@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('manage_tournaments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('region_id')->constrained('regions')->nullOnDelete();
-            $table->foreignId('scale_id')->constrained('scales')->nullOnDelete();
+            $table->foreignId('region_id')->nullable()->constrained('regions')->nullOnDelete();
+            $table->foreignId('scale_id')->nullable()->constrained('scales')->nullOnDelete();
             $table->integer('age_from');
             $table->integer('age_to');
             $table->date('date_commission');
