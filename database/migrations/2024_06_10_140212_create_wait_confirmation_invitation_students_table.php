@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('wait_confirmation_invitation_students', function (Blueprint $table) {
             $table->id();
             $table->string('email');
-            $table->foreignId('coach_id')->constrained('users')->nullOnDelete();
+            $table->foreignId('coach_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('confirmed')->default(false);
             $table->timestamps();
         });
