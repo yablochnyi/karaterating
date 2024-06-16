@@ -26,7 +26,7 @@ return new class extends Migration
             $table->integer('price');
             $table->string('address');
             $table->date('date');
-            $table->foreignId('organization_id')->constrained('users')->nullOnDelete();
+            $table->foreignId('organization_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
