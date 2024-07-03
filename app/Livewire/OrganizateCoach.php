@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Mail\InvitationFromTheCoach;
+use App\Mail\Invitation;
 use App\Models\User;
 use App\Models\WaitConfirmationInvitationStudent;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +21,7 @@ class OrganizateCoach extends Component
         if ($emails) {
             try {
                 foreach ($emails as $email) {
-                    Mail::to($email)->send(new InvitationFromTheCoach(auth()->id()));
+                    Mail::to($email)->send(new Invitation(auth()->id(), 'Приглашение от организатора'));
 
                     WaitConfirmationInvitationStudent::create([
                         'coach_id' => auth()->id(),

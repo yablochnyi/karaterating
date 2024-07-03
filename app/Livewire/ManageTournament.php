@@ -68,7 +68,7 @@ class ManageTournament extends Component
     {
         $this->validate();
 
-        \App\Models\ManageTournament::create([
+        $tournament = \App\Models\ManageTournament::create([
             "name" => $this->name,
             "region_id" => $this->region,
             "scale_id" => $this->scale,
@@ -84,6 +84,17 @@ class ManageTournament extends Component
             "date" => $this->date,
             "organization_id" => auth()->id()
         ]);
+
+        // Извлечение списков из сессии
+        $lists = session()->pull('lists', []);
+
+        // Сохранение списков с привязкой к турниру
+        foreach ($lists as $list) {
+            $tournament->lists()->create($list);
+        }
+
+        // Очистка сессии от временных списков
+        session()->forget('lists');
 
         $this->resetForm();
     }

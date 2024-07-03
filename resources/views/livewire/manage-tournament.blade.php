@@ -310,6 +310,10 @@
                                             </label>
                                             <div class="third-place-fight-text" >Бой за третье место</div>
                                         </div>
+                                        <div class="third-place-fight-container">
+                                            <livewire:components.session-lists />
+
+                                        </div>
                                     </div>
                                     <style>
                                         .filter-container {
@@ -871,6 +875,7 @@
 {{--                                    <span class="club-item">Кекушин каратэ-до "Тигр" х</span>--}}
 {{--                                    <button class="add-club-btn">+ добавить клуб</button>--}}
                                 </div>
+                                <button wire:click="$dispatch('openModal')" class="save-btn">Создать список</button>
                                 <button wire:click="create" class="save-btn">Сохранить</button>
                             </section>
                         </div>
@@ -1343,8 +1348,9 @@
             </div>
 
 
-
-
         </section>
+<livewire:create-list-modal />
+
     </main>
+
 </div>

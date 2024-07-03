@@ -29,4 +29,9 @@ class ManageTournament extends Model
     {
         return $this->belongsToMany(User::class, 'tournament_students', 'tournament_id', 'student_id');
     }
+
+    public function lists()
+    {
+        return $this->hasMany(TournamentStudentList::class, 'tournament_id');
+    }
 }

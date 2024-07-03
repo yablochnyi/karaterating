@@ -2,7 +2,10 @@
 
 namespace App\Observers;
 
+use App\Mail\Invitation;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class UserObserver
@@ -12,8 +15,14 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        $user->ref_token = Str::uuid()->toString();
-        $user->save();
+        if (empty($user->ref_token)) {
+            $user->ref_token = Str::uuid()->toString();
+            $user->saveQuietly();  // Используем saveQuietly, чтобы избежать вызова событий
+
+            if ($user->role_id == User::Organization) {
+                Mail::to($user->email)->send(new Invitation($user->id, 'Приглашение'));
+            }
+        }
     }
 
     /**

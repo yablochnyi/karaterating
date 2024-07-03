@@ -247,7 +247,7 @@
                         </div>
                     </section>
                     <a href="puli_tour_organizate.html" class="tournament-button1">Пули</a>
-                    <a href="puli_list_organizate.html" class="tournament-button1">Списки участников</a>
+                    <a href="{{route('organize.tournament.puli.list', $tournament->id)}}" class="tournament-button1">Списки участников</a>
                 </article>
                 <div class="tournament-info">
                     <div class="tournament-main__box">
@@ -289,7 +289,7 @@
                         <div class="tournament-actions" style="width: auto;">
                             <div class="tournament-date">{{$tournament->date}}</div>
                             <a href="puli_tour_organizate.html" style="margin-top: 20px; width: 100%; padding: 16px 5px; text-align: center; color: #071c31;" class="position-button">Пули</a>
-                            <a href="puli_list_organizate.html" class="application-button" style="padding: 16px 5px; text-align: center; color: #071c31;">Cписки участников</a>
+                            <a href="{{route('organize.tournament.puli.list', $tournament->id)}}" class="application-button" style="padding: 16px 5px; text-align: center; color: #071c31;">Cписки участников</a>
                         </div>
                     </div>
                     <!--

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthCoach
+class AuthOrganizator
 {
     /**
      * Handle an incoming request.
@@ -19,7 +19,7 @@ class AuthCoach
     {
         $user = Auth::user();
 
-        if (!$user || $user->role_id !== User::Coach) {
+        if (!$user || $user->role_id !== User::Organization) {
             return redirect('/login');
         }
 

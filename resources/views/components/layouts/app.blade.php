@@ -22,7 +22,7 @@
                     <img
                             src="{{asset('assets/img/logo.png')}}"
                             alt="Logo icon" class="logo-icon"/>
-                    <span class="logo-text">KARATERANG</span>
+                    <span class="logo-text">KARATERATING</span>
                 </div>
                 <nav class="nav-item">
                     <ul>

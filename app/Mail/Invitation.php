@@ -10,17 +10,19 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InvitationFromTheCoach extends Mailable
+class Invitation extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $coach;
+    public $subject;
     /**
      * Create a new message instance.
      */
-    public function __construct($coachId)
+    public function __construct($coachId, $subject)
     {
         $this->coach = User::find($coachId);
+        $this->subject = $subject;
     }
 
     /**
@@ -29,7 +31,7 @@ class InvitationFromTheCoach extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Приглашение от тренера',
+            subject: $this->subject,
         );
     }
 
@@ -39,7 +41,7 @@ class InvitationFromTheCoach extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.invitation-from-the-coach',
+            view: 'mail.invitation',
         );
     }
 

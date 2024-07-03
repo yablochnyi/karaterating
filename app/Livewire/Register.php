@@ -59,8 +59,11 @@ class Register extends Component
         Auth::login($user);
 
         $confirm = WaitConfirmationInvitationStudent::where('email', $this->email)->first();
-        $confirm->confirmed = true;
-        $confirm->save();
+        if ($confirm) {
+            $confirm->confirmed = true;
+            $confirm->save();
+        }
+
 
 
         return redirect()->route('edit.profile');
