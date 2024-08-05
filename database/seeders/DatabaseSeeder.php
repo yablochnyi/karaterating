@@ -19,39 +19,39 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-//                Role::create([
-//            'name' => 'Admin',
-//        ]);
+               Role::create([
+           'name' => 'Admin',
+       ]);
+
+      Role::create([
+          'name' => 'Organization',
+      ]);
 //
-//       Role::create([
-//           'name' => 'Organization',
-//       ]);
-////
-//       Role::create([
-//           'name' => 'Coach',
-//       ]);
-////
-//       Role::create([
-//           'name' => 'Student',
-//       ]);
-//        User::create([
-//            'name' => 'admin',
-//            'email' => 'admin@admin.com',
-//            'password' => bcrypt('admin'),
-//            'role_id' => 1
-//        ]);
+      Role::create([
+          'name' => 'Coach',
+      ]);
+//
+      Role::create([
+          'name' => 'Student',
+      ]);
+       User::create([
+           'name' => 'admin',
+           'email' => 'admin@admin.com',
+           'password' => bcrypt('admin'),
+           'role_id' => 1
+       ]);
 //        $organizerId = User::where('role_id', 2)->first()->id;
 //
 //        // Создание тренеров
-        for ($i = 0; $i < 10; $i++) {
-            User::create([
-                'name' => "Trener $i",
-                'email' => "coach$i@example.com",
-                'password' => bcrypt('password'),
-                'role_id' => 3,
-                'organization_id' => $organizerId
-            ]);
-        }
+        // for ($i = 0; $i < 10; $i++) {
+        //     User::create([
+        //         'name' => "Trener $i",
+        //         'email' => "coach$i@example.com",
+        //         'password' => bcrypt('password'),
+        //         'role_id' => 3,
+        //         'organization_id' => $organizerId
+        //     ]);
+        // }
 //
 //
 //        // Создание студентов и распределение по спискам
