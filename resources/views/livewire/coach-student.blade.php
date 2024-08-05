@@ -120,23 +120,7 @@
             <div class="container">
                 <div class="input-container">
                     <input for="email-input" wire:model="emails" class="email-input" placeholder="Добавьте почты учеников, через запятую"></input>
-                    <div class="select_drop" style="flex-grow: 0.3;">
-                        <div class="hall-select select_drop_link">
-                            <span class="hall-label">Выберите зал</span>
-                            <img
-                                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/5eb7de09060b06f0d1cf2b37151d8b74cea61858c705bc425469b4c774a44404?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                                    alt="" class="arrow-icon select_icon" loading="lazy" />
-                        </div>
-                        <div class="select_list" style="width: 300px;">
-                            <ul>
-                                <li class="all_status">
-                                    <a href="#">Зал</a>
-                                </li>
-                                <li><a href="#">Зал</a></li>
-                                <li><a href="#">Зал</a></li>
-                            </ul>
-                        </div>
-                    </div>
+
                     <button class="add-button">
                         <div class="add-icon-container">
                             <img

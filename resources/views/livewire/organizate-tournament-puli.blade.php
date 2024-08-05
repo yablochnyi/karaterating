@@ -392,7 +392,7 @@
                 <div class="puli_edit">
 
 
-                    <a href="puli_tour_organizate.html" class="fighter-card">
+                    <a wire:click.prevent="generatePools" href="" class="fighter-card">
                         <h2 class="fighter-name">+ Формировать</h2>
                         <h2 class="fighter-name">&nbsp;&nbspПули</h2>
                     </a>

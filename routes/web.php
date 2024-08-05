@@ -13,6 +13,7 @@ use App\Livewire\OrganizatePuliList;
 use App\Livewire\OrganizateTournament;
 use App\Livewire\EditProfile;
 use App\Livewire\OrganizateTournamentPuli;
+use App\Livewire\OrganizateTournamentPuliStudent;
 use App\Livewire\Profile;
 use App\Livewire\PuliListStudent;
 use App\Livewire\Register;
@@ -37,6 +38,8 @@ Route::get('/students/{id}', ViewStudentProfile::class)->name('students.show')->
 
 
 // organizator
+Route::get('/manage/tournaments/generated/puli/{id}', OrganizateTournamentPuliStudent::class)->name('organize.tournament.generated.puli')->middleware(AuthOrganizator::class);
+
 Route::get('/manage/tournaments', ManageTournament::class)->name('manage.tournament')->middleware(AuthOrganizator::class);
 Route::get('/manage/tournaments/{id}/coaches', OrganizateTournament::class)->name('organize.tournament')->middleware(AuthOrganizator::class);
 Route::get('/manage/tournaments/{id}/puli', OrganizateTournamentPuli::class)->name('organize.tournament.puli')->middleware(AuthOrganizator::class);

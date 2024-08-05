@@ -15,6 +15,8 @@ class Login extends Component
     public $email;
     #[Validate('required|string')]
     public $password;
+    public $errorMessage = '';
+
 
     public function register()
     {
@@ -22,6 +24,8 @@ class Login extends Component
 
         if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
             $this->redirect(FilterRegion::class);
+        } else {
+            $this->errorMessage = 'Неверный email или пароль.';
         }
     }
 

@@ -16,7 +16,7 @@ class ManageTournament extends Component
     public $tatami;
     public $KY_up_to_8;
     public $KY_from_8;
-    public $fight_for_third_place;
+    public $fight_for_third_place = false;
     public $price;
     public $address;
     public $date;

@@ -3,23 +3,22 @@
 
         <div class="nav_puli_box nav_puli_active" id="nav_puli">
 
-            <div class="puli__container">
-                @dd($tournament)
+            <div class="puli__container" wire:ignore>
                 @foreach($tournament->lists as $list)
-                <div id="match" class="active-match">
-                    <div class="match-number">{{$list->name}}</div>
-                    <!--<div class="match-location">Tатами №12</div>-->
-                    <div class="match-details">
-                        @if($list->gender == 'male')
-                        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/723f7d46cf93b41d46da476445cf5450caa752bc04925033d919e9cdba54e058?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                             alt="" class="match-icon" />
-                        @else
-                            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/ae6c2b2ef1f1568aa83ce38ac287ee9ba7e60006c81e2ac784cbd9d9e72c04c4?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                                 alt="" class="match-icon" />
-                        @endif
-                        <div class="match-info">{{$list->age_from}}-{{$list->age_to}} • {{$list->weight_from}}-{{$list->weight_to}}кг</div>
+                    <div id="match" class="match" wire:click="loadStudents({{ $list->id }})">
+                        <div class="match-number">{{ $list->name }}</div>
+                        <!--<div class="match-location">Tатами №12</div>-->
+                        <div class="match-details">
+                            @if($list->gender == 'male')
+                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/723f7d46cf93b41d46da476445cf5450caa752bc04925033d919e9cdba54e058?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                                     alt="" class="match-icon" />
+                            @else
+                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/ae6c2b2ef1f1568aa83ce38ac287ee9ba7e60006c81e2ac784cbd9d9e72c04c4?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                                     alt="" class="match-icon" />
+                            @endif
+                            <div class="match-info">{{ $list->age_from }}-{{ $list->age_to }} • {{ $list->weight_from }}-{{ $list->weight_to }}кг</div>
+                        </div>
                     </div>
-                </div>
                 @endforeach
 
 
@@ -333,74 +332,85 @@
                 font: 400 14px IBM Plex Mono, sans-serif;
             }
         </style>
-        <div class="container_puli_list">
-            <div class="header_puli_list">
-                <!--<div class="bullet-wrapper">
-                    <div class="name-text">Пули</div>
+        @if(!empty($students))
+            <div class="container_puli_list">
+                <div class="header_puli_list">
+                    <div class="name-wrapper">
+                        <div class="name-text">Документы</div>
+                    </div>
+                    <div class="name-wrapper"></div>
+                    <div class="document-wrapper">
+                        <div class="document-text">Фамилия и Имя</div>
+                    </div>
+                    <div class="name-wrapper"></div>
+                    <div class="age-wrapper">
+                        <div class="age-text">Возраст</div>
+                    </div>
+                    <div class="weight-wrapper">
+                        <div class="weight-text">Вес</div>
+                    </div>
+                    <div class="rank-wrapper">
+                        <div class="rank-text">Кю/Дан</div>
+                    </div>
+                    <div class="club-wrapper">
+                        <div class="club-text">Клуб</div>
+                    </div>
+                    <div class="coach-wrapper">
+                        <div class="coach-text">Тренер</div>
+                    </div>
                 </div>
-                <div class="gender-wrapper">
-                    <div class="gender-text">М/Ж</div>
-                    <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/9ec57a6c6ae72501621c8dac5bd8d0ab8b4a960f148b12c985f70efae9eafbeb?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                         alt="" class="icon" />
-                </div>-->
-                <div class="name-wrapper">
-                    <div class="name-text">Документы</div>
 
-                </div>
-                <div class="name-wrapper">
+                <style>
+                    .region-checkbox span {
+                        height: 30px;
+                        width: 30px;
+                    }
+                </style>
 
-                </div>
-                <div class="document-wrapper">
-                    <div class="document-text">Фамилия и Имя</div>
-                </div>
-                <div class="name-wrapper">
+                @foreach($students as $entry)
+                    <section class="participant-row">
+                        <div class="participant-name" style="color: rgb(9, 94, 193);">
+                            <a href="">Проверить</a>
+                        </div>
+                        <div class="name-wrapper"></div>
+                        <div class="participant-name">{{ $entry->student->first_name }} {{ $entry->student->last_name }}</div>
+                        <div class="name-wrapper"></div>
+                        <div class="participant-age">{{ $entry->student->age }} лет</div>
+                        <div class="participant-weight">{{ $entry->student->weight }} кг</div>
+                        <div class="participant-rank">{{ $entry->student->ky }}</div>
+                        <div class="participant-club">{{$entry->student->coach->club}}</div>
+                        <div class="participant-coach">{{$entry->student->coach->first_name . ' ' . $entry->student->coach->last_name}}</div>
+                        <div class="participant-name" style="color: rgb(9, 94, 193);">
+                            <a wire:click.prevent="$dispatch('openModalExchangeList', { tournamentId: {{ $tournament->id }}, studentId: {{ $entry->student->id }} })" href="">Переместить в другой список</a>
 
-                </div>
-                <div class="age-wrapper">
-                    <div class="age-text">Возраст</div>
-
-                </div>
-                <div class="weight-wrapper">
-                    <div class="weight-text">Вес</div>
-
-                </div>
-                <div class="rank-wrapper">
-                    <div class="rank-text">Кю/Дан</div>
-
-                </div>
-                <div class="club-wrapper">
-                    <div class="club-text">Клуб</div>
-
-                </div>
-                <div class="coach-wrapper">
-                    <div class="coach-text">Тренер</div>
-
+                        </div>
+                    </section>
+                @endforeach
+            </div>
+        @endif
+        @if($showModal)
+            <!-- Модальное окно -->
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 16px; border-radius: 8px; width: 100%; max-width: 500px;">
+                    <h2 style="font-size: 24px; margin-bottom: 16px;">Переместить ученика</h2>
+                    <form wire:submit.prevent="exchange">
+                        <!-- Поля формы -->
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px;">Списки</label>
+                            <select wire:model="targetListId" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Выберите</option>
+                                @foreach($tournamentLists as $list)
+                                    <option value="{{$list->id}}">{{$list->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="button" wire:click="$set('showModal', false)" style="margin-right: 8px; padding: 8px 16px; background: #ccc; color: white; border: none; border-radius: 4px;">Отмена</button>
+                            <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">Переместить</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <style>
-                .region-checkbox span{
-                    height: 30px;
-                    width: 30px;
-                }
-            </style>
-
-            <section class="participant-row">
-
-                <div class="participant-name" style="color: rgb(9, 94, 193);"><a href="organizate_doc.html">Проверить</a></div>
-                <div class="name-wrapper">
-
-                </div>
-                <div class="participant-name">Седова Мирослава</div>
-                <div class="participant-age"></div>
-                <div class="participant-age">16 лет</div>
-                <div class="participant-weight">45 кг</div>
-                <div class="participant-rank">1 дан</div>
-                <div class="participant-club">Каратэ-до "Тигр"</div>
-                <div class="participant-coach">Мурадян Гегам</div>
-            </section>
-
-
-        </div>
+        @endif
     </main>
 </div>

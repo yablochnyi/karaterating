@@ -34,4 +34,9 @@ class ManageTournament extends Model
     {
         return $this->hasMany(TournamentStudentList::class, 'tournament_id');
     }
+
+    public function pools()
+    {
+        return $this->hasMany(Pool::class, 'tournament_id');
+    }
 }

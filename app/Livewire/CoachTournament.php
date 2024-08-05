@@ -38,7 +38,9 @@ class CoachTournament extends Component
                 &&
                 $student->weight >= $list->weight_from && $student->weight <= $list->weight_to
                 &&
-                $student->ky >= $list->kyu_from && $student->ky <= $list->kyu_to
+                $student->ky >= $list->kyu_from
+                &&
+                $student->ky <= $list->kyu_to
                 &&
                 $student->gender == $list->gender
             ) {
@@ -81,14 +83,26 @@ class CoachTournament extends Component
 
     public function removeStudent($studentId, $tournamentId)
     {
+        // Удаление записи студента из TournamentStudent
         TournamentStudent::where('tournament_id', $tournamentId)
             ->where('student_id', $studentId)
             ->delete();
 
-        OrganizatePuliListStudent::where('tournament_id', $tournamentId)
-            ->where('student_id', $studentId)
-            ->delete();
+        // Получение всех списков из TournamentStudentList, где tournament_id == $tournamentId
+        $tournamentStudentLists = TournamentStudentList::where('tournament_id', $tournamentId)->with('students')->get();
+
+        // Проход по всем спискам и удаление записи студента из каждого списка
+        foreach ($tournamentStudentLists as $list) {
+            foreach ($list->students as $student) {
+                if ($student->student_id == $studentId) {
+                    // Удаление студента из списка
+                    $student->delete(); // Если у вас есть отдельная таблица для связи, этот метод работает непосредственно с записями студентов
+                }
+            }
+        }
     }
+
+
 
     public function isStudentInTournament($studentId, $tournamentId)
     {

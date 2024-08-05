@@ -45,7 +45,7 @@ class OrganizationResource extends Resource
                             ->label('Пароль')
                             ->password()
                             ->revealable()
-                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+//                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                             ->dehydrated(fn(?string $state): bool => filled($state))
                             ->required(fn(string $operation): bool => $operation === 'create'),
 

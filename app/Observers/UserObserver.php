@@ -18,10 +18,10 @@ class UserObserver
         if (empty($user->ref_token)) {
             $user->ref_token = Str::uuid()->toString();
             $user->saveQuietly();  // Используем saveQuietly, чтобы избежать вызова событий
-
-            if ($user->role_id == User::Organization) {
-                Mail::to($user->email)->send(new Invitation($user->id, 'Приглашение'));
-            }
+//
+//            if ($user->role_id == User::Organization) {
+//                Mail::to($user->email)->send(new Invitation($user->id, 'Приглашение'));
+//            }
         }
     }
 

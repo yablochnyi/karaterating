@@ -61,20 +61,20 @@ class EditProfile extends Component
 
     public function update()
     {
-        $this->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255',
-            'club' => 'required|string|max:255',
-            'birthday' => 'nullable|date',
-            'passportPreorder' => 'nullable|image',
-            'brandPreorder' => 'nullable|image',
-            'insurancePreorder' => 'nullable|image',
-            'iko_cardPreorder' => 'nullable|image',
-            'avatarPreorder' => 'nullable|image',
-            'weight' => 'nullable|numeric',
-            'age' => 'nullable|numeric',
-        ]);
+//        $this->validate([
+//            'first_name' => 'required|string|max:255',
+//            'last_name' => 'nullable|string|max:255',
+//            'email' => 'required|email|max:255',
+//            'club' => 'required|string|max:255',
+//            'birthday' => 'nullable|date',
+//            'passportPreorder' => 'nullable|image',
+//            'brandPreorder' => 'nullable|image',
+//            'insurancePreorder' => 'nullable|image',
+//            'iko_cardPreorder' => 'nullable|image',
+//            'avatarPreorder' => 'nullable|image',
+//            'weight' => 'nullable|numeric',
+//            'age' => 'nullable|numeric',
+//        ]);
 
         // Обновление свойств
         $this->user->first_name = $this->first_name;
@@ -88,6 +88,7 @@ class EditProfile extends Component
         $this->user->success_politic = $this->success_politic;
         $this->user->ky = $this->ky;
         $this->user->club = $this->club;
+        $this->user->gender = $this->gender;
 
         if ($this->passportPreorder) {
             $this->user->passport = $this->passportPreorder->store('passports', 'public');
@@ -107,6 +108,8 @@ class EditProfile extends Component
 
 
         $this->user->save();
+
+        $this->dispatch('notify', title: 'Данные сохранены');
     }
     public function render()
     {

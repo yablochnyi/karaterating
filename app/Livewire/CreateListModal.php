@@ -26,7 +26,7 @@ class CreateListModal extends Component
         'weightTo' => 'required|integer|min:0',
         'kyuFrom' => 'required|integer|min:0',
         'kyuTo' => 'required|integer|min:0',
-        'gender' => 'required|string|in:male,female',
+        'gender' => 'required|string|in:М,Ж',
     ];
 
     public function mount()

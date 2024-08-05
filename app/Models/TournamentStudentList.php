@@ -14,4 +14,15 @@ class TournamentStudentList extends Model
     {
         return $this->belongsTo(ManageTournament::class, 'tournament_id');
     }
+
+    public function students()
+    {
+        return $this->hasMany(OrganizatePuliListStudent::class, 'list_id', 'id');
+    }
+
+    public function match_pools()
+    {
+        return $this->hasMany(MatchPool::class, 'list_id', 'id');
+    }
+
 }
