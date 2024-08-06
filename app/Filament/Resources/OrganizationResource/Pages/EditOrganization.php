@@ -12,13 +12,6 @@ class EditOrganization extends EditRecord
 
     public static ?string $title = 'Редактировать организацию';
 
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        $data['ref_token'] = url('/register?ref=' . $data['ref_token']);
-
-        return $data;
-    }
-
     protected function getHeaderActions(): array
     {
         return [

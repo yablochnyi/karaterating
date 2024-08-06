@@ -135,7 +135,12 @@
                     <p class="confirmation-text">Ожидаем подтверждения</p>
                     <ul class="email-list">
                         @foreach($waitConfirmStudent as $email)
-                        <li class="email-item">{{$email->email}}</li>
+                            <li class="email-item">
+                                {{$email->email}}
+                                <button class="delete-button" wire:click.prevent="deleteEmail('{{ $email->id }}')">
+                                    <i class="fas fa-times"></i> <!-- Иконка крестика -->
+                                </button>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
@@ -375,23 +380,29 @@
             </style>
 
             <div class="email-address">
-                <span>johndoe@gmail.com</span>
-                <div class="email_add">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.714 5.99969H1.28596M6 1.28564V10.7137" stroke="#095EC1" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <a wire:click.prevent="sendEmails">Добавить</a>
-                </div>
+
+                    <input for="email-input" wire:model="emails" class="" placeholder="Добавьте почты"></input>
+
+                    <button class="add-button">
+                        <div class="add-icon-container">
+                            <img
+                                src="https://cdn.builder.io/api/v1/image/assets/TEMP/bd015786accaf6da58a8bf30670f8641b114efb20ed432ce1c63b653414d7fe0?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                                alt="" class="add-icon" loading="lazy" />
+                            <a wire:click.prevent="sendEmails" class="add-text">Добавить</a>
+                        </div>
+                    </button>
+
             </div>
-            <div class="room-selection">
-                <span class="room-selection-text">Выберите зал</span>
-                <picture><source srcset="https://cdn.builder.io/api/v1/image/assets/TEMP/5eb7de09060b06f0d1cf2b37151d8b74cea61858c705bc425469b4c774a44404?apiKey=64de9059607140be8c9d5acd9f2dfd62&" type="image/webp"><img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5eb7de09060b06f0d1cf2b37151d8b74cea61858c705bc425469b4c774a44404?apiKey=64de9059607140be8c9d5acd9f2dfd62&" alt="" class="room-selection-icon" /></picture>
-            </div>
+
             @if(count($waitConfirmStudent))
             <h2 class="confirmation-status">Ожидаем подтверждения</h2>
             <div class="participant-list">
                 @foreach($waitConfirmStudent as $email)
-                <span class="participant">{{$email->email}}</span>
+                <span class="participant">{{$email->email}}
+                <button class="delete-button" wire:click.prevent="deleteEmail('{{ $email->id }}')">
+                            <i class="fas fa-times"></i> <!-- Иконка крестика -->
+                        </button>
+                </span>
                 @endforeach
             </div>
             @endif

@@ -8,6 +8,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap&_v=20240405221544"
           rel="stylesheet">
+    <!-- Подключение CSS и JS Fancybox -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <title>Авторизация</title>
 </head>
 
@@ -290,7 +297,7 @@
                                     </a>
                                 </div>
                                 <div class="organizate_status">
-                                    <a href="coaches.html" class="coaches-section ">
+                                    <a href="{{route('organize.coach')}}" class="coaches-section ">
                                         <h3 class="coaches-title">Тренеры</h3>
                                     </a>
                                 </div>

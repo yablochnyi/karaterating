@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
 use App\Models\Organization;
+use App\Models\Region;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -49,6 +50,9 @@ class OrganizationResource extends Resource
                             ->dehydrated(fn(?string $state): bool => filled($state))
                             ->required(fn(string $operation): bool => $operation === 'create'),
 
+                        Forms\Components\Select::make('region_id')
+                            ->label('Регион')
+                            ->options(Region::all()->pluck('name', 'id')),
                         Forms\Components\TextInput::make('ref_token')
                             ->columnSpanFull()
                             ->readOnly()

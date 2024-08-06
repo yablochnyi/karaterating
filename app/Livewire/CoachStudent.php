@@ -11,11 +11,15 @@ use Livewire\Component;
 class CoachStudent extends Component
 {
     public $emails;
+    public $students;
+    public $waitConfirmStudent;
     public function deleteStudent($id)
     {
         $student = User::where('id', $id)->first();
-        $student->coach_id = 0;
+        $student->coach_id = null;
         $student->save();
+
+        $this->mount();
     }
 
     public function sendEmails()
@@ -39,12 +43,22 @@ class CoachStudent extends Component
 
 
         $this->emails = '';
+        $this->mount();
     }
 
+    public function deleteEmail($id)
+    {
+        WaitConfirmationInvitationStudent::find($id)->delete();
+        $this->mount();
+    }
+
+    public function mount()
+    {
+        $this->students = User::where('coach_id', auth()->id())->get();
+        $this->waitConfirmStudent = WaitConfirmationInvitationStudent::where('coach_id', auth()->id())->where('confirmed', false)->get();
+    }
     public function render()
     {
-        $students = User::where('coach_id', auth()->id())->get();
-        $waitConfirmStudent = WaitConfirmationInvitationStudent::where('coach_id', auth()->id())->where('confirmed', false)->get();
-        return view('livewire.coach-student', compact('students', 'waitConfirmStudent'));
+        return view('livewire.coach-student');
     }
 }

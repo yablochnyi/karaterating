@@ -151,7 +151,12 @@
                         <p class="confirmation-text">Ожидаем подтверждения</p>
                         <ul class="email-list">
                             @foreach($waitConfirmStudent as $email)
-                                <li class="email-item">{{$email->email}}</li>
+                                <li class="email-item">
+                                    {{$email->email}}
+                                    <button class="delete-button" wire:click.prevent="deleteEmail('{{ $email->id }}')">
+                                        <i class="fas fa-times"></i> <!-- Иконка крестика -->
+                                    </button>
+                                </li>
                             @endforeach
                         </ul>
                     </div>
@@ -405,7 +410,11 @@
                 <h2 class="confirmation-status">Ожидаем подтверждения</h2>
                 <div class="participant-list">
                     @foreach($waitConfirmStudent as $email)
-                        <span class="participant">{{$email->email}}</span>
+                        <span class="participant">{{$email->email}}
+                <button class="delete-button" wire:click.prevent="deleteEmail('{{ $email->id }}')">
+                            <i class="fas fa-times"></i> <!-- Иконка крестика -->
+                        </button>
+                </span>
                     @endforeach
                 </div>
             @endif

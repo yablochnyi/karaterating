@@ -412,6 +412,7 @@
                                 <div class="rank-container1">
                                     <select wire:model="ky" class="rank-select">
                                         <optgroup label="Кю">
+                                            <option value="0 кю">0 кю</option>
                                             @for ($i = 10; $i >= 1; $i--)
                                                 <option value="{{ $i }} кю">{{ $i }} кю</option>
                                             @endfor

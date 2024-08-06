@@ -13,6 +13,7 @@ class OrganizateCoach extends Component
 {
     public $coaches;
     public $emails;
+    public $waitConfirmStudent;
 
     public function sendEmails()
     {
@@ -37,21 +38,30 @@ class OrganizateCoach extends Component
         $this->emails = '';
     }
 
+    public function deleteEmail($id)
+    {
+        WaitConfirmationInvitationStudent::find($id)->delete();
+        $this->mount();
+    }
+
     public function mount()
     {
         $this->coaches = User::where('organization_id', Auth::id())->get();
+        $this->waitConfirmStudent = WaitConfirmationInvitationStudent::where('coach_id', auth()->id())->where('confirmed', false)->get();
     }
 
     public function deleteCoach($id)
     {
         $coach = User::where('id', $id)->first();
-        $coach->organization_id = 0;
+        $coach->organization_id = null;
         $coach->save();
+
+        $this->mount();
     }
 
     public function render()
     {
-        $waitConfirmStudent = WaitConfirmationInvitationStudent::where('coach_id', auth()->id())->where('confirmed', false)->get();
-        return view('livewire.organizate-coach', compact('waitConfirmStudent'));
+
+        return view('livewire.organizate-coach');
     }
 }
