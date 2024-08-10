@@ -268,7 +268,10 @@
                             <img
                                     src="{{asset('storage/' . $coach->avatar)}}"
                                     alt="Athlete avatar" class="athlete-avatar" />
-                            <h3 class="athlete-name">{{$coach->first_name . ' ' . $coach->last_name}}</h3>
+
+                            <h3 class="athlete-name">
+                                <a href="{{route('coach.show', $coach->id)}}">{{$coach->first_name . ' ' . $coach->last_name}}</a>
+                            </h3>
                         </div>
                         <p class="athlete-age">{{$coach->age}} лет</p>
                         <p class="athlete-weight">{{$coach->weight}}кг</p>
@@ -516,7 +519,10 @@
                             src="{{asset('storage/' . $coach->avatar)}}"
                             alt="User avatar" class="user-avatar" />
                     <div class="user-details">
-                        <h2 class="user-name">{{$coach->first_name . ' ' . $coach->last_name}}</h2>
+                        <h2 class="user-name">
+                            <a href="{{route('coach.show', $coach->id)}}">{{$coach->first_name . ' ' . $coach->last_name}}</a>
+                        </h2>
+
                         <p class="user-email">{{$coach->email}}</p>
                         <div class="user-stats">
                             <span class="user-age">{{$coach->age}} лет</span>

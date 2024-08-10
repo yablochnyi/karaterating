@@ -52,7 +52,9 @@
                                     <div class="tournament-pricing">
                                         <div class="pricing-info">
                                             <div class="price-label">Стоимость</div>
-                                            <div class="price-value">{{$tournament->price}}</div>
+                                            <div class="price-value">{{$tournament->price}}р.</div>
+                                            <div class="commission-date-label">Дата турнира</div>
+                                            <div class="commission-date-value">{{$tournament->date}}</div>
                                             <div class="commission-date-label">Дата комиссии</div>
                                             <div class="commission-date-value">{{$tournament->date}}</div>
                                         </div>
@@ -143,7 +145,9 @@
                                     <div class="tournament-pricing">
                                         <div class="pricing-info">
                                             <div class="price-label">Стоимость</div>
-                                            <div class="price-value">{{$tournament->price}}</div>
+                                            <div class="price-value">{{$tournament->price}}р.</div>
+                                            <div class="commission-date-label">Дата турнира</div>
+                                            <div class="commission-date-value">{{$tournament->date}}</div>
                                             <div class="commission-date-label">Дата комиссии</div>
                                             <div class="commission-date-value">{{$tournament->date_commission}}</div>
                                         </div>

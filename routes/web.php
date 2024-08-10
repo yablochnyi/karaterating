@@ -18,6 +18,7 @@ use App\Livewire\Profile;
 use App\Livewire\PuliListStudent;
 use App\Livewire\Register;
 use App\Livewire\ViewStudentProfile;
+use App\Livewire\ViewTrenerShow;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', FilterRegion::class)->name('filter.region');
@@ -35,6 +36,7 @@ Route::get('/profile', Profile::class)->name('profile')->middleware(Auth::class)
 Route::get('/coach/tournaments', CoachTournament::class)->name('coach.tournament')->middleware(AuthCoach::class);
 Route::get('/coach/students', CoachStudent::class)->name('coach.student')->middleware(AuthCoach::class);
 Route::get('/students/{id}', ViewStudentProfile::class)->name('students.show')->middleware(AuthCoach::class);
+Route::get('/coach/{id}', ViewTrenerShow::class)->name('coach.show')->middleware(AuthOrganizator::class);
 
 
 // organizator
