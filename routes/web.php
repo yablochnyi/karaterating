@@ -35,7 +35,7 @@ Route::get('/profile', Profile::class)->name('profile')->middleware(Auth::class)
 // coach
 Route::get('/coach/tournaments', CoachTournament::class)->name('coach.tournament')->middleware(AuthCoach::class);
 Route::get('/coach/students', CoachStudent::class)->name('coach.student')->middleware(AuthCoach::class);
-Route::get('/students/{id}', ViewStudentProfile::class)->name('students.show')->middleware(AuthCoach::class);
+Route::get('/students/{id}', ViewStudentProfile::class)->name('students.show');
 Route::get('/coach/{id}', ViewTrenerShow::class)->name('coach.show')->middleware(AuthOrganizator::class);
 
 

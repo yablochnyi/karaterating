@@ -337,8 +337,10 @@
                 <div class="participant-age">{{$student->age}} лет</div>
                 <div class="participant-weight">{{$student->weight}} кг</div>
                 <div class="participant-rank">{{$student->ky}}</div>
-                <div class="participant-club">{{$student->coach->club}}</div>
-                <div class="participant-coach">{{ $student->coach->first_name . ' ' . $student->coach->last_name }}</div>
+                @if(!empty($student->coach))
+                    <div class="participant-club">{{$student->coach->club}}</div>
+                    <div class="participant-coach">{{ $student->coach->first_name . ' ' . $student->coach->last_name }}</div>
+                @endif
             </section>
             @endforeach
         </div>

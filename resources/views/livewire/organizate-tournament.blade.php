@@ -241,7 +241,7 @@
                         </div>
                     </section>
                     <a href="{{route('organize.tournament.puli', $tournament->id)}}" class="tournament-button1">Пули</a>
-                    <a href="puli_list_organizate.html" class="tournament-button1">Список участников</a>
+                    <a href="{{route('organize.tournament.puli.list', $tournament->id)}}" class="tournament-button1">Список участников</a>
                 </article>
                 <div class="tournament-info">
                     <div class="tournament-main__box">

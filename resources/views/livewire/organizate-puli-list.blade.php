@@ -1,6 +1,5 @@
 <div>
     <main class="main_puli">
-
         <div class="nav_puli_box nav_puli_active" id="nav_puli">
 
             <div class="puli__container" wire:ignore>
@@ -9,14 +8,18 @@
                         <div class="match-number">{{ $list->name }}</div>
                         <!--<div class="match-location">Tатами №12</div>-->
                         <div class="match-details">
-                            @if($list->gender == 'male')
-                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/723f7d46cf93b41d46da476445cf5450caa752bc04925033d919e9cdba54e058?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                                     alt="" class="match-icon" />
-                            @else
-                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/ae6c2b2ef1f1568aa83ce38ac287ee9ba7e60006c81e2ac784cbd9d9e72c04c4?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                                     alt="" class="match-icon" />
-                            @endif
+{{--                            @if($list->gender == 'male')--}}
+{{--                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/723f7d46cf93b41d46da476445cf5450caa752bc04925033d919e9cdba54e058?apiKey=64de9059607140be8c9d5acd9f2dfd62&"--}}
+{{--                                     alt="" class="match-icon" />--}}
+{{--                            @else--}}
+{{--                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/ae6c2b2ef1f1568aa83ce38ac287ee9ba7e60006c81e2ac784cbd9d9e72c04c4?apiKey=64de9059607140be8c9d5acd9f2dfd62&"--}}
+{{--                                     alt="" class="match-icon" />--}}
+{{--                            @endif--}}
                             <div class="match-info">{{ $list->age_from }}-{{ $list->age_to }} • {{ $list->weight_from }}-{{ $list->weight_to }}кг</div>
+                            <button class="edit-button" wire:click.prevent="editMatchDetails({{ $list->id }})">
+                                <i class="fas fa-edit">
+                                </i>
+                            </button>
                         </div>
                     </div>
                 @endforeach
@@ -364,6 +367,7 @@
                     .region-checkbox span {
                         height: 30px;
                         width: 30px;
+
                     }
                 </style>
 
@@ -373,13 +377,24 @@
                             <a href="">Проверить</a>
                         </div>
                         <div class="name-wrapper"></div>
-                        <div class="participant-name">{{ $entry->student->first_name }} {{ $entry->student->last_name }}</div>
+{{--                        <div class="participant-name">{{ $entry->student->first_name }} {{ $entry->student->last_name }}</div>--}}
+                        <div class="participant-name"><a href="{{ route('students.show', $entry->student->id) }}">
+                                {{ $entry->student->last_name . ' ' . $entry->student->first_name }}
+                            </a></div>
+{{--                        <h2 class="user-name"><a href="{{ route('students.show', $student->id) }}">--}}
+{{--                                {{ $student->last_name . ' ' . $entry->student->first_name }}--}}
+{{--                            </a></h2>--}}
                         <div class="name-wrapper"></div>
                         <div class="participant-age">{{ $entry->student->age }} лет</div>
                         <div class="participant-weight">{{ $entry->student->weight }} кг</div>
                         <div class="participant-rank">{{ $entry->student->ky }}</div>
+                        @if(!empty($entry->student->coach))
                         <div class="participant-club">{{$entry->student->coach->club}}</div>
                         <div class="participant-coach">{{$entry->student->coach->first_name . ' ' . $entry->student->coach->last_name}}</div>
+                        @else
+                            <div class="participant-club"></div>
+                            <div class="participant-coach"></div>
+                        @endif
                         <div class="participant-name" style="color: rgb(9, 94, 193);">
                             <a wire:click.prevent="$dispatch('openModalExchangeList', { tournamentId: {{ $tournament->id }}, studentId: {{ $entry->student->id }} })" href="">Переместить в другой список</a>
 
@@ -407,6 +422,63 @@
                         <div style="display: flex; justify-content: flex-end;">
                             <button type="button" wire:click="$set('showModal', false)" style="margin-right: 8px; padding: 8px 16px; background: #ccc; color: white; border: none; border-radius: 4px;">Отмена</button>
                             <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">Переместить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+        @if($editList)
+            <!-- Модальное окно -->
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 16px; border-radius: 8px; width: 100%; max-width: 500px;">
+                    <h2 style="font-size: 24px; margin-bottom: 16px;">{{ 'Редактировать список'}}</h2>
+                    <form wire:submit.prevent="{{ 'updateList'}}">
+                        <!-- Поля формы -->
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px;">Название списка</label>
+                            <input type="text" wire:model="name" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                            @error('name') <span style="color: red;">{{ $message }}</span> @enderror
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px;">Возраст (от - до)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" wire:model="ageFrom" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                                <input type="number" wire:model="ageTo" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                            </div>
+                            @error('ageFrom') <span style="color: red;">{{ $message }}</span> @enderror
+                            @error('ageTo') <span style="color: red;">{{ $message }}</span> @enderror
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px;">Вес (от - до)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" wire:model="weightFrom" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                                <input type="number" wire:model="weightTo" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                            </div>
+                            @error('weightFrom') <span style="color: red;">{{ $message }}</span> @enderror
+                            @error('weightTo') <span style="color: red;">{{ $message }}</span> @enderror
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px;">Кю (от - до)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" wire:model="kyuFrom" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                                <input type="number" wire:model="kyuTo" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>
+                            </div>
+                            @error('kyuFrom') <span style="color: red;">{{ $message }}</span> @enderror
+                            @error('kyuTo') <span style="color: red;">{{ $message }}</span> @enderror
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 4px;">Пол</label>
+                            <select wire:model="gender" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="">Выберите</option>
+                                <option value="М">Мужской</option>
+                                <option value="Ж">Женский</option>
+                            </select>
+                            @error('gender') <span style="color: red;">{{ $message }}</span> @enderror
+                        </div>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="button" wire:click="$set('editList', false)" style="margin-right: 8px; padding: 8px 16px; background: #ccc; color: white; border: none; border-radius: 4px;">Отмена</button>
+
+                            <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">{{'Обновить'}}</button>
                         </div>
                     </form>
                 </div>

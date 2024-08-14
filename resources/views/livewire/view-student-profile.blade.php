@@ -673,7 +673,7 @@
                     border: 0;
                 }
             </style>
-            @if($student->coach_id == \Illuminate\Support\Facades\Auth::id())
+            @if($student->coach_id == \Illuminate\Support\Facades\Auth::id() || $coachBelongsToOrganizer)
             <section class="documents-container">
                 <h2 class="documents-title">Документы</h2>
                 <div class="documents-grid">

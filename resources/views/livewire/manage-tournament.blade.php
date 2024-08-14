@@ -63,9 +63,18 @@
                             </div>
                         </div>
                         <div class="tournament-actions">
-                            <div class="action-buttons">
-                                <button class="position-button">Положение</button>
-                                <button class="application-button">Заявление</button>
+                            <div class="tournament-actions">
+                                <div class="action-buttons">
+                                    <!-- Ссылка на скачивание документа "Положение" -->
+                                    <a href="{{ asset('storage/' . $tournament->regulation_document) }}" class="position-button" download>
+                                        Положение
+                                    </a>
+
+                                    <!-- Ссылка на скачивание документа "Заявление" -->
+                                    <a href="{{ asset('storage/' . $tournament->application_document) }}" class="application-button" download>
+                                        Заявление
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -93,7 +102,9 @@
                                 <div class="tournament-details__box">
                                     <h2 class="tournament-name">{{$tournament->name}}</h2>
                                     <div class="tournament-status">Идут заявки</div>
-                                    <button class="edit_btn">Редактировать</button>
+                                    <button class="edit_btn" wire:click="editTournament({{ $tournament->id }})">Редактировать</button>
+                                    <button class="edit_btn" wire:click="deleteTournament({{ $tournament->id }})">Удалить</button>
+
                                 </div>
                                 <div class="tournament-meta">
                                     <div class="region-info">
@@ -157,8 +168,15 @@
                         </div>
                         <div class="tournament-actions">
                             <div class="action-buttons">
-                                <button class="position-button">Положение</button>
-                                <button class="application-button">Заявление</button>
+                                <!-- Ссылка на скачивание документа "Положение" -->
+                                <a href="{{ asset('storage/' . $tournament->regulation_document) }}" class="position-button" download>
+                                    Положение
+                                </a>
+
+                                <!-- Ссылка на скачивание документа "Заявление" -->
+                                <a href="{{ asset('storage/' . $tournament->application_document) }}" class="application-button" download>
+                                    Заявление
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -242,12 +260,12 @@
                 </style>
 
                 <div class="tournament-add-container">
-                    <div class="tournament-add-wrapper">
+                    <div class="tournament-add-wrapper" wire:ignore.self>
                         <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d42cb134ee716ee06b53b7bd4fe57b3d0a711b1b10146fc1da9f9c3619c6fc0e?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
                              alt="Add tournament icon" class="tournament-add-icon" />
                         <div class="tournament-add-text">Добавить турнир</div>
                     </div>
-                    <div class="edit_cart none_mobile">
+                    <div class="edit_cart none_mobile" wire:ignore.self>
                         @if ($errors->any())
                             <div class="error-messages">
                                 @foreach ($errors->all() as $error)
@@ -502,20 +520,6 @@
                                                        style="width: 33px;height: 33px;">
                                             </div>
                                         </div>
-
-{{--                                        <div class="weight-filter">--}}
-{{--                                            <div class="weight-from">--}}
-{{--                                                <p class="weight-label">Вес от</p>--}}
-{{--                                                <input type="text" class="weight-input" placeholder="66"--}}
-{{--                                                       style="width: 33px;height: 33px;">--}}
-{{--                                            </div>--}}
-{{--                                            <div class="weight-to">--}}
-{{--                                                <p class="weight-label">и до</p>--}}
-{{--                                                <input type="text" class="weight-input" placeholder="80"--}}
-{{--                                                       style="width: 33px;height: 33px;">--}}
-{{--                                            </div>--}}
-{{--                                        </div>--}}
-
                                         <div class="kyu-filter">
                                             <div class="kyu-option">
                                                 <label for="input5" class="region-checkbox">
@@ -533,22 +537,6 @@
                                             </div>
                                         </div>
 
-{{--                                        <div class="gender-filter">--}}
-{{--                                            <div class="gender-option">--}}
-{{--                                                <label for="input2" class="region-checkbox">--}}
-{{--                                                    <input type="checkbox" class="region-input" id="input2">--}}
-{{--                                                    <span></span>--}}
-{{--                                                </label>--}}
-{{--                                                <p class="gender-label">Мужской</p>--}}
-{{--                                            </div>--}}
-{{--                                            <div class="gender-option">--}}
-{{--                                                <label for="input3" class="region-checkbox">--}}
-{{--                                                    <input type="checkbox" class="region-input" id="input3">--}}
-{{--                                                    <span></span>--}}
-{{--                                                </label>--}}
-{{--                                                <p class="gender-label">Женский</p>--}}
-{{--                                            </div>--}}
-{{--                                        </div>--}}
                                     </section>
                                 </div>
 
@@ -746,24 +734,6 @@
                                             stroke-width: 0.3px;
                                         }
                                     </style>
-
-{{--                                    <div class="select_drop">--}}
-{{--                                        <section class="region-container select_drop_link">--}}
-{{--                                            <span  class="region-label">Регион прохождени</span>--}}
-{{--                                            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/cd76616d53facf229262a1d74a3dbfd273019f6c2e8507bddb4ec42dfcd7011b?apiKey=64de9059607140be8c9d5acd9f2dfd62&"--}}
-{{--                                                 alt="Arrow icon" class="arrow-icon select_icon" loading="lazy" />--}}
-{{--                                        </section>--}}
-{{--                                        <div class="select_list" style="margin-top: -20px; width:237px;padding: 0;">--}}
-{{--                                            <ul>--}}
-{{--                                                @foreach($regions as $region)--}}
-{{--                                                <li class="all_status">--}}
-{{--                                                    <a wire:click.prevent="region({{$region->id}})" href="">{{$region->name}}</a>--}}
-{{--                                                </li>--}}
-{{--                                                @endforeach--}}
-
-{{--                                            </ul>--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
                                     <div class="select_drop">
                                         <select class="region-container" wire:model="region" style="width: 100%;">
                                             <option class="region-label" value="">Регион прохождения</option>
@@ -790,6 +760,17 @@
                             </div>
                             <div class="tournament-add-column">
                                 <input type="date" wire:model="date" class="date-container"></input>
+                                <!-- Кнопка для загрузки документа "Положение" -->
+                                <input type="file" id="positionDocument" wire:model="positionDocument" style="display:none;">
+                                <button class="position-button" onclick="document.getElementById('positionDocument').click()">
+                                    Положение
+                                </button>
+
+                                <!-- Кнопка для загрузки документа "Заявление" -->
+                                <input type="file" id="applicationDocument" wire:model="applicationDocument" style="display:none;">
+                                <button class="application-button" onclick="document.getElementById('applicationDocument').click()">
+                                    Заявление
+                                </button>
                                 <style>
                                     .date-container {
                                         display: flex;
@@ -1307,22 +1288,7 @@
                                         <div class="kyu-from-label10">КЮ от 8</div>
                                     </div>
                                 </div>
-{{--                                <div class="gender10">--}}
-{{--                                    <div class="male10">--}}
-{{--                                        <label for="input125" class="region-checkbox">--}}
-{{--                                            <input type="checkbox" class="region-input" id="input125">--}}
-{{--                                            <span></span>--}}
-{{--                                        </label>--}}
-{{--                                        <div class="male-label10">Мужской</div>--}}
-{{--                                    </div>--}}
-{{--                                    <div class="female10">--}}
-{{--                                        <label for="input124" class="region-checkbox">--}}
-{{--                                            <input type="checkbox" class="region-input" id="input124">--}}
-{{--                                            <span></span>--}}
-{{--                                        </label>--}}
-{{--                                        <div class="female-label10">Женский</div>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
+
                                 <div class="">
 {{--                                    <div class="region10 ">--}}
                                         <div class="select_drop" style="margin-top: 16px">
@@ -1355,6 +1321,94 @@
         </section>
 <livewire:create-list-modal />
 
+{{--        @if($showUpdateTournament)--}}
+{{--        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center;">--}}
+{{--            <div style="background: white; padding: 16px; border-radius: 8px; width: 100%; max-width: 500px;">--}}
+{{--                <h2 style="font-size: 24px; margin-bottom: 16px;">Обновить турнир</h2>--}}
+{{--                <form wire:submit.prevent="updateTournament">--}}
+{{--                    <!-- Поля формы -->--}}
+{{--                    <div style="margin-bottom: 16px;">--}}
+{{--                        <label style="display: block; margin-bottom: 4px;">Название</label>--}}
+{{--                        <input type="text" wire:model="name" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>--}}
+{{--                        @error('name') <span style="color: red;">{{ $message }}</span> @enderror--}}
+{{--                    </div>--}}
+{{--                    <div class="select_drop" style="margin-top: 16px">--}}
+{{--                        <label style="display: block; margin-bottom: 4px;">Регион прохождения</label>--}}
+{{--                        <select class="region-container" wire:model="region" style="width: 100%;">--}}
+{{--                            <option class="region-label" value="">Регион прохождения</option>--}}
+{{--                            @foreach($regions as $region)--}}
+{{--                                <option class="all_status" value="{{ $region->id }}">{{ $region->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
+{{--                    <div class="select_drop" style="margin-top: 16px;">--}}
+{{--                        <label style="display: block; margin-bottom: 4px;">Выберите масштаб</label>--}}
+{{--                        <select class="region-container" wire:model="scale" style="width: 100%; margin-bottom: 0px">--}}
+{{--                            <option value="">Выберите масштаб</option>--}}
+{{--                            @foreach($scales as $scale)--}}
+{{--                                <option class="tournament-scale" value="{{ $scale->id }}">{{ $scale->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
+{{--                    <div style="margin-bottom: 16px;">--}}
+{{--                        <label style="display: block; margin-bottom: 4px;">Возраст (от - до)</label>--}}
+{{--                        <div style="display: flex; gap: 8px;">--}}
+{{--                            <input type="number" wire:model="age_from" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>--}}
+{{--                            <input type="number" wire:model="age_to" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"/>--}}
+{{--                        </div>--}}
+{{--                        @error('ageFrom') <span style="color: red;">{{ $message }}</span> @enderror--}}
+{{--                        @error('ageTo') <span style="color: red;">{{ $message }}</span> @enderror--}}
+{{--                    </div>--}}
+{{--                    <div style="margin-bottom: 16px;">--}}
+{{--                        <div class="kyu-filter">--}}
+{{--                            <div class="kyu-option">--}}
+{{--                                <label for="input5" class="region-checkbox">--}}
+{{--                                    <input type="checkbox" wire:model="KY_up_to_8" class="region-input" id="input5">--}}
+{{--                                    <span></span>--}}
+{{--                                </label>--}}
+{{--                                <p class="kyu-label">КЮ до 8</p>--}}
+{{--                            </div>--}}
+{{--                            <div class="kyu-option">--}}
+{{--                                <label for="input1" class="region-checkbox">--}}
+{{--                                    <input type="checkbox" wire:model="KY_from_8" class="region-input" id="input1">--}}
+{{--                                    <span></span>--}}
+{{--                                </label>--}}
+{{--                                <p class="kyu-label">КЮ от 8</p>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div style="margin-bottom: 16px;">--}}
+{{--                        <label style="display: block; margin-bottom: 4px;">Пол</label>--}}
+{{--                        <select wire:model="gender" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">--}}
+{{--                            <option value="">Выберите</option>--}}
+{{--                            <option value="М">Мужской</option>--}}
+{{--                            <option value="Ж">Женский</option>--}}
+{{--                        </select>--}}
+{{--                        @error('gender') <span style="color: red;">{{ $message }}</span> @enderror--}}
+{{--                    </div>--}}
+{{--                    <div style="display: flex; justify-content: flex-end;">--}}
+{{--                        <button type="button" wire:click="$set('showModal', false)" style="margin-right: 8px; padding: 8px 16px; background: #ccc; color: white; border: none; border-radius: 4px;">Отмена</button>--}}
+{{--                        @if($listIndex !== null)--}}
+{{--                            <button type="button" wire:click="deleteList" style="margin-right: 8px; padding: 8px 16px; background: #ff0000; color: white; border: none; border-radius: 4px;">Удалить</button>--}}
+{{--                        @endif--}}
+{{--                        <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px;">Обновить</button>--}}
+{{--                    </div>--}}
+{{--                </form>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--        @endif--}}
     </main>
 
+    @script
+    <script>
+        $wire.on('openEditForm', () => {
+            var addButton = document.querySelector('.tournament-add-text');
+
+            // Симулируем клик по этому элементу
+            if (addButton) {
+                addButton.click();
+            }
+        });
+    </script>
+    @endscript
 </div>
