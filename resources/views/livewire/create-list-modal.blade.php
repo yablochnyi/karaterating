@@ -48,7 +48,7 @@
                         @error('gender') <span style="color: red;">{{ $message }}</span> @enderror
                     </div>
                     <div style="display: flex; justify-content: flex-end;">
-                        <button type="button" wire:click="$set('showModal', false)" style="margin-right: 8px; padding: 8px 16px; background: #ccc; color: white; border: none; border-radius: 4px;">Отмена</button>
+                        <button type="button" wire:click="resetForm" style="margin-right: 8px; padding: 8px 16px; background: #ccc; color: white; border: none; border-radius: 4px;">Отмена</button>
                         @if($listIndex !== null)
                             <button type="button" wire:click="deleteList" style="margin-right: 8px; padding: 8px 16px; background: #ff0000; color: white; border: none; border-radius: 4px;">Удалить</button>
                         @endif

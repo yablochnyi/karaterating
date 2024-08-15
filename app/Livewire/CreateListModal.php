@@ -130,6 +130,8 @@ class CreateListModal extends Component
         $this->kyuFrom = '';
         $this->kyuTo = '';
         $this->gender = '';
+        $this->listIndex = null;
+        $this->showModal = false;
     }
 
     public function render()
