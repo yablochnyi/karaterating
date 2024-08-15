@@ -26,7 +26,9 @@ class ManageTournament extends Component
     public $address;
     public $date;
     public $scale;
-    public $showUpdateTournament = false;
+    public $tournamentId;
+    public $regulation_document;
+    public $application_document;
 
     protected array $rules = [
         'name' => 'required|string|max:255',
@@ -97,23 +99,29 @@ class ManageTournament extends Component
         $this->region = $tournament->region_id;
         $this->scale = $tournament->scale_id;
         $this->tatami = $tournament->tatami;
-        $this->fight_for_third_place = $tournament->fight_for_third_place;
+
         $this->age_from = $tournament->age_from;
         $this->age_to = $tournament->age_to;
-        $this->KY_up_to_8 = $tournament->KY_up_to_8;
-        $this->KY_from_8 = $tournament->KY_from_8;
+        $this->fight_for_third_place = (bool) $tournament->fight_for_third_place;
+        $this->KY_up_to_8 = (bool) $tournament->KY_up_to_8;
+        $this->KY_from_8 = (bool) $tournament->KY_from_8;
+
         $this->date_commission = $tournament->date_commission;
         $this->price = $tournament->price;
         $this->address = $tournament->address;
         $this->date = $tournament->date;
+        $this->regulation_document = $tournament->regulation_document;
+        $this->application_document = $tournament->application_document;
 
         $this->dispatch('openEditForm');
-        $this->showUpdateTournament = true;
     }
 
     public function updateTournament()
     {
         $tournament = \App\Models\ManageTournament::find($this->tournamentId);
+
+        $positionDocumentPath = $this->positionDocument ? $this->positionDocument->store('documents', 'public') : null;
+        $applicationDocumentPath = $this->applicationDocument ? $this->applicationDocument->store('documents', 'public') : null;
 
         $tournament->update([
             'name' => $this->name,
@@ -129,6 +137,8 @@ class ManageTournament extends Component
             'price' => $this->price,
             'address' => $this->address,
             'date' => $this->date,
+            "regulation_document" => $positionDocumentPath,  // Сохраняем путь к положению
+            "application_document" => $applicationDocumentPath  // Сохраняем путь к заявлению
         ]);
 
     }
@@ -142,24 +152,28 @@ class ManageTournament extends Component
         $positionDocumentPath = $this->positionDocument ? $this->positionDocument->store('documents', 'public') : null;
         $applicationDocumentPath = $this->applicationDocument ? $this->applicationDocument->store('documents', 'public') : null;
 
-        $tournament = \App\Models\ManageTournament::create([
-            "name" => $this->name,
-            "region_id" => $this->region,
-            "scale_id" => $this->scale,
-            "age_from" => $this->age_from,
-            "age_to" => $this->age_to,
-            "date_commission" => $this->date_commission,
-            "tatami" => $this->tatami,
-            "KY_up_to_8" => $this->KY_up_to_8,
-            "KY_from_8" => $this->KY_from_8,
-            "fight_for_third_place" => $this->fight_for_third_place,
-            "price" => $this->price,
-            "address" => $this->address,
-            "date" => $this->date,
-            "organization_id" => auth()->id(),
-            "regulation_document" => $positionDocumentPath,  // Сохраняем путь к положению
-            "application_document" => $applicationDocumentPath  // Сохраняем путь к заявлению
-        ]);
+        if ($this->tournamentId) {
+            $this->updateTournament();
+        } else {
+            $tournament = \App\Models\ManageTournament::create([
+                "name" => $this->name,
+                "region_id" => $this->region,
+                "scale_id" => $this->scale,
+                "age_from" => $this->age_from,
+                "age_to" => $this->age_to,
+                "date_commission" => $this->date_commission,
+                "tatami" => $this->tatami,
+                "KY_up_to_8" => $this->KY_up_to_8,
+                "KY_from_8" => $this->KY_from_8,
+                "fight_for_third_place" => $this->fight_for_third_place,
+                "price" => $this->price,
+                "address" => $this->address,
+                "date" => $this->date,
+                "organization_id" => auth()->id(),
+                "regulation_document" => $positionDocumentPath,  // Сохраняем путь к положению
+                "application_document" => $applicationDocumentPath  // Сохраняем путь к заявлению
+            ]);
+        }
 
         // Извлечение списков из сессии
         $lists = session()->pull('lists', []);

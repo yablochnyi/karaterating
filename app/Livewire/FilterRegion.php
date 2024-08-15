@@ -41,7 +41,7 @@ class FilterRegion extends Component
             $query->whereIn('region_id', $this->selectedRegions);
         }
 
-        $this->tournaments = $query->orderBy('date', 'desc')->with('coaches')->get();
+        $this->tournaments = $query->orderBy('date', 'desc')->where('delete', false)->with('coaches')->get();
     }
 
     public function render()
