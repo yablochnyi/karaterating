@@ -116,24 +116,46 @@
 
         <div class="nav_puli_box nav_puli_active" id="nav_puli" style="background-color: #fafafb; ">
 
-            <div class="puli__container" wire:ignore>
-                @foreach($pool as $list)
-                    <div id="match" class="match" wire:click="loadStudents({{ $list->id }})">
-                        <div class="match-number">{{ $list->name }}</div>
-                        <!--<div class="match-location">Tатами №12</div>-->
-                        <div class="match-details">
-                            @if($list->gender == 'male')
-                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/723f7d46cf93b41d46da476445cf5450caa752bc04925033d919e9cdba54e058?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                                     alt="" class="match-icon" />
-                            @else
-                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/ae6c2b2ef1f1568aa83ce38ac287ee9ba7e60006c81e2ac784cbd9d9e72c04c4?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
-                                     alt="" class="match-icon" />
-                            @endif
-                            <div class="match-info">{{ $list->age_from }}-{{ $list->age_to }} • {{ $list->weight_from }}-{{ $list->weight_to }}кг</div>
-                        </div>
+            <div class="puli__container">
+                <div id="match" class="match">
+                    <div class="match-number">Пуля 1</div>
+                    <div class="match-location">Tатами №12</div>
+                    <div class="match-details">
+                        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/723f7d46cf93b41d46da476445cf5450caa752bc04925033d919e9cdba54e058?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                             alt="" class="match-icon" />
+                        <div class="match-info">12-13 • 22-32кг</div>
                     </div>
-                @endforeach
+                </div>
 
+                <div id="match" class="active-match">
+                    <div class="match-number">Пуля 2</div>
+                    <div class="match-location">Tатами №12</div>
+                    <div class="match-details">
+                        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0388d3419253cbb171d0da184fcfc66a1e2d57e0c656977efe8a377f6ed88888?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                             alt="" class="match-icon" />
+                        <div class="match-info">12-13 • 22-32кг</div>
+                    </div>
+                </div>
+
+                <div id="match" class="match">
+                    <div class="match-number">Пуля 3</div>
+                    <div class="match-location">Tатами №12</div>
+                    <div class="match-details">
+                        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0bd9106053031791ecae8b40b563bbd2bd4f1cbbbc6b15ca86f7d7c3bf4a2685?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                             alt="" class="match-icon" />
+                        <div class="match-info">16-18 • 30-35кг</div>
+                    </div>
+                </div>
+
+                <div id="match" class="match">
+                    <div class="match-number">Пуля 4</div>
+                    <div class="match-location">Tатами №12</div>
+                    <div class="match-details">
+                        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/ae6c2b2ef1f1568aa83ce38ac287ee9ba7e60006c81e2ac784cbd9d9e72c04c4?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
+                             alt="" class="match-icon" />
+                        <div class="match-info">12-13 • 22-32кг</div>
+                    </div>
+                </div>
                 <div class="new-match">
                     <button class="new-match-button">
                         <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d42cb134ee716ee06b53b7bd4fe57b3d0a711b1b10146fc1da9f9c3619c6fc0e?apiKey=64de9059607140be8c9d5acd9f2dfd62&"
@@ -158,247 +180,668 @@
             </div>
         </div>
 
-        <div class="puli_tour" wire:ignore.self>
-            <div class="tour__step tour__step-one" wire:ignore.self>
-                @if($students)
-                    @foreach($students as $matchPool)
-                        @if($matchPool->round == 1)
-                        <div class="tour_block"  wire:key="{{ $matchPool->id }}">
-                            @if($matchPool->student1)
-                                <div class="fighter-info" wire:click="selectStudent({{ $matchPool->id }}, 'student1', {{ $matchPool->student1->id }})" style="{{ $selectedStudent && $selectedStudent['matchId'] == $matchPool->id && $selectedStudent['id'] == $matchPool->student1->id ? 'border: 2px solid red;' : '' }}">
-                                    <div class="fighter-details">
-                                        <img src="{{ asset('assets/img/girl.png') }}" alt="Fighter {{ $matchPool->student1->first_name . ' ' .  $matchPool->student1->last_name }}" class="fighter-image" />
-                                        <p class="fighter-name">
-                                            {{ $matchPool->student1->first_name . ' ' .  $matchPool->student1->last_name }}
-                                        </p>
-                                    </div>
-                                    <p class="fighter-club">{{ $matchPool->student1->coach->club }}</p>
-                                </div>
-                            @else
-                                <div class="fighter-info">
-                                    <div class="fighter-details">
-                                        <img src="{{ asset('assets/img/placeholder.png') }}" alt="No Fighter" class="fighter-image" />
-                                        <p class="fighter-name">
-                                            No Fighter
-                                        </p>
-                                    </div>
-                                    <p class="fighter-club">No Club</p>
-                                </div>
-                            @endif
-
-                            <p class="fight-number">Бой № {{ $loop->iteration }}</p>
-
-                            @if($matchPool->student2)
-                                <div class="fighter-info" wire:click="selectStudent({{ $matchPool->id }}, 'student2', {{ $matchPool->student2->id }})" style="{{ $selectedStudent && $selectedStudent['matchId'] == $matchPool->id && $selectedStudent['id'] == $matchPool->student2->id ? 'border: 2px solid red;' : '' }}">
-                                    <div class="fighter-details">
-                                        <img src="{{ asset('assets/img/girl.png') }}" alt="Fighter {{ $matchPool->student2->first_name . ' ' .  $matchPool->student2->last_name }}" class="fighter-image" />
-                                        <p class="fighter-name">
-                                            {{ $matchPool->student2->first_name . ' ' .  $matchPool->student2->last_name }}
-                                        </p>
-                                    </div>
-                                    <p class="fighter-club">{{ $matchPool->student2->coach->club }}</p>
-                                </div>
-                            @else
-                                <div class="fighter-info">
-                                    <div class="fighter-details">
-                                        <img src="{{ asset('assets/img/placeholder.png') }}" alt="No Fighter" class="fighter-image" />
-                                        <p class="fighter-name">
-                                            No Fighter
-                                        </p>
-                                    </div>
-                                    <p class="fighter-club">No Club</p>
-                                </div>
-                            @endif
+        <div class="puli_tour">
+            <div class="tour__step tour__step-one">
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
                         </div>
-                        @endif
-                    @endforeach
-                @endif
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
             </div>
-
             <div class="tour__step tour__step-other">
-                @if($students)
-                    @foreach($students as $matchPool)
-                        @if($matchPool->round == 2)
-                            <div class="tour_block" wire:ignore wire:key="{{ $matchPool->id }}">
-                                @if($matchPool->student1)
-                                    <div class="fighter-info" wire:click="selectStudent({{ $matchPool->id }}, 'student1', {{ $matchPool->student1->id }})" style="{{ $selectedStudent && $selectedStudent['matchId'] == $matchPool->id && $selectedStudent['id'] == $matchPool->student1->id ? 'border: 2px solid red;' : '' }}">
-                                        <div class="fighter-details">
-                                            <img src="{{ asset('assets/img/girl.png') }}" alt="Fighter {{ $matchPool->student1->first_name . ' ' .  $matchPool->student1->last_name }}" class="fighter-image" />
-                                            <p class="fighter-name">
-                                                {{ $matchPool->student1->first_name . ' ' .  $matchPool->student1->last_name }}
-                                            </p>
-                                        </div>
-                                        <p class="fighter-club">{{ $matchPool->student1->coach->club }}</p>
-                                    </div>
-                                @else
-                                    <div class="fighter-info">
-                                        <div class="fighter-details">
-                                            <img src="{{ asset('assets/img/placeholder.png') }}" alt="No Fighter" class="fighter-image" />
-                                            <p class="fighter-name">
-                                                No Fighter
-                                            </p>
-                                        </div>
-                                        <p class="fighter-club">No Club</p>
-                                    </div>
-                                @endif
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
 
-                                <p class="fight-number">Бой № {{ $loop->iteration }}</p>
-
-                                @if($matchPool->student2)
-                                    <div class="fighter-info" wire:click="selectStudent({{ $matchPool->id }}, 'student2', {{ $matchPool->student2->id }})" style="{{ $selectedStudent && $selectedStudent['matchId'] == $matchPool->id && $selectedStudent['id'] == $matchPool->student2->id ? 'border: 2px solid red;' : '' }}">
-                                        <div class="fighter-details">
-                                            <img src="{{ asset('assets/img/girl.png') }}" alt="Fighter {{ $matchPool->student2->first_name . ' ' .  $matchPool->student2->last_name }}" class="fighter-image" />
-                                            <p class="fighter-name">
-                                                {{ $matchPool->student2->first_name . ' ' .  $matchPool->student2->last_name }}
-                                            </p>
-                                        </div>
-                                        <p class="fighter-club">{{ $matchPool->student2->coach->club }}</p>
-                                    </div>
-                                @else
-                                    <div class="fighter-info">
-                                        <div class="fighter-details">
-                                            <img src="{{ asset('assets/img/placeholder.png') }}" alt="No Fighter" class="fighter-image" />
-                                            <p class="fighter-name">
-                                                No Fighter
-                                            </p>
-                                        </div>
-                                        <p class="fighter-club">No Club</p>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
-                    @endforeach
-                @endif
             </div>
-{{--            <div class="tour__step tour__last-step" style="">--}}
-{{--                <div class="tour_block tour_block-opacity" style="opacity: 0;">--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                    <p class="fight-number">Бой №1</p>--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                <div class="tour_block">--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                    <p class="fight-number">Бой №1</p>--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                <div class="tour_block">--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                    <p class="fight-number">Бой №1</p>--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                <div class="tour_block tour_block-opacity" style="opacity: 0;">--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                    <p class="fight-number">Бой №1</p>--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--            <div class="tour__step tour__step-other">--}}
-{{--                <div class="tour_block">--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                    <p class="fight-number">Бой №1</p>--}}
-{{--                    <div class="fighter-info">--}}
-{{--                        <div class="fighter-details">--}}
-{{--                            <img src="img/girl.png"--}}
-{{--                                 alt="Fighter Kolosova Irina" class="fighter-image" />--}}
-{{--                            <p class="fighter-name">--}}
-{{--                                Колосова<br />--}}
-{{--                                Ирина--}}
-{{--                            </p>--}}
-{{--                        </div>--}}
-{{--                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
+            <div class="tour__step tour__step-other">
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tour__step tour__last-step" style="">
+                <div class="tour_block tour_block-opacity" style="opacity: 0;">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+                <div class="tour_block tour_block-opacity" style="opacity: 0;">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tour__step tour__step-other">
+                <div class="tour_block">
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                    <p class="fight-number">Бой №1</p>
+                    <div class="fighter-info">
+                        <div class="fighter-details">
+                            <img src="img/girl.png"
+                                 alt="Fighter Kolosova Irina" class="fighter-image" />
+                            <p class="fighter-name">
+                                Колосова<br />
+                                Ирина
+                            </p>
+                        </div>
+                        <p class="fighter-club">Спортивный клуб "Торнадо"</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </div>
