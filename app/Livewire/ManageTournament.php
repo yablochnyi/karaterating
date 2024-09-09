@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Region;
 use App\Models\Scale;
+use App\Models\TemplateStudentList;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -183,7 +184,24 @@ class ManageTournament extends Component
             $tournament->lists()->create($list);
         }
 
-        // Очистка сессии от временных списков
+        $authUserId = auth()->id(); // Получаем ID авторизованного пользователя
+
+        foreach ($lists as $list) {
+            $list['user_id'] = $authUserId;
+
+            TemplateStudentList::firstOrCreate([
+                'name' => $list['name'],
+                'age_from' => $list['age_from'],
+                'age_to' => $list['age_to'],
+                'weight_from' => $list['weight_from'],
+                'weight_to' => $list['weight_to'],
+                'kyu_from' => $list['kyu_from'],
+                'kyu_to' => $list['kyu_to'],
+                'gender' => $list['gender'],
+                'user_id' => $list['user_id'],
+            ]);
+        }
+
         session()->forget('lists');
 
         $this->resetForm();
@@ -218,6 +236,22 @@ class ManageTournament extends Component
         $scales = Scale::all();
         $regions = Region::all();
         $manageTournaments = \App\Models\ManageTournament::where('organization_id', auth()->id())->where('delete', false)->with('coaches')->get();
+        $lists = TemplateStudentList::where('user_id', auth()->id())->get();
+        session()->forget('lists');
+        foreach ($lists as $list) {
+            $listData = [
+                'name' => $list->name,
+                'age_from' => $list->age_from,
+                'age_to' => $list->age_to,
+                'weight_from' => $list->weight_from,
+                'weight_to' => $list->weight_to,
+                'kyu_from' => $list->kyu_from,
+                'kyu_to' => $list->kyu_to,
+                'gender' => $list->gender,
+            ];
+
+            session()->push('lists', $listData);
+        }
         return view('livewire.manage-tournament', compact('scales', 'regions', 'manageTournaments'));
     }
 }

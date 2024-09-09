@@ -17,6 +17,7 @@ use App\Livewire\OrganizateTournamentPuliStudent;
 use App\Livewire\Profile;
 use App\Livewire\PuliListStudent;
 use App\Livewire\Register;
+use App\Livewire\TemplateList;
 use App\Livewire\ViewStudentProfile;
 use App\Livewire\ViewTrenerShow;
 use Illuminate\Support\Facades\Route;
@@ -47,3 +48,4 @@ Route::get('/manage/tournaments/{id}/coaches', OrganizateTournament::class)->nam
 Route::get('/manage/tournaments/{id}/puli', OrganizateTournamentPuli::class)->name('organize.tournament.puli')->middleware(AuthOrganizator::class);
 Route::get('/manage/coach', OrganizateCoach::class)->name('organize.coach')->middleware(AuthOrganizator::class);
 Route::get('/manage/tournament/{id}/puli/list', OrganizatePuliList::class)->name('organize.tournament.puli.list')->middleware(AuthOrganizator::class);
+
