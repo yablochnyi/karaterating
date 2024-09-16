@@ -32,11 +32,15 @@ class Profile extends Page implements HasForms
     {
         $user = Auth::user();
 
-        $this->form->fill(array_merge(
-            $user->toArray(),
-            ['club' => $user->trener->club ?? null]
-        ));
-
+        if (Auth::user()->role_id === User::Coach)
+        {
+            $this->form->fill($user->toArray());
+        } else {
+            $this->form->fill(array_merge(
+                $user->toArray(),
+                ['club' => $user->trener->club ?? null]
+            ));
+        }
     }
 
     public function form(Form $form): Form
