@@ -3,19 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Observers\UserObserver;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[ObservedBy([UserObserver::class])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     const Admin = 1;
     const Organization = 2;
@@ -51,19 +46,8 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-    public function tournaments()
-    {
-        return $this->belongsToMany(ManageTournament::class, 'tournament_students', 'student_id', 'tournament_id')
-            ->wherePivot('is_success', true);
-    }
-
-    public function coach(): BelongsTo
+    public function trener()
     {
         return $this->belongsTo(User::class, 'coach_id', 'id');
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->role_id === self::Admin;
     }
 }

@@ -19,14 +19,10 @@ use Illuminate\Support\Facades\Hash;
 
 class OrganizationResource extends Resource
 {
-    protected static ?string $model = User::class;
-
+    protected static ?string $model = Organization::class;
     protected static ?string $slug = 'organizations';
-
-    protected static ?string $breadcrumb = 'Организации';
-
-    protected static ?string $navigationLabel = 'Организации';
-
+    protected static ?string $modelLabel = 'Организация';
+    protected static ?string $pluralModelLabel = 'Организации';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -46,10 +42,9 @@ class OrganizationResource extends Resource
                             ->label('Пароль')
                             ->password()
                             ->revealable()
-//                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                             ->dehydrated(fn(?string $state): bool => filled($state))
                             ->required(fn(string $operation): bool => $operation === 'create'),
-
                         Forms\Components\Select::make('region_id')
                             ->label('Регион')
                             ->options(Region::all()->pluck('name', 'id')),
@@ -65,7 +60,6 @@ class OrganizationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->where('role_id', '=', 2))
             ->columns([
                 TextColumn::make('name')
                     ->label('Название организации')

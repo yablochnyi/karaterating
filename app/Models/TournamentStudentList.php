@@ -10,19 +10,13 @@ class TournamentStudentList extends Model
     use HasFactory;
     protected $guarded = false;
 
-    public function tournament()
+    public function student()
     {
-        return $this->belongsTo(ManageTournament::class, 'tournament_id');
+        return $this->belongsTo(User::class, 'student_id');
     }
 
-    public function students()
+    public function listTournament()
     {
-        return $this->hasMany(OrganizatePuliListStudent::class, 'list_id', 'id');
+        return $this->belongsTo(ListTournament::class, 'list_tournament_id');
     }
-
-    public function match_pools()
-    {
-        return $this->hasMany(MatchPool::class, 'list_id', 'id');
-    }
-
 }

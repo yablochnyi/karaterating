@@ -1,0 +1,32 @@
+.avatar-with-stripes {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%; /* Для круглого аватара */
+    overflow: hidden; /* Обрезаем лишнее */
+}
+
+.avatar-with-stripes::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px; /* Высота пояса */
+    background-color: var(--belt-color, #000); /* Цвет пояса */
+}
+
+.avatar-with-stripes::after {
+    content: '';
+    position: absolute;
+    width: 3px; /* Ширина полосы */
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    background-color: transparent; /* По умолчанию прозрачный */
+}
+
+/* Добавляем динамические полосы */
+.avatar-with-stripes[data-stripes]::after {
+    background-color: green; /* Пример цвета */
+    /* Здесь можно добавить дополнительную логику для положения и количества полос */
+}

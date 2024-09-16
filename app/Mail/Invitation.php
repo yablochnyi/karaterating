@@ -14,15 +14,17 @@ class Invitation extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $coach;
+    public $user;
     public $subject;
+    public $email;
     /**
      * Create a new message instance.
      */
-    public function __construct($coachId, $subject)
+    public function __construct($userId, $email, $subject)
     {
-        $this->coach = User::find($coachId);
+        $this->user = User::find($userId);
         $this->subject = $subject;
+        $this->email = $email;
     }
 
     /**

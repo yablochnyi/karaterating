@@ -9,6 +9,7 @@ use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 
 class CreateOrganization extends CreateRecord
@@ -23,6 +24,7 @@ class CreateOrganization extends CreateRecord
 
         $data['role_id'] = User::Organization;
         $data['password'] = Hash::make($data['password']);
+        $data['ref_token'] = Str::uuid()->toString();
 
         return $data;
     }

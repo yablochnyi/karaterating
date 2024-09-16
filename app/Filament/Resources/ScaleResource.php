@@ -17,17 +17,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ScaleResource extends Resource
 {
     protected static ?string $model = Scale::class;
-    protected static ?string $breadcrumb = 'Масштабы турнира';
-
-    protected static ?string $navigationLabel = 'Масштабы турнира';
-
+    protected static ?string $modelLabel = 'Масштаб турнира';
+    protected static ?string $pluralModelLabel = 'Масштабы турниров';
     protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('name')->label('Регион')
+                TextInput::make('name')->label('Масштаб турнира')
             ]);
     }
 

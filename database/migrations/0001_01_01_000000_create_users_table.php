@@ -39,6 +39,10 @@ return new class extends Migration
             $table->integer('wins')->nullable();
             $table->integer('losses')->nullable();
             $table->decimal('balance', 8, 2)->nullable();
+            $table->string('rang')->nullable();
+            $table->string('club')->nullable();
+            $table->boolean('success_politic')->nullable()->default(false);
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });
