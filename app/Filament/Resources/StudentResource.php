@@ -159,7 +159,7 @@ class StudentResource extends Resource
                     ->schema([
                         LightboxImageEntry::make('passport')
                             ->size(200)
-                            ->href(fn(Model $record): string => url('storage/' . $record->avatar))
+                            ->href(fn(Model $record): string => url('storage/' . $record->passport))
                             ->label('Паспорт'),
                         LightboxImageEntry::make('brand')
                             ->label('Марка')

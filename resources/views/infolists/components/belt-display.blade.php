@@ -86,7 +86,7 @@
 
         <style>
             .belt {
-                width: 100%;
+                width: 26%;
                 height: 20px;
                 margin: 5px 0;
                 position: relative;
