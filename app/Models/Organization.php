@@ -11,6 +11,10 @@ class Organization extends Model
     protected $guarded = false;
     protected $table = 'users';
 
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
     protected static function booted()
     {
         static::addGlobalScope('role', function ($builder) {
