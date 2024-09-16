@@ -6,8 +6,10 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TrenersRelationManager extends RelationManager
@@ -44,6 +46,7 @@ class TrenersRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->multiple()
+                    ->recordTitle(fn (Model $record) => "{$record->first_name} {$record->last_name}")
                     ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('organization_id', auth()->id()))
                     ->preloadRecordSelect(),
             ])

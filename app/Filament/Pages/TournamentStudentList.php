@@ -49,7 +49,7 @@ class TournamentStudentList extends Page implements HasForms, HasTable, HasInfol
 
     public function mount($id)
     {
-        $this->list = ListTournament::with(['templateStudentList', 'students'])->findOrFail($id);
+        $this->list = ListTournament::where('template_student_list_id', $id)->with(['templateStudentList', 'students'])->first();
     }
 
     public function table(Table $table): Table

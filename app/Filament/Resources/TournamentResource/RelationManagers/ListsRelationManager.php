@@ -152,11 +152,11 @@ class ListsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\Action::make('view_Students')
                     ->icon('heroicon-o-user-group')
-                    ->url(fn ($record): string => url('tournament-student-list/' . $record->id))
+                    ->url(fn ($record): string => url('panel/tournament-student-list/' . $record->id))
                     ->openUrlInNewTab()
                     ->label('Ученики'),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DetachAction::make(),
+                Tables\Actions\DetachAction::make()
 //                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

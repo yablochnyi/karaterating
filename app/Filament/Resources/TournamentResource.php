@@ -70,16 +70,16 @@ class TournamentResource extends Resource
                             ->prefix('Возраст до'),
                         Forms\Components\Section::make()
                             ->schema([
-                                Forms\Components\Toggle::make('KY_from_8')
-                                    ->required()
-                                    ->onColor('success')
-                                    ->offColor('danger')
-                                    ->label('КЮ от 1'),
                                 Forms\Components\Toggle::make('KY_up_to_8')
                                     ->required()
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->label('КЮ до 8'),
+                                Forms\Components\Toggle::make('KY_from_8')
+                                    ->required()
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->label('КЮ от 8'),
                                 Forms\Components\Toggle::make('fight_for_third_place')
                                     ->required()
                                     ->onColor('success')
@@ -100,21 +100,20 @@ class TournamentResource extends Resource
                         Forms\Components\Section::make()
                             ->schema([
                                 Forms\Components\DateTimePicker::make('date_commission')
-                                    ->hiddenLabel()
                                     ->required()
-                                    ->prefix('Дата комиссии'),
+                                    ->label('Дата комиссии'),
                                 Forms\Components\DateTimePicker::make('date')
-                                    ->hiddenLabel()
                                     ->required()
-                                    ->prefix('Дата начала турнира'),
+                                    ->label('Дата начала турнира'),
                                 Forms\Components\DateTimePicker::make('date_finish')
-                                    ->hiddenLabel()
                                     ->required()
-                                    ->prefix('Дата завершения турнира')
+                                    ->label('Дата завершения турнира')
                             ])->columns(3),
                         Forms\Components\FileUpload::make('regulation_document')
                             ->label('Положение')
                             ->directory('regulation_document')
+                            ->openable()
+                            ->downloadable()
                             ->required(),
                         Forms\Components\FileUpload::make('application_document')
                             ->label('Заявление')

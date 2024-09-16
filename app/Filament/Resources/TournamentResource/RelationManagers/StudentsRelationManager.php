@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class StudentsRelationManager extends RelationManager
 {
@@ -70,12 +71,16 @@ class StudentsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->multiple()
                     ->preloadRecordSelect()
+                    ->recordTitle(fn (Model $record) => "{$record->first_name} {$record->last_name}")
                     ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('coach_id', auth()->id()))
                     ->hidden(auth()->user()->role_id == User::Student || auth()->user()->role_id == User::Organization)
                     ->after(function ($data, $livewire) {
                         $parentRecord = $livewire->getOwnerRecord();
                         $lists = $parentRecord->lists;
-                        $students = \App\Models\User::whereIn('id', $data)->get()->keyBy('id');
+                        $studentIds = $data['recordId'] ?? [];
+
+                        // Получение студентов по ID
+                        $students = \App\Models\User::whereIn('id', $studentIds)->get()->keyBy('id');
 
                         foreach ($students as $student) {
                             $addedToList = false;
@@ -108,7 +113,7 @@ class StudentsRelationManager extends RelationManager
                                     'gender' => 'all',
                                     'user_id' => $parentRecord->organization_id,
                                 ]);
-                                $listTournament = ListTournament::create([
+                                $listTournament = ListTournament::firstOrCreate([
                                     'tournament_id' => $parentRecord->id,
                                     'template_student_list_id' => $defaultList->id,
                                 ]);
@@ -136,12 +141,27 @@ class StudentsRelationManager extends RelationManager
                     ->hidden(function ($record) {
                         return auth()->user()->role_id == User::Student && auth()->user()->id != $record->id;
                     })
+                    ->after(function ($record, $livewire) {
+                        // Получить текущий турнир
+                        $parentRecord = $livewire->getOwnerRecord();
+                        $tournamentId = $parentRecord->id;
+
+                        // Найти все записи ListTournament для текущего турнира
+                        $listTournaments = ListTournament::where('tournament_id', $tournamentId)->get();
+
+                        // Удалить записи из TournamentStudentList для всех найденных списков
+                        foreach ($listTournaments as $listTournament) {
+                            TournamentStudentList::where('student_id', $record->id)
+                                ->where('list_tournament_id', $listTournament->id)
+                                ->delete();
+                        }
+                    })
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make()
-                        ->hidden(auth()->user()->role_id == User::Student),
-                ]),
+//                Tables\Actions\BulkActionGroup::make([
+//                    Tables\Actions\DetachBulkAction::make()
+//                        ->hidden(auth()->user()->role_id == User::Student),
+//                ]),
             ]);
     }
 
