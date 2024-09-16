@@ -132,19 +132,15 @@ class Profile extends Page implements HasForms
                         Section::make('Документы')
                             ->schema([
                                 FileUpload::make('passport')
-                                    ->required()
                                     ->image()
                                     ->label('Паспорт'),
                                 FileUpload::make('brand')
-                                    ->required()
                                     ->image()
                                     ->label('Марка'),
                                 FileUpload::make('insurance')
-                                    ->required()
                                     ->image()
                                     ->label('Страховка'),
                                 FileUpload::make('iko_card')
-                                    ->required()
                                     ->image()
                                     ->label('Карта IKO'),
                                 Checkbox::make('success_politic')
