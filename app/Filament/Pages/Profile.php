@@ -10,7 +10,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -52,7 +51,7 @@ class Profile extends Page implements HasForms
                     ->schema([
                         Section::make()
                             ->schema([
-                                SpatieMediaLibraryFileUpload::make('avatar')
+                                FileUpload::make('avatar')
                                     ->label('Загрузите аватар')
                                     ->directory('avatar')
                                     ->required()
