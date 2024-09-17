@@ -97,9 +97,8 @@ class ListsRelationManager extends RelationManager
                 Tables\Actions\Action::make('download_lists')
                     ->label('Скачать списки')
                     ->color('warning')
-                    ->action(function () {
-
-                    }),
+                    ->url(fn($livewire): string => url('panel/tournament-student-list-pdf/' . $livewire->getOwnerRecord()->id))
+                    ->openUrlInNewTab(),
                 Tables\Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['user_id'] = auth()->id();
