@@ -117,6 +117,8 @@ class StudentResource extends Resource
                             LightboxImageEntry::make('avatar')
                                 ->hiddenLabel()
                                 ->size(300)
+                                ->slideWidth('906px')
+                                ->slideHeight('500px')
                                 ->href(fn(Model $record): string => url('storage/' . $record->avatar)),
 
                             Grid::make(2)

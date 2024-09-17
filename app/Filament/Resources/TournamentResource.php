@@ -118,6 +118,8 @@ class TournamentResource extends Resource
                         Forms\Components\FileUpload::make('application_document')
                             ->label('Заявление')
                             ->directory('application_document')
+                            ->openable()
+                            ->downloadable()
                             ->required(),
                         Forms\Components\TextInput::make('address')
                             ->hiddenLabel()
