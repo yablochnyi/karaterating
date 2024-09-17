@@ -97,15 +97,14 @@ class TournamentStudentList extends Page implements HasForms, HasTable, HasInfol
                                 $templateLists = ListTournament::where('tournament_id', $tournamentId)
                                     ->with('templateStudentList') // Получаем связанные списки
                                     ->get()
-                                    ->pluck('templateStudentList.name', 'templateStudentList.id'); // Используем имена списков
-
+                                    ->pluck('templateStudentList.name', 'id');
                                 return $templateLists;
                             })
                             ->required(),
                     ])
                 ->action(function ($record, $data): void {
                     $exchange = \App\Models\TournamentStudentList::where('student_id', $record->id)
-                        ->where('list_tournament_id', $this->list->template_student_list_id)
+                        ->where('list_tournament_id', $this->list->id)
                         ->first();
                     $exchange->list_tournament_id = $data['new_list_id'];
                     $exchange->save();

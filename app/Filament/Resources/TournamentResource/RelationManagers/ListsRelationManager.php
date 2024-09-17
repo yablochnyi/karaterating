@@ -55,18 +55,6 @@ class ListsRelationManager extends RelationManager
                             ->suffix('кг')
                             ->integer()
                             ->required(),
-                        Forms\Components\TextInput::make('weight_from')
-                            ->hiddenLabel()
-                            ->prefix('Вес от')
-                            ->suffix('кг')
-                            ->integer()
-                            ->required(),
-                        Forms\Components\TextInput::make('weight_to')
-                            ->hiddenLabel()
-                            ->prefix('Вес до')
-                            ->suffix('кг')
-                            ->integer()
-                            ->required(),
                         Forms\Components\TextInput::make('rang_from')
                             ->hiddenLabel()
                             ->prefix('От')
@@ -106,7 +94,18 @@ class ListsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\Action::make('download_lists')
+                    ->label('Скачать списки')
+                    ->color('warning')
+                    ->action(function () {
+
+                    }),
+                Tables\Actions\CreateAction::make()
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['user_id'] = auth()->id();
+
+                        return $data;
+                    }),
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
                     ->label('Прикрепить список')
@@ -116,7 +115,7 @@ class ListsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\Action::make('view_Students')
                     ->icon('heroicon-o-user-group')
-                    ->url(fn ($record): string => url('panel/tournament-student-list/' . $record->id))
+                    ->url(fn($record): string => url('panel/tournament-student-list/' . $record->id))
                     ->openUrlInNewTab()
                     ->label('Ученики'),
                 Tables\Actions\EditAction::make(),

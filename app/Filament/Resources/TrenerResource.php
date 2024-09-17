@@ -98,6 +98,8 @@ class TrenerResource extends Resource
                             LightboxImageEntry::make('avatar')
                                 ->hiddenLabel()
                                 ->size(300)
+                                ->slideWidth('906px')
+                                ->slideHeight('1200px')
                                 ->href(fn(Model $record): string => url('storage/' . $record->avatar)),
 
                             Grid::make(2)
@@ -139,19 +141,27 @@ class TrenerResource extends Resource
                     ->schema([
                         LightboxImageEntry::make('passport')
                             ->size(200)
+                            ->slideWidth('906px')
+                            ->slideHeight('1200px')
                             ->href(fn(Model $record): string => url('storage/' . $record->passport))
-                            ->label('Паспорт'),
+                            ->label('Будо паспорт'),
                         LightboxImageEntry::make('brand')
                             ->label('Марка')
                             ->size(200)
+                            ->slideWidth('906px')
+                            ->slideHeight('1200px')
                             ->href(fn(Model $record): string => url('storage/' . $record->brand)),
                         LightboxImageEntry::make('insurance')
                             ->label('Страховка')
                             ->size(200)
+                            ->slideWidth('906px')
+                            ->slideHeight('1200px')
                             ->href(fn(Model $record): string => url('storage/' . $record->insurance)),
                         LightboxImageEntry::make('iko_card')
                             ->label('Карта IKO')
                             ->size(200)
+                            ->slideWidth('906px')
+                            ->slideHeight('1200px')
                             ->href(fn(Model $record): string => url('storage/' . $record->iko_card)),
 //                                Checkbox::make('success_politic')
 //                                    ->label('Я согласен с договором оферты и политикой конфиденциальности')

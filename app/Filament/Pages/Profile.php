@@ -137,7 +137,7 @@ class Profile extends Page implements HasForms
                             ->schema([
                                 FileUpload::make('passport')
                                     ->image()
-                                    ->label('Паспорт'),
+                                    ->label('Будо паспорт'),
                                 FileUpload::make('brand')
                                     ->image()
                                     ->label('Марка'),
