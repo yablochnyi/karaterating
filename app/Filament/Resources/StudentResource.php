@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Infolists\Components\BeltDisplay;
+use App\Infolists\Components\Rating;
 use App\Infolists\Components\TrenerClubToStudent;
 use App\Models\Student;
 use App\Models\User;
@@ -118,7 +119,7 @@ class StudentResource extends Resource
                                 ->hiddenLabel()
                                 ->size(300)
                                 ->slideWidth('906px')
-                                ->slideHeight('500px')
+                                ->slideHeight('1200px')
                                 ->href(fn(Model $record): string => url('storage/' . $record->avatar)),
 
                             Grid::make(2)
@@ -144,6 +145,11 @@ class StudentResource extends Resource
                                             ->label('Вес'),
                                         TextEntry::make('birthday')
                                             ->label('Дата Рождения'),
+                                       TextEntry::make('trener')
+                                           ->label('Тренер')
+                                           ->formatStateUsing(function (object $state): HtmlString {
+                                               return new HtmlString($state->first_name . ' ' . $state->last_name);
+                                           }),
                                        TrenerClubToStudent::make('club')
                                            ->label('Клуб'),
 
@@ -154,6 +160,9 @@ class StudentResource extends Resource
 
                         BeltDisplay::make('rang')
                             ->hiddenLabel(),
+
+                        Rating::make('rating')
+                        ->hiddenLabel()
 
                     ]),
 

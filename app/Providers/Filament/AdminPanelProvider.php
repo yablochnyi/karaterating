@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use App\Filament\Pages\Auth\PasswordReset;
 use App\Filament\Pages\Auth\Register;
 use App\Filament\Pages\Profile;
 use Filament\Http\Middleware\Authenticate;
@@ -44,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
-        ->pages([
+            ->pages([
 //                Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
@@ -64,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->registration(Register::class)
+            ->passwordReset(PasswordReset::class)
             ->plugins([
                 BreezyCore::make()
                     ->myProfile()

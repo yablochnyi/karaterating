@@ -85,11 +85,16 @@ class StudentsRelationManager extends RelationManager
                         foreach ($students as $student) {
                             $addedToList = false;
 
+                            $rankString = $student->rang;
+
+                            // Удаляем все символы, кроме цифр
+                            $rankNumber = filter_var($rankString, FILTER_SANITIZE_NUMBER_INT);
+
                             foreach ($lists as $list) {
                                 if (
                                     $student->age >= $list->age_from && $student->age <= $list->age_to &&
                                     $student->weight >= $list->weight_from && $student->weight <= $list->weight_to &&
-                                    $student->ky >= $list->kyu_from && $student->ky <= $list->kyu_to &&
+                                    $rankNumber >= $list->rang_from && $rankNumber <= $list->rang_to &&
                                     $student->gender == $list->gender
                                 ) {
                                     TournamentStudentList::create(

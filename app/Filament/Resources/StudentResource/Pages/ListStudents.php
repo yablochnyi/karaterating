@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\StudentResource\Pages;
 
 use App\Filament\Resources\StudentResource;
-use App\Mail\Invitation;
+use App\Mail\InvitationStudent;
+use App\Mail\InvitationTrener;
 use App\Models\User;
 use App\Models\WaitConfirmationInvitation;
 use Closure;
@@ -44,7 +45,7 @@ class ListStudents extends ListRecords
                     if ($emails) {
                         try {
                             foreach ($emails as $email) {
-                                Mail::to($email)->send(new Invitation(auth()->id(), $email, 'Приглашение от тренера'));
+                                Mail::to($email)->send(new InvitationStudent(auth()->id(), $email, 'Karaterating - Приглашение от тренера'));
 
                                 WaitConfirmationInvitation::create([
                                     'inviting_id' => auth()->id(),

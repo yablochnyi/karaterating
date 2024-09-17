@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\TrenerResource\Pages;
 
 use App\Filament\Resources\TrenerResource;
-use App\Mail\Invitation;
+use App\Mail\InvitationTrener;
 use App\Models\WaitConfirmationInvitation;
 use Closure;
 use Filament\Forms\Components\TextInput;
@@ -42,7 +42,7 @@ class ListTreners extends ListRecords
                     if ($emails) {
                         try {
                             foreach ($emails as $email) {
-                                Mail::to($email)->send(new Invitation(auth()->id(), $email, 'Приглашение от организатора'));
+                                Mail::to($email)->send(new InvitationTrener(auth()->id(), $email, 'Karaterating - Приглашение от организатора'));
 
                                 WaitConfirmationInvitation::create([
                                     'inviting_id' => auth()->id(),

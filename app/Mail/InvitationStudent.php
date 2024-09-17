@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -9,23 +10,21 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InvitationOrganization extends Mailable
+class InvitationStudent extends Mailable
 {
     use Queueable, SerializesModels;
-    public $name;
-    public $email;
-    public $password;
-    public $subject;
 
+    public $user;
+    public $subject;
+    public $email;
     /**
      * Create a new message instance.
      */
-    public function __construct($name, $email, $password, $subject)
+    public function __construct($userId, $email, $subject)
     {
-        $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
+        $this->user = User::find($userId);
         $this->subject = $subject;
+        $this->email = $email;
     }
 
     /**
@@ -44,7 +43,7 @@ class InvitationOrganization extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.invitation-organization',
+            view: 'mail.invitation-student',
         );
     }
 

@@ -20,7 +20,7 @@ class CreateOrganization extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        Mail::to($data['email'])->send(new InvitationOrganization($data['email'], $data['password'], 'Приглашение'));
+        Mail::to($data['email'])->send(new InvitationOrganization($data['name'], $data['email'], $data['password'], 'Karaterating'));
 
         $data['role_id'] = User::Organization;
         $data['password'] = Hash::make($data['password']);

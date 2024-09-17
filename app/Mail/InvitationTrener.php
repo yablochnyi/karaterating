@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class Invitation extends Mailable
+class InvitationTrener extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -43,7 +43,7 @@ class Invitation extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.invitation',
+            view: 'mail.invitation-trener',
         );
     }
 
