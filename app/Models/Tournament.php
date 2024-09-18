@@ -40,7 +40,8 @@ class Tournament extends Model
 
     public function lists()
     {
-        return $this->belongsToMany(TemplateStudentList::class, 'list_tournaments', 'tournament_id', 'template_student_list_id');
+        return $this->belongsToMany(TemplateStudentList::class, 'list_tournaments', 'tournament_id', 'template_student_list_id')
+            ->withPivot('id');
     }
 
     public function region()

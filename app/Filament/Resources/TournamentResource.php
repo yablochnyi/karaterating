@@ -135,13 +135,13 @@ class TournamentResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                $query->where('organization_id', auth()->id())
-                    ->orWhereHas('treners', function ($query) {
-                        $query->where('trener_id', auth()->id());
-                    })
-                    ->orWhereHas('students', function ($query) {
-                        $query->where('student_id', auth()->id());
-                    });
+//                $query->where('organization_id', auth()->id())
+//                    ->orWhereHas('treners', function ($query) {
+//                        $query->where('trener_id', auth()->id());
+//                    })
+//                    ->orWhereHas('students', function ($query) {
+//                        $query->where('student_id', auth()->id());
+//                    });
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([

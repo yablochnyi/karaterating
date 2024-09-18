@@ -114,7 +114,7 @@ class ListsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\Action::make('view_Students')
                     ->icon('heroicon-o-user-group')
-                    ->url(fn($record): string => url('panel/tournament-student-list/' . $record->id))
+                    ->url(fn($record): string => url('panel/tournament-student-list/' . $record->pivot->id))  // Допустим, отношение называется tournamentStudentList
                     ->openUrlInNewTab()
                     ->label('Ученики'),
                 Tables\Actions\EditAction::make(),
