@@ -107,7 +107,7 @@ class StudentsRelationManager extends RelationManager
                                 ) {
                                     TournamentStudentList::create(
                                         [
-                                            'list_tournament_id' => $list->id,
+                                            'list_tournament_id' => $list->pivot->id,
                                             'student_id' => $student->id,
                                         ]);
                                     $addedToList = true;
