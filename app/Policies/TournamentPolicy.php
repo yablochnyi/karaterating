@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Tournament;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TournamentPolicy
 {
@@ -37,7 +38,7 @@ class TournamentPolicy
      */
     public function update(User $user, Tournament $tournament): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $tournament->organization_id === Auth::id();
     }
 
     /**
@@ -45,7 +46,7 @@ class TournamentPolicy
      */
     public function delete(User $user, Tournament $tournament): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $tournament->organization_id === Auth::id();
     }
 
     /**
@@ -53,7 +54,7 @@ class TournamentPolicy
      */
     public function restore(User $user, Tournament $tournament): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $tournament->organization_id === Auth::id();
     }
 
     /**
@@ -61,6 +62,6 @@ class TournamentPolicy
      */
     public function forceDelete(User $user, Tournament $tournament): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $tournament->organization_id === Auth::id();
     }
 }

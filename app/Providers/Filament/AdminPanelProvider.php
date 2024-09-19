@@ -71,6 +71,7 @@ class AdminPanelProvider extends PanelProvider
                     ->myProfile()
                     ->customMyProfilePage(Profile::class),
             ])
+            ->databaseNotifications()
             ->authMiddleware([
                 Authenticate::class,
             ]);

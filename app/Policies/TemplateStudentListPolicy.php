@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\TemplateStudentList;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TemplateStudentListPolicy
 {
@@ -37,7 +38,7 @@ class TemplateStudentListPolicy
      */
     public function update(User $user, TemplateStudentList $templateStudentList): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $templateStudentList->user_id === Auth::id();
     }
 
     /**
@@ -45,7 +46,7 @@ class TemplateStudentListPolicy
      */
     public function delete(User $user, TemplateStudentList $templateStudentList): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $templateStudentList->user_id === Auth::id();
     }
 
     /**
@@ -53,7 +54,7 @@ class TemplateStudentListPolicy
      */
     public function restore(User $user, TemplateStudentList $templateStudentList): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $templateStudentList->user_id === Auth::id();
     }
 
     /**
@@ -61,6 +62,6 @@ class TemplateStudentListPolicy
      */
     public function forceDelete(User $user, TemplateStudentList $templateStudentList): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $templateStudentList->user_id === Auth::id();
     }
 }

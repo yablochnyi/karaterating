@@ -11,17 +11,6 @@ class Tournament extends Model
     use HasFactory, SoftDeletes;
     protected $guarded = false;
 
-    public function scopeAccessibleByUser($query, $userId)
-    {
-        return $query->where('organization_id', $userId)
-            ->orWhereHas('treners', function ($query) use ($userId) {
-                $query->where('trener_id', $userId);
-            })
-            ->orWhereHas('students', function ($query) use ($userId) {
-                $query->where('student_id', $userId);
-            });
-    }
-
 
     public function coaches()
     {
@@ -54,4 +43,8 @@ class Tournament extends Model
         return $this->belongsTo(Scale::class);
     }
 
+    public function tournamentOrganizations()
+    {
+        return $this->hasMany(OrganizationTournament::class, 'tournament_id');
+    }
 }

@@ -73,8 +73,8 @@ class TrenerResource extends Resource
                     ->label('Клуб'),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make()
-                    ->label('Удаленные тренеры'),
+//                Tables\Filters\TrashedFilter::make()
+//                    ->label('Удаленные тренеры'),
 
             ], layout: FiltersLayout::AboveContent)
             ->actions([
@@ -189,11 +189,11 @@ class TrenerResource extends Resource
         ];
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
-    }
+//    public static function getEloquentQuery(): Builder
+//    {
+//        return parent::getEloquentQuery()
+//            ->withoutGlobalScopes([
+//                SoftDeletingScope::class,
+//            ]);
+//    }
 }

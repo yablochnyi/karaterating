@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Trener;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TrenerPolicy
 {
@@ -37,7 +38,7 @@ class TrenerPolicy
      */
     public function update(User $user, Trener $trener): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $trener->organization_id === Auth::id();
     }
 
     /**
@@ -45,7 +46,7 @@ class TrenerPolicy
      */
     public function delete(User $user, Trener $trener): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $trener->organization_id === Auth::id();
     }
 
     /**
@@ -53,7 +54,7 @@ class TrenerPolicy
      */
     public function restore(User $user, Trener $trener): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $trener->organization_id === Auth::id();
     }
 
     /**
@@ -61,6 +62,6 @@ class TrenerPolicy
      */
     public function forceDelete(User $user, Trener $trener): bool
     {
-        return $user->role_id === User::Organization;
+        return $user->role_id === User::Organization && $trener->organization_id === Auth::id();
     }
 }

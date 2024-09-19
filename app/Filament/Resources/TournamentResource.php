@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TournamentResource\Pages;
 use App\Filament\Resources\TournamentResource\RelationManagers;
 use App\Infolists\Components\BeltDisplay;
+use App\Models\OrganizationTournament;
 use App\Models\Region;
 use App\Models\Scale;
 use App\Models\Tournament;
@@ -17,6 +18,8 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords\Tab;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -27,7 +30,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
+use Livewire\Attributes\On;
 use Njxqlus\Filament\Components\Infolists\LightboxImageEntry;
 
 class TournamentResource extends Resource
@@ -135,13 +140,15 @@ class TournamentResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-//                $query->where('organization_id', auth()->id())
-//                    ->orWhereHas('treners', function ($query) {
-//                        $query->where('trener_id', auth()->id());
-//                    })
-//                    ->orWhereHas('students', function ($query) {
-//                        $query->where('student_id', auth()->id());
-//                    });
+                $user = auth()->user();
+
+                // Если пользователь авторизован как студент
+                if ($user->role_id === User::Student) {
+                    // Фильтруем турниры, к которым привязан студент
+                    $query->whereHas('students', function ($query) use ($user) {
+                        $query->where('student_id', $user->id);
+                    });
+                }
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
@@ -198,9 +205,9 @@ class TournamentResource extends Resource
 
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make()
-                    ->label('Удаленные турниры')
-                    ->visible(fn() => Auth::user()->role_id === User::Organization),
+//                Tables\Filters\TrashedFilter::make()
+//                    ->label('Удаленные турниры'),
+//                    ->visible(fn() => Auth::user()->role_id === User::Organization),
                 Tables\Filters\SelectFilter::make('region_id')
                     ->options(Region::pluck('name', 'id'))
                     ->preload()
@@ -209,6 +216,39 @@ class TournamentResource extends Resource
 
             ], layout: FiltersLayout::AboveContent)
             ->actions([
+                Tables\Actions\Action::make('send_application')
+                    ->label('Подать заявку')
+                    ->visible(function ($record){
+                        return !$record->tournamentOrganizations->contains('applicant_organizer_id', Auth::id()) && $record->organization_id != Auth::id()
+                            && $record->role_id === User::Organization;
+                    })
+                    ->action(function ($record) {
+                        Notification::make()
+                            ->title('Новая заявка')
+                            ->body('Заявка на турнир ' . $record->name . ' от ' . Auth::user()->name)
+                            ->actions([
+                                Action::make('Посмотреть')
+                                    ->button()
+                                    ->openUrlInNewTab()
+                                    ->url(OrganizationTournamentResource::getUrl())
+                                    ->markAsRead(),
+                            ])
+                            ->viewData([
+                                'tournament_id' => $record->id,
+                                'applicant_organizer_id' => Auth::id(),
+                                ])
+                            ->sendToDatabase(User::find($record->organization_id));
+
+                        OrganizationTournament::firstOrCreate([
+                            'tournament_id' => $record->id,
+                            'applicant_organizer_id' => Auth::id(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Заявка отправлена')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\ViewAction::make()->hidden(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
@@ -247,11 +287,11 @@ class TournamentResource extends Resource
         ];
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
-    }
+//    public static function getEloquentQuery(): Builder
+//    {
+//        return parent::getEloquentQuery()
+//            ->withoutGlobalScopes([
+//                SoftDeletingScope::class,
+//            ]);
+//    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TournamentResource\RelationManagers;
 
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -11,6 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class TrenersRelationManager extends RelationManager
 {
@@ -31,7 +33,6 @@ class TrenersRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
-            ->modifyQueryUsing(fn (Builder $query) => $query->where('organization_id', auth()->id()))
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')
                     ->label('Имя'),
@@ -46,13 +47,14 @@ class TrenersRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->multiple()
-                    ->recordTitle(fn (Model $record) => "{$record->first_name} {$record->last_name}")
-                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('organization_id', auth()->id()))
+                    ->recordTitle(fn(Model $record) => "{$record->first_name} {$record->last_name}")
+                    ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('organization_id', auth()->id()))
                     ->preloadRecordSelect(),
             ])
             ->actions([
 //                Tables\Actions\EditAction::make(),
-                Tables\Actions\DetachAction::make(),
+                Tables\Actions\DetachAction::make()
+                    ->visible(fn($record) => $record->organization_id === auth()->id()),
 //                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -61,5 +63,10 @@ class TrenersRelationManager extends RelationManager
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public function isReadOnly(): bool
+    {
+        return false;
     }
 }

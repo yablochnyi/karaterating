@@ -83,7 +83,6 @@ class ListsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
-            ->modifyQueryUsing(fn(Builder $query) => $query->where('user_id', auth()->id()))
             ->columns([
                 TextColumn::make('name')
                     ->label('Название списка')
@@ -100,12 +99,14 @@ class ListsRelationManager extends RelationManager
                     ->url(fn($livewire): string => url('panel/tournament-student-list-pdf/' . $livewire->getOwnerRecord()->id))
                     ->openUrlInNewTab(),
                 Tables\Actions\CreateAction::make()
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id())
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['user_id'] = auth()->id();
 
                         return $data;
                     }),
                 Tables\Actions\AttachAction::make()
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id())
                     ->preloadRecordSelect()
                     ->label('Прикрепить список')
                     ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('user_id', auth()->id()))
@@ -117,13 +118,16 @@ class ListsRelationManager extends RelationManager
                     ->url(fn($record): string => url('panel/tournament-student-list/' . $record->pivot->id))  // Допустим, отношение называется tournamentStudentList
                     ->openUrlInNewTab()
                     ->label('Ученики'),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id()),
                 Tables\Actions\DetachAction::make()
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id())
 //                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make(),
+                    Tables\Actions\DetachBulkAction::make()
+                        ->visible(fn($livewire) => $livewire->getOwnerRecord()->user_id === auth()->id()),
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

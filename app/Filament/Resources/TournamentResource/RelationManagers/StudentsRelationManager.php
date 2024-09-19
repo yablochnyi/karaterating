@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TournamentResource\RelationManagers;
 use App\Models\ListTournament;
 use App\Models\OrganizatePuliListStudent;
 use App\Models\TournamentStudentList;
+use App\Models\TournamentTrener;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class StudentsRelationManager extends RelationManager
 {
@@ -73,7 +75,13 @@ class StudentsRelationManager extends RelationManager
                     ->preloadRecordSelect()
                     ->recordTitle(fn (Model $record) => "{$record->first_name} {$record->last_name}")
                     ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('coach_id', auth()->id()))
-                    ->hidden(auth()->user()->role_id == User::Student || auth()->user()->role_id == User::Organization)
+                    ->hidden(function ($livewire) {
+                        $trener = TournamentTrener::where('tournament_id', $livewire->getOwnerRecord()->id)
+                        ->where('trener_id', Auth::id())->exists();
+                        return auth()->user()->role_id == User::Student ||
+                            auth()->user()->role_id == User::Organization ||
+                            !$trener;
+                    })
                     ->after(function ($data, $livewire) {
                         $parentRecord = $livewire->getOwnerRecord();
                         $lists = $parentRecord->lists;
