@@ -2,70 +2,87 @@
 
 namespace App\Http\Controllers;
 
-use Xoco70\LaravelTournaments\Models\Tournament;
+use App\Models\Pool;
+use App\Models\Tournament;
 
 class GeneratePuliController extends Controller
 {
     public function generate($tournamentId)
     {
-        // Загружаем ваш локальный турнир с его списками и студентами
-        $localTournament = \App\Models\Tournament::with(['lists.listTournaments.students.trener'])->findOrFail($tournamentId);
+        $tournament = Tournament::with(['lists.listTournaments.students.trener'])->findOrFail($tournamentId);
 
-        foreach ($localTournament->lists as $list) {
+        foreach ($tournament->lists as $list) {
             foreach ($list->listTournaments as $listTournament) {
                 $students = $listTournament->students;
-                $count = $students->count();
 
-
+                if ($students->count() == 3) {
+                    // Логика распределения для 3 участников, как в вашем оригинальном коде
+                    $this->generateForThreeStudents($students, $tournamentId, $listTournament->id);
+                } elseif ($students->count() == 4) {
+                    // Логика распределения для 4 участников
+                    $this->generateForFourStudents($students, $tournamentId, $listTournament->id);
+                }
             }
         }
 
-        return response()->json(['message' => 'Турнирные сетки успешно созданы']);
+        return response()->json(['message' => 'Пули успешно созданы']);
     }
 
-    protected function getTournamentType($count)
+    protected function generateForThreeStudents($students, $tournamentId, $listTournamentId)
     {
+        // Сортировка студентов по тренерам
+        $groupedByTreners = $students->groupBy('trener_id');
 
-        if ($count == 2) {
-            return 'single_elimination'; // Для двух участников - один матч
-        } elseif ($count == 3) {
-            return 'round_robin'; // Каждый с каждым
-        } elseif ($count >= 4) {
-            return 'single_elimination'; // Для четырех и более участников - турнир на выбывание
-        }
-    }
+        if (count($groupedByTreners) == 2) {
+            // Если 2 студента от одного тренера, то они бьются последними
+            $lastFightGroup = $groupedByTreners->filter(function($group) {
+                return count($group) == 2;
+            })->first();
+            $firstFightGroup = $groupedByTreners->filter(function($group) {
+                return count($group) == 1;
+            })->first();
 
-    protected function applyCustomRules(Tournament $tournament)
-    {
-        // Здесь можно задать правила для изменения сетки, чтобы ученики одного тренера
-        // не встречались в первом бою. Пакет xoco70 не поддерживает это по умолчанию,
-        // поэтому потребуется дополнительная логика.
+            // Расписание первых боев
+            $this->scheduleFight($firstFightGroup[0], $lastFightGroup[0], $tournamentId, $listTournamentId);
+            $this->scheduleFight($firstFightGroup[0], $lastFightGroup[1], $tournamentId, $listTournamentId);
 
-        $matches = $tournament->matches()->where('round', 1)->get();
-        $participantsByTrainer = $tournament->participants->groupBy(function ($participant) {
-            return $participant->external->trener_id; // Используем ID тренера для группировки
-        });
-
-        foreach ($matches as $match) {
-            // Проверяем участников и перемещаем их по сетке, если они тренируются у одного тренера
-            $participant1 = $match->participant1;
-            $participant2 = $match->participant2;
-
-            if ($participant1 && $participant2 && $participant1->external->trener_id == $participant2->external->trener_id) {
-                // Если оба бойца от одного тренера, переназначаем бой
-                $this->reassignMatch($tournament, $match);
+            // Расписание последнего боя
+            $this->scheduleFight($lastFightGroup[0], $lastFightGroup[1], $tournamentId, $listTournamentId);
+        } else {
+            // Стандартный порядок боев для всех трех участников
+            for ($i = 0; $i < $students->count(); $i++) {
+                for ($j = $i + 1; $j < $students->count(); $j++) {
+                    $this->scheduleFight($students[$i], $students[$j], $tournamentId, $listTournamentId);
+                }
             }
         }
     }
 
-    protected function reassignMatch(Tournament $tournament, $match)
+    protected function generateForFourStudents($students, $tournamentId, $listTournamentId)
     {
-        // Здесь можно добавить логику для переназначения матчей,
-        // чтобы бойцы от одного тренера не встречались в первом бою.
-        // Например, можно поменять участника в текущем бою на другого.
-
-        // Логика переназначения, если необходимо
+        $this->scheduleFight($students[0], $students[1], $tournamentId, $listTournamentId); // Бой 1: Участник 1 против Участника 2
+        $this->scheduleFight($students[2], $students[3], $tournamentId, $listTournamentId); // Бой 2: Участник 3 против Участника 4
+        Pool::create([
+            'tournament_id' => $tournamentId,
+            'list_id' => $listTournamentId,
+            'student_id' => null,
+            'opponent_id' => null,
+            'round' => 'final',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 
-
+    protected function scheduleFight($student1, $student2, $tournamentId, $listTournamentId)
+    {
+        Pool::create([
+            'tournament_id' => $tournamentId,
+            'list_id' => $listTournamentId,
+            'student_id' => $student1->id,
+            'opponent_id' => $student2->id,
+            'round' => 1,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    }
 }

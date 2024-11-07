@@ -28,7 +28,7 @@ class Puli extends Page implements HasForms, HasActions
 
     public function mount()
     {
-        $tournamentId = 7; // ID турнира
+        $tournamentId = 1; // ID турнира
         $this->tournament = Tournament::with(['pools.student', 'pools.opponent'])->findOrFail($tournamentId);
 
 //        dd($tournament);

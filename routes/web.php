@@ -11,3 +11,4 @@ Route::get('/panel/tournament-student-list-pdf/{id}', [GeneratePDFReportControll
     ->middleware(['auth'])->name('generatePDFReport');
 
 
+
