@@ -20,4 +20,6 @@ class TemplateStudentList extends Model
     {
         return $this->hasMany(ListTournament::class, 'template_student_list_id');
     }
+
+
 }

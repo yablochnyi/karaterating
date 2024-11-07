@@ -9,3 +9,5 @@ Route::get('/', function () {
 
 Route::get('/panel/tournament-student-list-pdf/{id}', [GeneratePDFReportController::class, 'generatePDFReport'])
     ->middleware(['auth'])->name('generatePDFReport');
+
+
