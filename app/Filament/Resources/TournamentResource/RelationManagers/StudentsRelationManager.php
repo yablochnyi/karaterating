@@ -102,9 +102,15 @@ class StudentsRelationManager extends RelationManager
                                 if (
                                     $student->age >= $list->age_from && $student->age <= $list->age_to &&
                                     $student->weight >= $list->weight_from && $student->weight <= $list->weight_to &&
-                                    $rankNumber >= $list->rang_from && $rankNumber <= $list->rang_to &&
-                                    $student->gender == $list->gender
-                                ) {
+                                    $student->gender == $list->gender &&
+                                    (
+                                        // Диапазон "от" определенного ранга (например, от 8 кю до 1 кю)
+                                        ($list->rang_from > $list->rang_to && $rankNumber <= $list->rang_from && $rankNumber >= $list->rang_to) ||
+
+                                        // Диапазон "до" определенного ранга (например, до 8 кю)
+                                        ($list->rang_from <= $list->rang_to && $rankNumber >= $list->rang_to)
+                                    )
+                                ){
                                     TournamentStudentList::create(
                                         [
                                             'list_tournament_id' => $list->pivot->id,

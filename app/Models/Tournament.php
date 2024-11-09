@@ -47,4 +47,9 @@ class Tournament extends Model
     {
         return $this->hasMany(OrganizationTournament::class, 'tournament_id');
     }
+
+    public function pools()
+    {
+        return $this->hasMany(Pool::class, 'tournament_id');
+    }
 }
