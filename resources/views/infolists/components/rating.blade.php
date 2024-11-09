@@ -1,7 +1,11 @@
 <x-dynamic-component :component="$getEntryWrapperView()" :entry="$entry">
     <div>
-{{--        {{ $getState() }}--}}
         <div class="profile-stats-row">
+            @php
+                $record = $getRecord();
+                $winsAndLosses = $record->getWinsAndLosses();
+                $medalsCount = $record->getMedalsCount();
+            @endphp
             <div class="profile-stats-item">
                 <div class="profile-stats-label">Рейтинг</div>
                 <div class="profile-stats-value">0</div>
@@ -9,24 +13,25 @@
             <div class="profile-stats-item">
                 <div class="profile-stats-label">Золото 🥇</div>
                 <div class="profile-stats-icon-wrapper">
-                    <div class="profile-stats-icon-text">0</div>
+                    <div class="profile-stats-icon-text">{{ $medalsCount['gold'] }}</div>
                 </div>
             </div>
             <div class="profile-stats-item">
                 <div class="profile-stats-label">Серебро 🥈</div>
                 <div class="profile-stats-icon-wrapper">
-                    <div class="profile-stats-icon-text">0</div>
+                    <div class="profile-stats-icon-text">{{ $medalsCount['silver'] }}</div>
                 </div>
             </div>
             <div class="profile-stats-item">
                 <div class="profile-stats-label">Бронза 🥉</div>
                 <div class="profile-stats-icon-wrapper">
-                    <div class="profile-stats-icon-text">0</div>
+                    <div class="profile-stats-icon-text">{{ $medalsCount['bronze'] }}</div>
                 </div>
             </div>
+
             <div class="profile-stats-record">
                 <div class="profile-stats-label">Победы/Поражения</div>
-                <div class="profile-info-value">0 / 0</div>
+                <div class="profile-info-value">{{ $winsAndLosses['wins'] }} / {{ $winsAndLosses['losses'] }}</div>
             </div>
         </div>
         <style>

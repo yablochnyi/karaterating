@@ -55,9 +55,11 @@ class DatabaseSeeder extends Seeder
 
         // Создаем студентов и привязываем их к случайным тренерам
         $students = [];
-        for ($j = 1; $j <= 4; $j++) {
+        for ($j = 1; $j <= 9; $j++) {
             $students[] = User::create([
                 'name' => "Student $j",
+                'first_name' => "Student $j",
+                'last_name' => "Student $j",
                 'email' => "student$j@example.com",
                 'password' => Hash::make('password'), // Пароль по умолчанию
                 'role_id' => $studentRole->id,

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tournament_id')->constrained('tournaments')->cascadeOnDelete();
             $table->foreignId('list_id')->constrained('list_tournaments')->cascadeOnDelete();
-            $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('opponent_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('student_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('opponent_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

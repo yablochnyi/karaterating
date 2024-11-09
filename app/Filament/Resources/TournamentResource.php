@@ -273,7 +273,8 @@ class TournamentResource extends Resource
         return [
             RelationManagers\TrenersRelationManager::class,
             RelationManagers\StudentsRelationManager::class,
-            RelationManagers\ListsRelationManager::class
+            RelationManagers\ListsRelationManager::class,
+            RelationManagers\PoolsRelationManager::class
         ];
     }
 

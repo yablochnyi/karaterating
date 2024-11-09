@@ -19,4 +19,5 @@ class TournamentStudentList extends Model
     {
         return $this->belongsTo(ListTournament::class, 'list_tournament_id');
     }
+
 }

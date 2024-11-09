@@ -15,12 +15,24 @@ class EditTournament extends EditRecord
     {
         return [
             Actions\Action::make('generate_puli')
-                ->action(function($record) {
+                ->action(function ($record) {
                     $index = new GeneratePuliController();
                     $index->generate($record->id);
-            })
-            ->label('Сгенерировать пули'),
+                })
+                ->label(function ($record) {
+                    // Проверяем, существуют ли пули для данного турнира
+                    return $record->pools()->exists() ? 'Перегенерировать пули' : 'Сгенерировать пули';
+                })
+                ->requiresConfirmation(function ($record) {
+                    return $record->pools()->exists();
+                })
+                ->modalHeading(fn($record) => $record->pools()->exists() ? 'Перегенерация' : 'Подтверждение')
+                ->modalDescription(fn($record) => $record->pools()->exists()
+                    ? 'Пули уже сгенерированы. Вы уверены, что хотите перегенерировать их?'
+                    : 'Вы уверены, что хотите сгенерировать пули для этого турнира?'),
+
             Actions\DeleteAction::make(),
         ];
     }
+
 }
