@@ -17,7 +17,7 @@
                     @foreach($tournament->pools->where('round', $round) as $pool)
                         @php
                             // Проверяем, есть ли оба участника в бою
-                            $isClickable = $pool->student && $pool->opponent;
+                            $isClickable = $pool->student && $pool->opponent && $tournament->organization_id == auth()->id();
                         @endphp
 
                         <div
@@ -83,7 +83,7 @@
                 @if($thirdPlacePool)
                     @php
                         // Проверка, есть ли оба участника в бою за 3 место
-                        $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent;
+                        $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent && $tournament->organization_id == auth()->id();
                     @endphp
 
                     <div class="match third-place"
