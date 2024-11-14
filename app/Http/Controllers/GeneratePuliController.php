@@ -12,7 +12,13 @@ class GeneratePuliController extends Controller
     public $tournament;
     public function generate($tournamentId)
     {
-        $tournament = Tournament::with(['lists.listTournaments.students.trener'])->findOrFail($tournamentId);
+        $tournament = Tournament::with([
+            'lists.listTournaments' => function ($query) use ($tournamentId) {
+                // Фильтруем `listTournaments`, чтобы получить только записи для текущего турнира
+                $query->where('tournament_id', $tournamentId);
+            },
+            'lists.listTournaments.students.trener'
+        ])->findOrFail($tournamentId);
 
         $this->tournament = $tournament;
 
@@ -90,30 +96,39 @@ class GeneratePuliController extends Controller
                 })->first();
 
                 // Создаём пары так, чтобы одноклубники были разведены
-                $this->scheduleFight($clubWithTwoStudents[0], $otherClub[0], $tournamentId, $listTournamentId, 1, 1); // Бой 1
+                $this->scheduleFight($clubWithTwoStudents[0], $otherClub[0], $tournamentId, $listTournamentId, 1, 1, '1/2'); // Бой 1
                 $this->scheduleFight($clubWithTwoStudents[1], $otherClub[1], $tournamentId, $listTournamentId, 1, 2); // Бой 2
             } else {
                 // Стандартный случай (если нет двух одноклубников), просто распределяем пары
-                $this->scheduleFight($students[0], $students[1], $tournamentId, $listTournamentId, 1, 1);
-                $this->scheduleFight($students[2], $students[3], $tournamentId, $listTournamentId, 1, 2);
+                $this->scheduleFight($students[0], $students[1], $tournamentId, $listTournamentId, 1, 1, '1/2');
+                $this->scheduleFight($students[2], $students[3], $tournamentId, $listTournamentId, 1, 2, '1/2');
             }
         } else {
             // Если все из одного клуба или нет одноклубников, распределяем пары стандартно
-            $this->scheduleFight($students[0], $students[1], $tournamentId, $listTournamentId, 1, 1);
-            $this->scheduleFight($students[2], $students[3], $tournamentId, $listTournamentId, 1, 2);
+            $this->scheduleFight($students[0], $students[1], $tournamentId, $listTournamentId, 1, 1, '1/2');
+            $this->scheduleFight($students[2], $students[3], $tournamentId, $listTournamentId, 1, 2, '1/2');
         }
 
         // Создаём финальный бой для победителей
-        Pool::create([
-            'tournament_id' => $tournamentId,
-            'list_id' => $listTournamentId,
-            'student_id' => null,
-            'opponent_id' => null,
-            'round' => 2,
-            'position_in_round' => 1,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        $round = 2;
+        Pool::create(['type' => 'final','tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => null, 'round' => $round, 'position_in_round' => 1, 'created_at' => now(), 'updated_at' => now()]);
+
+        // **Бой за третье место**
+        // Проверяем, включен ли бой за третье место
+        if ($this->tournament->fight_for_third_place) {
+            $round = 3;
+            Pool::create([
+                'type' => '3rd',
+                'tournament_id' => $tournamentId,
+                'list_id' => $listTournamentId,
+                'student_id' => null, // Заполните фактическими участниками для боя за третье место
+                'opponent_id' => null, // Заполните фактическими участниками для боя за третье место
+                'round' => $round,
+                'position_in_round' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
     }
 
     protected function generateForFiveToEightStudents($students, $tournamentId, $listTournamentId)
@@ -190,11 +205,13 @@ class GeneratePuliController extends Controller
                 $tournamentId,
                 $listTournamentId,
                 $round,
-                $position++
+                $position++,
+                $type = '1/2'
             );
 
             // Студент 5 автоматически проходит во второй раунд
             Pool::create([
+                'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => $remainingStudents[2]->id, // Student 5
@@ -207,6 +224,7 @@ class GeneratePuliController extends Controller
 
             // Третий раунд: финал с одним боем
             Pool::create([
+                'type' => 'final',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => null,
@@ -216,6 +234,23 @@ class GeneratePuliController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            // **Бой за третье место**
+            // Проверяем, включен ли бой за третье место
+            if ($this->tournament->fight_for_third_place) {
+                $round = 4;
+                Pool::create([
+                    'type' => '3rd',
+                    'tournament_id' => $tournamentId,
+                    'list_id' => $listTournamentId,
+                    'student_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'opponent_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'round' => $round,
+                    'position_in_round' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
 
         } elseif ($totalStudents === 6) {
             // Логика для 6 участников - 2 привода
@@ -275,6 +310,7 @@ class GeneratePuliController extends Controller
 
             // 5. Студент 5 получает бай
             Pool::create([
+                'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => $studentsBypassFirstRound[0]->id, // Student 5
@@ -287,6 +323,7 @@ class GeneratePuliController extends Controller
 
             // 6. Студент 6 получает бай
             Pool::create([
+                'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => null, // Student 6
@@ -302,6 +339,7 @@ class GeneratePuliController extends Controller
             $position = 1;
 
             Pool::create([
+                'type' => 'final',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => null,
@@ -311,6 +349,23 @@ class GeneratePuliController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            // **Бой за третье место**
+            // Проверяем, включен ли бой за третье место
+            if ($this->tournament->fight_for_third_place) {
+                $round = 4;
+                Pool::create([
+                    'type' => '3rd',
+                    'tournament_id' => $tournamentId,
+                    'list_id' => $listTournamentId,
+                    'student_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'opponent_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'round' => $round,
+                    'position_in_round' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
 
         } elseif ($totalStudents === 7) {
             // Логика для 7 участников - 1 "бай" во втором раунде
@@ -376,6 +431,7 @@ class GeneratePuliController extends Controller
 
             // 6. Пустой бой для завершения второго раунда
             Pool::create([
+                'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => null,
@@ -391,6 +447,7 @@ class GeneratePuliController extends Controller
             $position = 1;
 
             Pool::create([
+                'type' => 'final',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => null,
@@ -401,13 +458,47 @@ class GeneratePuliController extends Controller
                 'updated_at' => now()
             ]);
 
+            // **Бой за третье место**
+            // Проверяем, включен ли бой за третье место
+            if ($this->tournament->fight_for_third_place) {
+                $round = 4;
+                Pool::create([
+                    'type' => '3rd',
+                    'tournament_id' => $tournamentId,
+                    'list_id' => $listTournamentId,
+                    'student_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'opponent_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'round' => $round,
+                    'position_in_round' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
         } elseif ($totalStudents === 8) {
             $numberOfMatches = $totalStudents / 2;
             for ($i = 0; $i < $totalStudents; $i += 2) {
                 $this->scheduleFight($students[$i], $students[$i + 1], $tournamentId, $listTournamentId, $round, $i / 2 + 1);
             }
 
-            $this->generateEmptyRounds($numberOfMatches / 2, $tournamentId, $listTournamentId, $round + 1);
+            $this->generateEmptyRounds($numberOfMatches / 2, $tournamentId, $listTournamentId, $round + 1, '1/2');
+
+            // **Бой за третье место**
+            // Проверяем, включен ли бой за третье место
+            if ($this->tournament->fight_for_third_place) {
+                $round = 4;
+                Pool::create([
+                    'type' => '3rd',
+                    'tournament_id' => $tournamentId,
+                    'list_id' => $listTournamentId,
+                    'student_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'opponent_id' => null, // Заполните фактическими участниками для боя за третье место
+                    'round' => $round,
+                    'position_in_round' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
 
         } else {
             throw new \Exception("Этот метод поддерживает только генерацию сетки для 5-8 участников.");
@@ -1635,6 +1726,7 @@ class GeneratePuliController extends Controller
         $position = 1;
         foreach (range(1, 2) as $pos) {
             Pool::create([
+                'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
                 'student_id' => null,
@@ -1649,26 +1741,39 @@ class GeneratePuliController extends Controller
         // **Финальный раунд**: Оставляем один пустой бой
         $round = 5;
         $position = 1;
-        Pool::create([
-            'tournament_id' => $tournamentId,
-            'list_id' => $listTournamentId,
-            'student_id' => null,
-            'opponent_id' => null,
-            'round' => $round,
-            'position_in_round' => $position,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        Pool::create(['type' => 'final','tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position, 'created_at' => now(), 'updated_at' => now()]);
+
+        // **Бой за третье место**
+        // Проверяем, включен ли бой за третье место
+        if ($this->tournament->fight_for_third_place) {
+            $round = 6;
+            Pool::create([
+                'type' => '3rd',
+                'tournament_id' => $tournamentId,
+                'list_id' => $listTournamentId,
+                'student_id' => null, // Заполните фактическими участниками для боя за третье место
+                'opponent_id' => null, // Заполните фактическими участниками для боя за третье место
+                'round' => $round,
+                'position_in_round' => 1,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
 
 
     }
 
-    protected function generateEmptyRounds($numberOfMatches, $tournamentId, $listTournamentId, $round)
+    protected function generateEmptyRounds($numberOfMatches, $tournamentId, $listTournamentId, $round, $type = null)
     {
         $position = 1;
+
         while ($numberOfMatches >= 1) {
+            // Если это последний матч, назначаем тип "final"
+            $currentType = ($numberOfMatches === 1) ? 'final' : $type;
+
             for ($i = 0; $i < $numberOfMatches; $i++) {
                 Pool::create([
+                    'type' => $currentType,
                     'tournament_id' => $tournamentId,
                     'list_id' => $listTournamentId,
                     'student_id' => null,
@@ -1676,7 +1781,7 @@ class GeneratePuliController extends Controller
                     'round' => $round,
                     'position_in_round' => $position,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
                 $position++;
             }
@@ -1687,9 +1792,11 @@ class GeneratePuliController extends Controller
         }
     }
 
-    protected function scheduleFight($student1, $student2, $tournamentId, $listTournamentId, $round = 1, $position = 1)
+
+    protected function scheduleFight($student1, $student2, $tournamentId, $listTournamentId, $round = 1, $position = 1, $type = null)
     {
         Pool::create([
+            'type' => $type,
             'tournament_id' => $tournamentId,
             'list_id' => $listTournamentId,
             'student_id' => $student1 ? $student1->id : null,

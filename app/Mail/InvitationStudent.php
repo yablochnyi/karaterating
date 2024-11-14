@@ -42,9 +42,17 @@ class InvitationStudent extends Mailable
      */
     public function content(): Content
     {
-        return new Content(
-            view: 'mail.invitation-student',
-        );
+        $existStudent = User::where('email', $this->email)->first();
+        if ($existStudent && $existStudent->coach_id == null) {
+            return new Content(
+                view: 'mail.re-invitation-student',
+            );
+        } else {
+            return new Content(
+                view: 'mail.invitation-student',
+            );
+        }
+
     }
 
     /**

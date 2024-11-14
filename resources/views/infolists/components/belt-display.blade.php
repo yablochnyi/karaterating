@@ -3,7 +3,8 @@
         @php
             // Функции для получения цвета пояса и полосок
             function getColorForLevel($level) {
-                $colors = [
+                if ($level) {
+                   $colors = [
                     'кю' => [
                         0 => '#FFFFFF',
                         10 => '#FF7F00',
@@ -36,10 +37,13 @@
                 $type = strtolower($type);
 
                 return $colors[$type][$number] ?? '#000000';
+                }
+
             }
 
             function getStripeColorForLevel($level) {
-                $stripeColors = [
+                if ($level) {
+                     $stripeColors = [
                     'кю' => [
                         0 => [],
                         10 => [],
@@ -72,6 +76,8 @@
                 $type = strtolower($type);
 
                 return $stripeColors[$type][$number] ?? [];
+                }
+
             }
 
             $beltColor = getColorForLevel($getState());
@@ -79,9 +85,11 @@
         @endphp
 
         <div class="belt" style="background-color: {{ $beltColor }};">
-            @foreach ($stripeColors as $index => $stripeColor)
-                <div class="belt-stripe" style="background-color: {{ $stripeColor }}; left: {{ $index * 10 }}%;"></div>
-            @endforeach
+            @if($stripeColors)
+                @foreach ($stripeColors as $index => $stripeColor)
+                    <div class="belt-stripe" style="background-color: {{ $stripeColor }}; left: {{ $index * 10 }}%;"></div>
+                @endforeach
+            @endif
         </div>
 
         <style>

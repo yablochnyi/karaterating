@@ -61,14 +61,16 @@ class StudentResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('trener', function ($query) {
-                    $query->whereHas('organization', function ($query) {
-                        $query->where('id', auth()->id()); // Тренеры, связанные с организацией
-                    });
-                })
-                    ->orWhereHas('trener', function ($query) {
-                        $query->where('id', auth()->id()); // Студенты, привязанные к авторизованному тренеру
-                    });
+                $query->where(function ($query) {
+                    $query->whereHas('trener', function ($query) {
+                        $query->whereHas('organization', function ($query) {
+                            $query->where('id', auth()->id()); // Фильтр по организации тренеров
+                        });
+                    })
+                        ->orWhereHas('trener', function ($query) {
+                            $query->where('id', auth()->id()); // Фильтр по тренеру
+                        });
+                });
             })
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
