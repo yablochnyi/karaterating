@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Auth;
 
+use App\Models\User;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -18,6 +19,7 @@ use Filament\Pages\Auth\Login as BaseAuth;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 
@@ -38,8 +40,20 @@ class Login extends BaseAuth
             redirect()->intended(Filament::getUrl());
         }
 
-        $this->form->fill();
+        if (request()->has('ref') && request()->has('email')) {
+            Session::put('referrer', request()->ref);
+            Session::put('email', request()->email);
+
+            // Автозаполнение email в форме
+            $this->form->fill([
+                'email' => request()->get('email'),
+            ]);
+        } else {
+            // Очищаем форму, если email отсутствует
+            $this->form->fill();
+        }
     }
+
 
     public function authenticate(): ?LoginResponse
     {
@@ -70,7 +84,27 @@ class Login extends BaseAuth
 
         session()->regenerate();
 
+        if (Session::has('referrer')) {
+            $referrer = $this->getReferrerFromSession(); // Извлекаем тренера по токену
+
+            if ($referrer && $user->role_id === User::Student && $user->coach_id == null) { // Только для учеников
+                $user->coach_id = $referrer->id; // Связываем ученика с тренером
+                $user->save();
+            }
+        }
+
         return app(LoginResponse::class);
+    }
+
+    protected function getReferrerFromSession(): ?User
+    {
+        if (Session::has('referrer')) {
+            $referrer = User::where('ref_token', Session::get('referrer'))->first();
+            Session::forget('referrer'); // Очищаем реферера из сессии
+            return $referrer ?: null;
+        }
+
+        return null;
     }
 
     protected function getRateLimitedNotification(TooManyRequestsException $exception): ?Notification

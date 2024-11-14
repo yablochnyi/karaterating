@@ -26,6 +26,8 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilamentSortOrder\Actions\DownStepAction;
+use IbrahimBougaoua\FilamentSortOrder\Actions\UpStepAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -251,7 +253,8 @@ class TournamentResource extends Resource
                     }),
                 Tables\Actions\ViewAction::make()->hidden(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
 //                Tables\Actions\BulkActionGroup::make([

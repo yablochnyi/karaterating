@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use IbrahimBougaoua\FilamentSortOrder\Traits\SortOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TemplateStudentList extends Model
 {
     use HasFactory;
+    use SortOrder;
     protected $guarded = false;
 
     public function tournaments()

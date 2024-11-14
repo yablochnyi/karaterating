@@ -11,6 +11,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilamentSortOrder\Actions\DownStepAction;
+use IbrahimBougaoua\FilamentSortOrder\Actions\UpStepAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -121,9 +123,11 @@ class ListsRelationManager extends RelationManager
                 Tables\Actions\EditAction::make()
                     ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id()),
                 Tables\Actions\DetachAction::make()
-                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id())
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id()),
 //                Tables\Actions\DeleteAction::make(),
+
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DetachBulkAction::make()

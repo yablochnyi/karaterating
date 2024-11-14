@@ -12,7 +12,13 @@ class GeneratePuliController extends Controller
     public $tournament;
     public function generate($tournamentId)
     {
-        $tournament = Tournament::with(['lists.listTournaments.students.trener'])->findOrFail($tournamentId);
+        $tournament = Tournament::with([
+            'lists.listTournaments' => function ($query) use ($tournamentId) {
+                // Фильтруем `listTournaments`, чтобы получить только записи для текущего турнира
+                $query->where('tournament_id', $tournamentId);
+            },
+            'lists.listTournaments.students.trener'
+        ])->findOrFail($tournamentId);
 
         $this->tournament = $tournament;
 

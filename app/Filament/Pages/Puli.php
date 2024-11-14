@@ -32,6 +32,43 @@ class Puli extends Page implements HasForms, HasActions
     public $tournament;
 
     public $titleList;
+    public $isSwapping = false;
+    public $selectedIds = [];
+
+    public function toggleSwapping()
+    {
+        $this->isSwapping = !$this->isSwapping;
+        $this->selectedIds = []; // Сброс выбранных участников при каждом переключении
+    }
+
+    public function swapSelected()
+    {
+        if (count($this->selectedIds) !== 2) {
+            return; // Обмен выполняется только при выборе двух участников
+        }
+
+        $studentId1 = $this->selectedIds[0];
+        $studentId2 = $this->selectedIds[1];
+
+        // Получаем записи участников
+        $pool1 = $this->tournament->pools->where('student_id', $studentId1)->first();
+        $pool2 = $this->tournament->pools->where('student_id', $studentId2)->first();
+
+        if ($pool1 && $pool2) {
+            // Обменяем позиции участников
+            $tempPosition = $pool1->position_in_round;
+            $pool1->position_in_round = $pool2->position_in_round;
+            $pool2->position_in_round = $tempPosition;
+
+            $pool1->save();
+            $pool2->save();
+
+            $this->tournament->refresh(); // Обновляем турнир после изменений
+        }
+
+        // Завершаем режим перемещения и сбрасываем выбранные id
+        $this->toggleSwapping();
+    }
 
     public function getTitle(): string|Htmlable
     {
@@ -88,10 +125,12 @@ class Puli extends Page implements HasForms, HasActions
                 // Переносим победителя в следующий раунд
                 $this->moveWinnerToNextRound($pool, $data['winner_id']);
 
-                Notification::make()
-                    ->title('Данные сохранены')
-                    ->success()
-                    ->send();
+                $this->mount($pool->list_id, $pool->tournament_id);
+                return redirect()->to(request()->header('Referer'));
+//                Notification::make()
+//                    ->title('Данные сохранены')
+//                    ->success()
+//                    ->send();
             });
     }
 
