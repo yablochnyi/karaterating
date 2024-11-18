@@ -31,6 +31,6 @@ class Trener extends Model
 
     public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class, 'coach_id');
     }
 }

@@ -1,24 +1,35 @@
 <x-filament-panels::page>
 
-    <div class="theme theme-dark">
-{{--        <button type="submit"--}}
-{{--                wire:click="toggleSwapping"--}}
-{{--                class="mt-2 filament-button inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700 filament-page-button-action">--}}
-{{--            Переместить участников--}}
-{{--        </button>--}}
+    <div class="theme theme-dark" wire:ignore>
+        @if ($tournament->pools->where('type', 'Round Robin')->count() > 0 && $tournament->organization_id == auth()->id())
+            <button
+                wire:click="mountAction('winnerForThreeStudents', { pools: {{ $tournament->pools }} })"
+                    class="mt-2 filament-button inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700 filament-page-button-action">
+                Выбрать победителя
+            </button>
+
+        @else
+            <button
+                wire:click="toggleSwapping"
+                class="mt-2 filament-button inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700 filament-page-button-action">
+                Переместить участников
+            </button>
+        @endif
         <div class="bracket disable-image" wire:ignore>
 
             @php
                 // Определяем максимальный номер раунда, исключая бои за третье место
+
                 $maxRound = $tournament->pools
                     ->where('type', '!=', '3rd')
                     ->max('round');
+
             @endphp
 
 
-                <!-- Цикл по каждому раунду от 1 до максимального -->
+            <!-- Цикл по каждому раунду от 1 до максимального -->
             @for ($round = 1; $round <= $maxRound; $round++)
-                <div class="column round-{{ $round }}" >
+                <div class="column round-{{ $round }}">
                     <!-- Фильтрация пула для текущего раунда и исключение боев за третье место -->
                     @foreach($tournament->pools->where('round', $round) as $pool)
                         @php
@@ -27,7 +38,6 @@
                         @endphp
 
                         <div
-
                             class="match {{ $pool->winner_id ? ($pool->student_id == $pool->winner_id ? 'winner-top' : 'winner-bottom') : '' }}"
                             @if($isClickable) wire:click="mountAction('winner', { id: {{ $pool->id }} })" @endif
                             style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
@@ -36,38 +46,60 @@
                                 <span class="image"></span>
                                 <span class="seed"> </span>
                                 <span class="name">
-                                {{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}<br>
-                                {{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}
-                                </span>
+            {{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}<br>
+            {{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}
+        </span>
 
-                                <span class="score" style="{{ $pool->type == 'final' ? ($pool->student_id == $pool->winner_id ? 'color: gold;' : 'color: silver;') : '' }}">
-                                @if($pool->student_id == $pool->winner_id || ($pool->type == 'final' && $pool->opponent_id == $pool->winner_id))
-                                    <x-bi-trophy/>
-                                @endif
-                                </span>
-
+                                <span class="score"
+                                      style="
+                  @if($pool->type == 'final')
+                      {{ $pool->student_id == $pool->winner_id ? 'color: gold;' : 'color: silver;' }}
+                  @elseif($pool->type == 'Round Robin')
+                      {{ $pool->student_id == $pool->winner_id_1rd_robbin ? 'color: gold;' : '' }}
+                      {{ $pool->student_id == $pool->winner_id_2rd_robbin ? 'color: silver;' : '' }}
+                      {{ $pool->student_id == $pool->winner_id_3rd_robbin ? 'color: #cd7f32;' : '' }}
+                  @endif">
+            @if(
+                ($pool->student_id == $pool->winner_id || ($pool->type == 'final' && $pool->opponent_id == $pool->winner_id)) ||
+                ($pool->type == 'Round Robin' &&
+                    ($pool->student_id == $pool->winner_id_1rd_robbin ||
+                     $pool->student_id == $pool->winner_id_2rd_robbin ||
+                     $pool->student_id == $pool->winner_id_3rd_robbin))
+            )
+                                        <x-bi-trophy/>
+                                    @endif
+        </span>
                             </div>
-                            @if($isSwapping)
-                                <input type="checkbox" wire:model="selectedIds" value="{{ $pool->student_id }}" />
-                            @endif
+
                             <div class="match-bottom team">
                                 <span class="image"></span>
                                 <span class="seed"> </span>
                                 <span class="name">
-                                {{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}<br>
-                                {{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}
-                                </span>
+            {{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}<br>
+            {{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}
+        </span>
 
-                                <span class="score" style="{{ $pool->type == 'final' ? ($pool->opponent_id == $pool->winner_id ? 'color: gold;' : 'color: silver;') : '' }}">
-                                @if($pool->opponent_id == $pool->winner_id || ($pool->type == 'final' && $pool->student_id == $pool->winner_id))
-                                    <x-bi-trophy/>
-                                @endif
-                                </span>
-
+                                <span class="score"
+                                      style="
+                  @if($pool->type == 'final')
+                      {{ $pool->opponent_id == $pool->winner_id ? 'color: gold;' : 'color: silver;' }}
+                  @elseif($pool->type == 'Round Robin')
+                      {{ $pool->opponent_id == $pool->winner_id_1rd_robbin ? 'color: gold;' : '' }}
+                      {{ $pool->opponent_id == $pool->winner_id_2rd_robbin ? 'color: silver;' : '' }}
+                      {{ $pool->opponent_id == $pool->winner_id_3rd_robbin ? 'color: #cd7f32;' : '' }}
+                  @endif">
+            @if(
+                ($pool->opponent_id == $pool->winner_id || ($pool->type == 'final' && $pool->student_id == $pool->winner_id)) ||
+                ($pool->type == 'Round Robin' &&
+                    ($pool->opponent_id == $pool->winner_id_1rd_robbin ||
+                     $pool->opponent_id == $pool->winner_id_2rd_robbin ||
+                     $pool->opponent_id == $pool->winner_id_3rd_robbin))
+            )
+                                        <x-bi-trophy/>
+                                    @endif
+        </span>
                             </div>
-                            @if($isSwapping)
-                                <input type="checkbox" wire:model="selectedIds" value="{{ $pool->opponent_id }}" />
-                            @endif
+
                             <div class="match-lines">
                                 <div class="line one"></div>
                                 <div class="line two"></div>
@@ -76,6 +108,7 @@
                                 <div class="line one"></div>
                             </div>
                         </div>
+
 
                     @endforeach
                 </div>
@@ -139,7 +172,6 @@
                 @endif
             </div>
         @endif
-
 
 
     </div>

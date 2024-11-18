@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Pool;
 use App\Models\TemplateStudentList;
 use App\Models\Tournament;
+use App\Models\User;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Actions\EditAction;
@@ -16,6 +17,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Puli extends Page implements HasForms, HasActions
@@ -32,43 +34,10 @@ class Puli extends Page implements HasForms, HasActions
     public $tournament;
 
     public $titleList;
-    public $isSwapping = false;
-    public $selectedIds = [];
 
-    public function toggleSwapping()
-    {
-        $this->isSwapping = !$this->isSwapping;
-        $this->selectedIds = []; // Сброс выбранных участников при каждом переключении
-    }
-
-    public function swapSelected()
-    {
-        if (count($this->selectedIds) !== 2) {
-            return; // Обмен выполняется только при выборе двух участников
-        }
-
-        $studentId1 = $this->selectedIds[0];
-        $studentId2 = $this->selectedIds[1];
-
-        // Получаем записи участников
-        $pool1 = $this->tournament->pools->where('student_id', $studentId1)->first();
-        $pool2 = $this->tournament->pools->where('student_id', $studentId2)->first();
-
-        if ($pool1 && $pool2) {
-            // Обменяем позиции участников
-            $tempPosition = $pool1->position_in_round;
-            $pool1->position_in_round = $pool2->position_in_round;
-            $pool2->position_in_round = $tempPosition;
-
-            $pool1->save();
-            $pool2->save();
-
-            $this->tournament->refresh(); // Обновляем турнир после изменений
-        }
-
-        // Завершаем режим перемещения и сбрасываем выбранные id
-        $this->toggleSwapping();
-    }
+    public $selectedParticipant1 = null;
+    public $selectedParticipant2 = null;
+    public $isSwappingMode = false;
 
     public function getTitle(): string|Htmlable
     {
@@ -95,9 +64,8 @@ class Puli extends Page implements HasForms, HasActions
 
         // Получаем title из TemplateStudentList и сохраняем в свойство
         $this->titleList = $this->tournament->pools->first()->listTournament->templateStudentList->name ?? 'Default Title';
+
     }
-
-
 
     public function winnerAction(): Action
     {
@@ -134,6 +102,65 @@ class Puli extends Page implements HasForms, HasActions
             });
     }
 
+    public function winnerForThreeStudentsAction(): Action
+    {
+        return Action::make('winnerForThreeStudents')
+            ->label('Победитель')
+            ->color('success')
+            ->requiresConfirmation()
+            ->modalIcon('heroicon-o-trophy')
+            ->modalDescription('Выберите победителя')
+            ->form(function (array $arguments) {
+                $pools = $arguments['pools'] ?? [];
+                $participants = collect($pools)
+                    ->flatMap(function ($pool) {
+                        return [
+                            $pool['student_id'],
+                            $pool['opponent_id'],
+                        ];
+                    })
+                    ->unique(); // Убираем дубликаты
+
+                // Получаем пользователей
+                $users = User::whereIn('id', $participants)->get();
+
+                // Генерируем массив с именами участников
+                $userOptions = $users->mapWithKeys(function ($user) {
+                    return [$user->id => $user->first_name . ' ' . $user->last_name]; // ID => Имя
+                });
+
+                return [
+                    Select::make('winner_id_1rd_robbin')
+                        ->label('1-е место')
+                        ->options($userOptions) // Используем имена для выбора
+                        ->required(),
+                    Select::make('winner_id_2rd_robbin')
+                        ->label('2-е место')
+                        ->options($userOptions) // Используем имена для выбора
+                        ->required(),
+                    Select::make('winner_id_3rd_robbin')
+                        ->label('3-е место')
+                        ->options($userOptions) // Используем имена для выбора
+                        ->required(),
+                ];
+            })
+            ->action(function (array $data, array $arguments) {
+                foreach ($arguments['pools'] as $pool) {
+                    DB::table('pools')
+                        ->where('id', $pool['id'])
+                        ->update([
+                            'winner_id_1rd_robbin' => $data['winner_id_1rd_robbin'],
+                            'winner_id_2rd_robbin' => $data['winner_id_2rd_robbin'],
+                            'winner_id_3rd_robbin' => $data['winner_id_3rd_robbin'],
+                        ]);
+                }
+                return redirect()->to(request()->header('Referer'));
+//                Notification::make()
+//                    ->title('Данные сохранены')
+//                    ->success()
+//                    ->send();
+            });
+    }
 
     public function getPoolParticipants($poolId)
     {
@@ -171,7 +198,7 @@ class Puli extends Page implements HasForms, HasActions
             // Если студент или оппонент в следующем пуле — это предыдущий победитель, убираем его
             if ($nextPool->student_id == $currentPool->student_id || $nextPool->student_id == $currentPool->opponent_id) {
                 $nextPool->student_id = null;
-            } elseif ($nextPool->opponent_id == $currentPool->opponent_id || $currentPool->student_id) {
+            } elseif ($nextPool->opponent_id == $currentPool->opponent_id || $nextPool->opponent_id == $currentPool->opponent_id) {
                 $nextPool->opponent_id = null;
             }
 
@@ -224,6 +251,60 @@ class Puli extends Page implements HasForms, HasActions
 
             $thirdPlacePool->save();
         }
+    }
+
+    public function toggleSwapping()
+    {
+        $this->isSwappingMode = !$this->isSwappingMode;
+        $this->selectedParticipant1 = null;
+        $this->selectedParticipant2 = null;
+    }
+
+    public function selectParticipant($participantId)
+    {
+        if (!$this->isSwappingMode) {
+            return;
+        }
+
+        if (is_null($this->selectedParticipant1)) {
+            $this->selectedParticipant1 = $participantId;
+        } elseif (is_null($this->selectedParticipant2)) {
+            $this->selectedParticipant2 = $participantId;
+            $this->swapParticipants(); // После выбора второго участника выполняем обмен
+        }
+    }
+
+    public function swapParticipants()
+    {
+        // Обмен местами двух участников
+        $pool1 = Pool::where('student_id', $this->selectedParticipant1)
+            ->orWhere('opponent_id', $this->selectedParticipant1)
+            ->first();
+
+        $pool2 = Pool::where('student_id', $this->selectedParticipant2)
+            ->orWhere('opponent_id', $this->selectedParticipant2)
+            ->first();
+
+        if ($pool1 && $pool2) {
+            // Меняем их местами
+            $tempStudentId = $pool1->student_id;
+            $pool1->student_id = $pool2->student_id;
+            $pool2->student_id = $tempStudentId;
+
+            $tempOpponentId = $pool1->opponent_id;
+            $pool1->opponent_id = $pool2->opponent_id;
+            $pool2->opponent_id = $tempOpponentId;
+
+            $pool1->save();
+            $pool2->save();
+        }
+
+        // Сбрасываем режим и выбранных участников
+        $this->selectedParticipant1 = null;
+        $this->selectedParticipant2 = null;
+        $this->isSwappingMode = false;
+
+        session()->flash('message', 'Участники успешно поменялись местами!');
     }
 
 
