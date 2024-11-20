@@ -17,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 
 class Profile extends Page implements HasForms
 {
@@ -148,9 +149,19 @@ class Profile extends Page implements HasForms
                                     ->image()
                                     ->label('Карта IKO'),
                                 Checkbox::make('success_politic')
-                                    ->label('Я согласен с договором оферты и политикой конфиденциальности')
+                                    ->label(new HtmlString(
+                                        'Я согласен с <a href="' . url('panel/agreement-doc/1') . '" target="_blank" style="color: orange;">договором оферты</a> и <a href="' . url('panel/agreement-doc/2') . '" target="_blank" style="color: orange;">политикой конфиденциальности</a>'
+                                    ))
                                     ->required()
-                                    ->columnSpanFull()
+                                    ->columnSpanFull(),
+
+                                Checkbox::make('data_processing')
+                                    ->label(new HtmlString(
+                                        'Я согласен на <a href="' . url('panel/agreement-doc/3') . '" target="_blank" style="color: orange;">обработку моих персональных данных</a>'
+                                    ))
+                                    ->required()
+                                    ->columnSpanFull(),
+
                             ])->columns(4)
                     ])
 

@@ -38,34 +38,104 @@
                                 @if($isClickable) wire:click="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                 style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
 
-                                <div class="match-top team">
+                                <div class="match-top team"
+                                     @if($isClickable) wire:click="mountAction('winner', { id: {{ $pool->id }} })" @endif
+                                >
                                     <span class="image"></span>
-                                    <span class="seed"> </span>
+                                    <span class="seed"></span>
                                     <span class="name">
-                        {{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}<br>
-                        {{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}
-                    </span>
+        {{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}<br>
+        {{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}
+    </span>
+
                                     <span class="score"
-                                          style="{{ $pool->type == 'final' ? ($pool->student_id == $pool->winner_id ? 'color: gold;' : 'color: silver;') : '' }}">
-                        @if($pool->student_id == $pool->winner_id || ($pool->type == 'final' && $pool->opponent_id == $pool->winner_id))
-                                            <x-bi-trophy/>
+                                          style="
+              @if($pool->type == 'final')
+                  {{ $pool->student_id == $pool->winner_id ? 'color: gold;' : 'color: silver;' }}
+              @elseif($pool->type == 'Round Robin')
+                  {{ $pool->student_id == $pool->winner_id_1rd_robbin ? 'color: gold;' : '' }}
+                  {{ $pool->student_id == $pool->winner_id_2rd_robbin ? 'color: silver;' : '' }}
+                  {{ $pool->student_id == $pool->winner_id_3rd_robbin ? 'color: #cd7f32;' : '' }}
+              @endif
+          ">
+        @if($pool->type == 'final')
+                                            @if($pool->winner_id == null)
+                                                <!-- Если победитель не определен, отображаем трофей -->
+                                                <x-bi-trophy style="font-size: 24px;" />
+                                            @elseif($pool->student_id == $pool->winner_id)
+                                                <!-- Если победитель — текущий студент -->
+                                                <span style="font-size: 24px; color: gold;">🥇</span>
+                                            @elseif($pool->opponent_id == $pool->winner_id)
+                                                <!-- Если победитель — оппонент -->
+                                                <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+
+                                        @elseif($pool->type == 'Round Robin')
+                                            @if($pool->student_id == $pool->winner_id_1rd_robbin)
+                                                <span style="font-size: 20px; color: gold;">🥇</span>
+                                            @elseif($pool->student_id == $pool->winner_id_2rd_robbin)
+                                                <span style="font-size: 20px; color: silver;">🥈</span>
+                                            @elseif($pool->student_id == $pool->winner_id_3rd_robbin)
+                                                <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                            @endif
+                                        @elseif($pool->student_id == $pool->winner_id)
+
+                                            <x-bi-trophy style="font-size: 24px;" />
                                         @endif
-                    </span>
+    </span>
                                 </div>
 
-                                <div class="match-bottom team">
+                                <div class="score-input-container">
+                                    <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                           class="fight-score-input"
+                                           placeholder="0">
+                                </div>
+
+                                <div class="match-bottom team"
+                                     @if($isClickable) wire:click="mountAction('winner', { id: {{ $pool->id }} })" @endif
+                                >
                                     <span class="image"></span>
                                     <span class="seed"> </span>
                                     <span class="name">
-                        {{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}<br>
-                        {{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}
-                    </span>
+        {{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}<br>
+        {{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}
+    </span>
+
                                     <span class="score"
-                                          style="{{ $pool->type == 'final' ? ($pool->opponent_id == $pool->winner_id ? 'color: gold;' : 'color: silver;') : '' }}">
-                        @if($pool->opponent_id == $pool->winner_id || ($pool->type == 'final' && $pool->student_id == $pool->winner_id))
-                                            <x-bi-trophy/>
+                                          style="
+              @if($pool->type == 'final')
+                  {{ $pool->opponent_id == $pool->winner_id ? 'color: gold;' : 'color: silver;' }}
+              @elseif($pool->type == 'Round Robin')
+                  {{ $pool->opponent_id == $pool->winner_id_1rd_robbin ? 'color: gold;' : '' }}
+                  {{ $pool->opponent_id == $pool->winner_id_2rd_robbin ? 'color: silver;' : '' }}
+                  {{ $pool->opponent_id == $pool->winner_id_3rd_robbin ? 'color: #cd7f32;' : '' }}
+              @endif
+          ">
+        @if($pool->type == 'final')
+                                            @if($pool->winner_id == null)
+                                                <!-- Если победитель не определен, отображаем трофей -->
+                                                <x-bi-trophy style="font-size: 24px;" />
+                                            @elseif($pool->opponent_id == $pool->winner_id)
+                                                <!-- Если победитель — текущий оппонент -->
+                                                <span style="font-size: 24px; color: gold;">🥇</span>
+                                            @elseif($pool->student_id == $pool->winner_id)
+                                                <!-- Если победитель — студент -->
+                                                <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+
+                                        @elseif($pool->type == 'Round Robin')
+                                            @if($pool->opponent_id == $pool->winner_id_1rd_robbin)
+                                                <span style="font-size: 20px; color: gold;">🥇</span>
+                                            @elseif($pool->opponent_id == $pool->winner_id_2rd_robbin)
+                                                <span style="font-size: 20px; color: silver;">🥈</span>
+                                            @elseif($pool->opponent_id == $pool->winner_id_3rd_robbin)
+                                                <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                            @endif
+                                        @elseif($pool->opponent_id == $pool->winner_id)
+
+                                            <x-bi-trophy style="font-size: 24px;" />
                                         @endif
-                    </span>
+    </span>
                                 </div>
 
                                 <!-- Отображаем линии, только если это не последний раунд -->
@@ -93,40 +163,53 @@
                     $thirdPlacePool = $poolsByList->where('type', '3rd')->first();
                 @endphp
                 @if($thirdPlacePool)
-                    <div class="third-place-container" wire:ignore>
-                        <h3 class="third-place-title">Бой за 3 место</h3>
-                        <div class="match third-place"
-                             @if($isClickable) wire:click="mountAction('winner', { id: {{ $thirdPlacePool->id }} })"
-                             @endif
-                             style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
+                    <h3 class="third-place-title">Бой за 3 место</h3>
+                    @php
+                        // Проверка, есть ли оба участника в бою за 3 место
+                        $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent && $tournament->organization_id == auth()->id();
+                    @endphp
 
-                            <div class="match-top team">
-                                <span class="image"></span>
-                                <span class="seed">3rd</span>
-                                <span class="name">
-                                    {{ $thirdPlacePool->student ? $thirdPlacePool->student->first_name . ' ' . $thirdPlacePool->student->last_name : 'TBD' }}<br>
-                                    {{ $thirdPlacePool->student ? ($thirdPlacePool->student->club ?? $thirdPlacePool->student->trener->club) : null }}
-                                </span>
-                                <span class="score" style="color: #cd7f32;">
-                                    @if($thirdPlacePool->student_id == $thirdPlacePool->winner_id)
-                                        <x-bi-trophy/>
-                                    @endif
-                                </span>
-                            </div>
+                    <div class="match third-place"
+                         @if($isClickable) wire:click="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif
+                         style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
 
-                            <div class="match-bottom team">
-                                <span class="image"></span>
-                                <span class="seed">3rd</span>
-                                <span class="name">
-                                    {{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->first_name . ' ' . $thirdPlacePool->opponent->last_name : 'TBD' }}<br>
-                                    {{ $thirdPlacePool->opponent ? ($thirdPlacePool->opponent->club ?? $thirdPlacePool->opponent->trener->club) : null }}
-                                </span>
-                                <span class="score" style="color: #cd7f32;">
-                                    @if($thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
-                                        <x-bi-trophy/>
-                                    @endif
-                                </span>
-                            </div>
+                        <div class="match-top team">
+                            <span class="image"></span>
+                            <span class="seed">3rd</span>
+                            <span class="name">
+                        {{ $thirdPlacePool->student ? $thirdPlacePool->student->first_name . ' ' . $thirdPlacePool->student->last_name : 'TBD' }}<br>
+                        {{ $thirdPlacePool->student ? ($thirdPlacePool->student->club ?? $thirdPlacePool->student->trener->club) : null }}
+
+                    </span>
+                            <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
+                                @if($thirdPlacePool->winner_id === null)
+                                    <x-bi-trophy/>
+                                @elseif($thirdPlacePool->student_id == $thirdPlacePool->winner_id)
+                                    <span style="font-size: 24px;">🥉</span>
+                                @endif
+                    </span>
+                        </div>
+
+                        <div class="score-input-container">
+                            <input type="text" wire:model.live="tatami_and_fight_number.{{ $thirdPlacePool->id }}"
+                                   class="fight-score-input"
+                                   placeholder="0">
+                        </div>
+
+                        <div class="match-bottom team">
+                            <span class="image"></span>
+                            <span class="seed">3rd</span>
+                            <span class="name">
+                        {{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->first_name . ' ' . $thirdPlacePool->opponent->last_name : 'TBD' }}<br>
+                        {{ $thirdPlacePool->opponent ? ($thirdPlacePool->opponent->club ?? $thirdPlacePool->opponent->trener->club) : null }}
+                    </span>
+                            <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
+                                 @if($thirdPlacePool->winner_id === null)
+                                    <x-bi-trophy/>
+                                @elseif($thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
+                                    <span style="font-size: 24px;">🥉</span>
+                                @endif
+                    </span>
                         </div>
                     </div>
                 @endif
@@ -137,34 +220,45 @@
 
 </div>
 <style>
-    .title {
-        font-size: 18px;
-        font-weight: bold;
-        text-align: left;
-        margin-top: 20px;
-        line-height: 1.2em;
-        max-width: 100%; /* Ограничивает ширину */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+
+    /* Контейнер для поля ввода */
+    .score-input-container {
+        position: absolute;
+        top: 50%; /* Центрируем относительно всего блока */
+        left: 90%; /* Центрируем по горизонтали */
+        transform: translate(-50%, -50%); /* Точное выравнивание */
+        z-index: 10; /* Поверх текста */
+        background-color: transparent; /* Чтобы не перекрывалось блоками */
     }
 
+    /* Стили для поля ввода */
+    .fight-score-input {
+        width: 50px; /* Ширина поля */
+        height: 30px; /* Высота поля */
+        text-align: center; /* Центровка текста внутри */
+        border: 1px solid #ccc; /* Граница */
+        border-radius: 5px; /* Закругленные углы */
+        font-size: 14px; /* Размер шрифта */
+        background-color: #fff; /* Белый фон */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Легкая тень */
+        padding: 0; /* Без внутренних отступов */
+        color: black;
+    }
 
     .page-break {
-        page-break-before: always;
+        page-break-before: always; /* Новый блок всегда с новой страницы */
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        transform-origin: top left; /* Масштабирование сверху слева */
+        position: relative;
+        overflow: hidden;
+    }
+
+    .title {
         margin-top: 50px;
-        width: 210mm;
-        /*height: 297mm;*/
-    }
-    .tournament-scale {
-        transform: scale(0.7); /* Уменьшите значение, чтобы все элементы вместились */
-        transform-origin: top left;
-    }
-    /* Устанавливаем размеры для страницы A4 */
-    body, .page-break {
-        margin: 10px;
-        padding: 0;
-        box-sizing: border-box;
+        font-size: 18px;
+        text-align: center;
     }
 
     /* Стили для дополнительного блока для третьего места */
@@ -174,7 +268,7 @@
     }
 
     .third-place-title {
-        color: #e3e8ef;
+        color: black;
         font-size: 18px;
         margin-bottom: 10px;
     }
@@ -186,8 +280,8 @@
     }
 
     .theme {
-        /*height: 30%;*/
-        /*width: 30%;*/
+        /*height: 100%;*/
+        /*width: 100%;*/
         position: absolute;
     }
 
@@ -213,14 +307,10 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        /*min-width: 240px;*/
+        min-width: 240px;
         max-width: 240px;
-        /*height: 62px;*/
+        height: 150px;
         margin: 35px 24px 12px 0;
-
-        min-width: 200px; /* Уменьшите ширину */
-        height: 40px; /* Уменьшите высоту */
-        /*margin: 20px 10px 16px 0; !* Сократите отступы *!*/
     }
 
     .match .match-top {
@@ -276,7 +366,7 @@
     }
 
     .match-lines .line.two {
-        height: 44px;
+        height: 100px;
         width: 1px;
         left: 11px;
     }
@@ -302,19 +392,19 @@
     }
 
     .column:nth-child(2) .match-lines .line.two {
-        height: 88px;
+        height: 250px;
     }
 
     .column:nth-child(3) .match-lines .line.two {
-        height: 175px;
+        height: 450px;
     }
 
     .column:nth-child(4) .match-lines .line.two {
-        height: 262px;
+        height: 600px;
     }
 
     .column:nth-child(5) .match-lines .line.two {
-        height: 349px;
+        height: 750px;
     }
 
     .disable-image .image,

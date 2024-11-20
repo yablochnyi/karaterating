@@ -35,9 +35,15 @@ class Puli extends Page implements HasForms, HasActions
 
     public $titleList;
 
-    public $selectedParticipant1 = null;
-    public $selectedParticipant2 = null;
-    public $isSwappingMode = false;
+    public array $tatami_and_fight_number = [];
+
+    public function updatedTatamiAndFightNumber($value, $key)
+    {
+
+        Pool::find($key)->update([
+            'tatami_and_fight_number' => $value,
+        ]);
+    }
 
     public function getTitle(): string|Htmlable
     {
@@ -64,6 +70,7 @@ class Puli extends Page implements HasForms, HasActions
 
         // Получаем title из TemplateStudentList и сохраняем в свойство
         $this->titleList = $this->tournament->pools->first()->listTournament->templateStudentList->name ?? 'Default Title';
+        $this->tatami_and_fight_number = $this->tournament->pools->pluck('tatami_and_fight_number', 'id')->toArray();
 
     }
 
@@ -253,58 +260,125 @@ class Puli extends Page implements HasForms, HasActions
         }
     }
 
-    public function toggleSwapping()
+    public function swapParticipantsAction(): Action
     {
-        $this->isSwappingMode = !$this->isSwappingMode;
-        $this->selectedParticipant1 = null;
-        $this->selectedParticipant2 = null;
-    }
+        return Action::make('swapParticipants')
+            ->label('Переместить участников')
+            ->color('primary')
+            ->requiresConfirmation()
+            ->modalIcon('heroicon-o-trophy')
+            ->modalDescription('Выберите двух участников для перемещения')
+            ->form(function (array $arguments) {
+                $pools = $arguments['pools'] ?? [];
+                $participants = collect($pools)
+                    ->flatMap(function ($pool) {
+                        return [
+                            $pool['student_id'],
+                            $pool['opponent_id'],
+                        ];
+                    })
+                    ->unique();
 
-    public function selectParticipant($participantId)
-    {
-        if (!$this->isSwappingMode) {
-            return;
-        }
+                // Получаем пользователей
+                $users = User::whereIn('id', $participants)->get();
 
-        if (is_null($this->selectedParticipant1)) {
-            $this->selectedParticipant1 = $participantId;
-        } elseif (is_null($this->selectedParticipant2)) {
-            $this->selectedParticipant2 = $participantId;
-            $this->swapParticipants(); // После выбора второго участника выполняем обмен
-        }
-    }
+                // Генерируем массив с именами участников
+                $userOptions = $users->mapWithKeys(function ($user) {
+                    return [$user->id => $user->first_name . ' ' . $user->last_name];
+                });
 
-    public function swapParticipants()
-    {
-        // Обмен местами двух участников
-        $pool1 = Pool::where('student_id', $this->selectedParticipant1)
-            ->orWhere('opponent_id', $this->selectedParticipant1)
-            ->first();
+                return [
+                    Select::make('participant_1')
+                        ->label('Первый участник')
+                        ->options($userOptions)
+                        ->required(),
+                    Select::make('participant_2')
+                        ->label('Второй участник')
+                        ->options($userOptions)
+                        ->required(),
+                ];
+            })
+            ->action(function (array $data, array $arguments) {
+                $pools = $arguments['pools'] ?? [];
 
-        $pool2 = Pool::where('student_id', $this->selectedParticipant2)
-            ->orWhere('opponent_id', $this->selectedParticipant2)
-            ->first();
+                $participant1 = $data['participant_1'];
+                $participant2 = $data['participant_2'];
 
-        if ($pool1 && $pool2) {
-            // Меняем их местами
-            $tempStudentId = $pool1->student_id;
-            $pool1->student_id = $pool2->student_id;
-            $pool2->student_id = $tempStudentId;
+                if ($participant1 === $participant2) {
+                    Notification::make()
+                        ->title('Участники не могут быть одинаковыми')
+                        ->danger()
+                        ->send();
 
-            $tempOpponentId = $pool1->opponent_id;
-            $pool1->opponent_id = $pool2->opponent_id;
-            $pool2->opponent_id = $tempOpponentId;
+                    return;
+                }
 
-            $pool1->save();
-            $pool2->save();
-        }
+                // Ищем все пулы для каждого участника
+                $pool1Matches = collect($pools)->filter(function ($pool) use ($participant1) {
+                    return $pool['student_id'] == $participant1 || $pool['opponent_id'] == $participant1;
+                });
 
-        // Сбрасываем режим и выбранных участников
-        $this->selectedParticipant1 = null;
-        $this->selectedParticipant2 = null;
-        $this->isSwappingMode = false;
+                $pool2Matches = collect($pools)->filter(function ($pool) use ($participant2) {
+                    return $pool['student_id'] == $participant2 || $pool['opponent_id'] == $participant2;
+                });
 
-        session()->flash('message', 'Участники успешно поменялись местами!');
+                if ($pool1Matches->isEmpty() || $pool2Matches->isEmpty()) {
+                    Notification::make()
+                        ->title('Не удалось найти участников в пулах')
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                $pool1 = $pool1Matches->first();
+                $pool2 = $pool2Matches->first();
+
+                $participant1Position = '';
+// Проверяем, где находится первый участник
+                if ($pool1['student_id'] == $participant1) {
+                    // Участник 1 — студент
+                    $participant1Position = 'student_id';
+                } elseif ($pool1['opponent_id'] == $participant1) {
+                    // Участник 1 — оппонент
+                    $participant1Position = 'opponent_id';
+                }
+
+                $participant2Position = 'student_id';
+// Проверяем, где находится второй участник
+                if ($pool2['student_id'] == $participant2) {
+                    // Участник 2 — студент
+                    $participant2Position = 'student_id';
+                } elseif ($pool2['opponent_id'] == $participant2) {
+                    // Участник 2 — оппонент
+                    $participant2Position = 'opponent_id';
+                }
+
+// Меняем местами участников
+                $temp = $pool1[$participant1Position];
+                $pool1[$participant1Position] = $pool2[$participant2Position];
+                $pool2[$participant2Position] = $temp;
+
+// Сохраняем изменения в базе данных
+                DB::table('pools')->where('id', $pool1['id'])->update([
+                    'student_id' => $pool1['student_id'],
+                    'opponent_id' => $pool1['opponent_id'],
+                ]);
+
+                DB::table('pools')->where('id', $pool2['id'])->update([
+                    'student_id' => $pool2['student_id'],
+                    'opponent_id' => $pool2['opponent_id'],
+                ]);
+
+
+                Notification::make()
+                    ->title('Участники успешно перемещены')
+                    ->success()
+                    ->send();
+
+                return redirect()->to(request()->header('Referer'));
+            });
+
     }
 
 
