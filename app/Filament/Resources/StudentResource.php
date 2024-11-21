@@ -9,6 +9,7 @@ use App\Infolists\Components\Rating;
 use App\Infolists\Components\TrenerClubToStudent;
 use App\Models\Student;
 use App\Models\User;
+use Carbon\Carbon;
 use Faker\Provider\Text;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
@@ -146,6 +147,13 @@ class StudentResource extends Resource
                                         TextEntry::make('weight')
                                             ->label('Вес'),
                                         TextEntry::make('birthday')
+                                            ->formatStateUsing(function (?string $state): HtmlString {
+                                                return new HtmlString(
+                                                    $state
+                                                        ? Carbon::parse($state)->format('d.m.y')
+                                                        : '-'
+                                                );
+                                            })
                                             ->label('Дата Рождения'),
                                        TextEntry::make('trener')
                                            ->label('Тренер')

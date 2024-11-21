@@ -94,6 +94,7 @@ class Profile extends Page implements HasForms
                                     ->required(),
                                 DatePicker::make('birthday')
                                     ->label('Дата Рождения')
+                                    ->format('d.m.y')
                                     ->required(),
                                 Select::make('rang')
                                     ->prefix('Кю / Дан')

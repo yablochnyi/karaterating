@@ -87,9 +87,14 @@
         <div class="belt" style="background-color: {{ $beltColor }};">
             @if($stripeColors)
                 @foreach ($stripeColors as $index => $stripeColor)
-                    <div class="belt-stripe" style="background-color: {{ $stripeColor }}; left: {{ $index * 10 }}%;"></div>
+                    <div class="belt-stripe"
+                         style="background-color: {{ $stripeColor }};
+                left: {{ $index * 2 + 10 }}%; /* Добавляем смещение */">
+                    </div>
                 @endforeach
+
             @endif
+
         </div>
 
         <style>
@@ -107,6 +112,7 @@
                 top: 0;
                 bottom: 0;
                 width: 3px;
+                left: 10px;
                 /* Расположение полосок будет управляться через inline-стили */
             }
         </style>

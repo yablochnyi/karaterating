@@ -7,6 +7,7 @@ use App\Filament\Resources\TrenerResource\RelationManagers;
 use App\Infolists\Components\BeltDisplay;
 use App\Models\Region;
 use App\Models\Trener;
+use Carbon\Carbon;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Group;
@@ -124,6 +125,13 @@ class TrenerResource extends Resource
                                         TextEntry::make('weight')
                                             ->label('Вес'),
                                         TextEntry::make('birthday')
+                                            ->formatStateUsing(function (?string $state): HtmlString {
+                                                return new HtmlString(
+                                                    $state
+                                                        ? Carbon::parse($state)->format('d.m.y')
+                                                        : '-'
+                                                );
+                                            })
                                             ->label('Дата Рождения'),
                                         TextEntry::make('club')
                                             ->label('Клуб')
