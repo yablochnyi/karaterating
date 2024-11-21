@@ -150,7 +150,7 @@ class StudentResource extends Resource
                                             ->formatStateUsing(function (?string $state): HtmlString {
                                                 return new HtmlString(
                                                     $state
-                                                        ? Carbon::parse($state)->format('d.m.y')
+                                                        ? Carbon::parse($state)->format('d.m.Y')
                                                         : '-'
                                                 );
                                             })
