@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class PoolsRelationManager extends RelationManager
 {
@@ -34,9 +35,9 @@ class PoolsRelationManager extends RelationManager
             ->recordTitleAttribute('id')
             ->modifyQueryUsing(function (Builder $query) {
                 return $query
-                    ->selectRaw('MIN(id) as id, tournament_id, list_id, MAX(tatami) as tatami') // Добавляем tatami в запрос
-                    ->groupBy('tournament_id', 'list_id')
-                    ->orderBy('tournament_id', 'asc'); // Указываем явную сортировку
+                    ->selectRaw('MIN(id) as id, tournament_id, list_id, MAX(tatami) as tatami') // Добавляем поля type и winner_id
+                    ->groupBy('tournament_id', 'list_id') // Указываем группировку
+                    ->orderBy('tournament_id', 'asc'); // Указываем сортировку
             })
             ->columns([
                 Tables\Columns\TextColumn::make('templateStudentList.name')
@@ -46,6 +47,7 @@ class PoolsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('tatami')
                     ->label('Татами') // Название столбца
                     ->sortable(), // Делаем поле сортируемым
+
             ])
             ->filters([
                 SelectFilter::make('tatami')
@@ -102,7 +104,8 @@ class PoolsRelationManager extends RelationManager
                     ])
                     ->modalHeading('Выбор Татами')
                     ->color('primary')
-            ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id == auth()->id()),
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id == auth()->id()),
                 Tables\Actions\Action::make('view_pool')
                     ->icon('heroicon-o-trophy')
                     ->url(fn($record, $livewire): string => url('panel/tournament-puli/' . $record->list_id . '/tournament/' . $livewire->getOwnerRecord()->id))
@@ -115,8 +118,6 @@ class PoolsRelationManager extends RelationManager
                 ]),
             ]);
     }
-
-
 
 
 }

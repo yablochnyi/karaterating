@@ -5,26 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Таблица регистрации участников</title>
     <style>
-        *{ font-family: DejaVu Sans; font-size: 12px;}
+        * {
+            font-family: DejaVu Sans;
+            font-size: 12px;
+        }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
+
         th, td {
             border: 1px solid black;
             padding: 8px;
             text-align: center;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         .section-title {
             font-weight: bold;
             text-align: center;
             padding: 10px 0;
             font-size: 1.2em;
+        }
+
+        .page-break {
+            page-break-before: always;
         }
     </style>
 </head>
@@ -32,8 +42,12 @@
 
 <h2 class="section-title">ПРОТОКОЛ РЕГИСТРАЦИИ УЧАСТНИКОВ СОРЕВНОВАНИЙ</h2>
 
-@foreach($listTournaments as $listTournament)
-    <!-- Добавляем название списка -->
+@foreach($listTournaments as $index => $listTournament)
+    <!-- Добавляем новый класс для начала страницы с нового листа -->
+    @if ($index > 0)
+        <div class="page-break"></div>
+    @endif
+
     <h3 class="section-title">
         {{ mb_strtoupper($listTournament->templateStudentList->name) }}
     </h3>

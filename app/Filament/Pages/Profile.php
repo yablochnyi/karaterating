@@ -2,6 +2,10 @@
 
 namespace App\Filament\Pages;
 
+use App\Infolists\Components\BeltDisplay;
+use App\Infolists\Components\Rating;
+use App\Models\Student;
+use App\Models\Tournament;
 use App\Models\User;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -14,14 +18,25 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Infolists\Concerns\InteractsWithInfolists;
+use Filament\Infolists\Contracts\HasInfolists;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 
-class Profile extends Page implements HasForms
+class Profile extends Page implements HasForms, HasTable, HasInfolists
 {
     use InteractsWithForms;
+    use InteractsWithTable;
+    use InteractsWithInfolists;
+
+
 
     protected static bool $shouldRegisterNavigation = false;
     protected static ?string $title = 'Редактировать профиль';
@@ -139,16 +154,24 @@ class Profile extends Page implements HasForms
                             ->schema([
                                 FileUpload::make('passport')
                                     ->image()
+                                    ->required()
                                     ->label('Будо паспорт'),
                                 FileUpload::make('brand')
                                     ->image()
+                                    ->required()
                                     ->label('Марка'),
                                 FileUpload::make('insurance')
                                     ->image()
+                                    ->required()
                                     ->label('Страховка'),
                                 FileUpload::make('iko_card')
                                     ->image()
+                                    ->required()
                                     ->label('Карта IKO'),
+                                FileUpload::make('certificate')
+                                    ->image()
+                                    ->required()
+                                    ->label('Сертификат'),
                                 Checkbox::make('success_politic')
                                     ->label(new HtmlString(
                                         'Я согласен с <a href="' . url('panel/agreement-doc/1') . '" target="_blank" style="color: orange;">договором оферты</a> и <a href="' . url('panel/agreement-doc/2') . '" target="_blank" style="color: orange;">политикой конфиденциальности</a>'
@@ -163,11 +186,51 @@ class Profile extends Page implements HasForms
                                     ->required()
                                     ->columnSpanFull(),
 
-                            ])->columns(4)
+                            ])->columns(5)
                     ])
 
             ])
             ->statePath('data');
+    }
+
+    public function table(Table $table): Table
+    {
+        $student = Student::find(auth()->id()); // Получаем текущего авторизованного пользователя
+
+
+        return $table
+            ->query($student->tournaments()->getQuery()) // Преобразуем связь в Builder
+            ->columns([
+                TextColumn::make('name')
+                    ->label('Турнир'),
+                TextColumn::make('wins_losses')
+                    ->label('Победы/Поражения')
+                    ->getStateUsing(fn () => $student->getWinsAndLosses()['wins'] . ' / ' . $student->getWinsAndLosses()['losses']), // Формируем текст "Победы / Поражения"
+
+            ])
+            ->filters([
+                // Добавьте фильтры, если нужно
+            ])
+            ->actions([
+                // Добавьте действия, если нужно
+            ])
+            ->bulkActions([
+                // Добавьте массовые действия, если нужно
+            ]);
+    }
+
+    public function productInfolist(Infolist $infolist): Infolist
+    {
+        $student = Student::find(auth()->id());
+        return $infolist
+            ->record($student)
+            ->schema([
+                BeltDisplay::make('rang')
+                    ->hiddenLabel(),
+
+                Rating::make('rating')
+                    ->hiddenLabel()
+            ]);
     }
 
     public function create(): void

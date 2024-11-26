@@ -24,8 +24,10 @@ class Tournament extends Model
 
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'student_tournaments', 'tournament_id', 'student_id');
+        return $this->belongsToMany(Student::class, 'student_tournaments', 'tournament_id', 'student_id')
+            ->withPivot('is_success_weight'); // Указываем колонку из смежной таблицы
     }
+
 
     public function lists()
     {

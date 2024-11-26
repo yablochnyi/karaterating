@@ -7,4 +7,7 @@
             Сохранить
         </button>
     </form>
+
+    {{ $this->productInfolist }}
+    {{ $this->table }}
 </x-filament-panels::page>

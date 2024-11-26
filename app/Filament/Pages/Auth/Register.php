@@ -47,7 +47,7 @@ class Register extends BaseRegister
 
     public function mount(): void
     {
-        if (request()->has('ref') && request()->has('email')) {
+        if (request()->has('ref')) {
             Session::put('referrer', request()->ref);
             Session::put('email', request()->email);
 

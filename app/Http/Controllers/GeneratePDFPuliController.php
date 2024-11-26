@@ -27,7 +27,6 @@ class GeneratePDFPuliController extends Controller
             'tournament' => $tournament,
             'poolsGroupedByListId' => $poolsGroupedByListId
         ])->format('a4')
-//        })
             ->name('your-invoice.pdf');
 
 

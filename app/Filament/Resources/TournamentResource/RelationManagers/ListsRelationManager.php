@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\TournamentResource\RelationManagers;
 
+use App\Exports\StudentsExport;
+use App\Exports\TournamentListExport;
 use App\Models\ListTournament;
 use App\Models\TournamentStudentList;
 use App\Models\User;
@@ -9,12 +11,15 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use IbrahimBougaoua\FilamentSortOrder\Actions\DownStepAction;
 use IbrahimBougaoua\FilamentSortOrder\Actions\UpStepAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ListsRelationManager extends RelationManager
 {
@@ -95,12 +100,24 @@ class ListsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
+                Action::make('exportExcel')
+                    ->label('Скачать списки в Excel') // Текст кнопки
+                    ->action(function ($livewire) {
+                        $listTournaments = ListTournament::where('tournament_id', $livewire->getOwnerRecord()->id)
+                            ->whereHas('tournamentStudentLists') // Фильтруем списки с участниками
+                            ->with(['tournamentStudentLists.student', 'templateStudentList'])
+                            ->get();
+
+                        return Excel::download(new TournamentListExport($listTournaments), 'tournament_students.xlsx');
+                    })
+                    ->color('warning'),
                 Tables\Actions\Action::make('download_lists')
-                    ->label('Скачать списки')
+                    ->label('Скачать списки в PDF')
                     ->color('warning')
                     ->url(fn($livewire): string => url('panel/tournament-student-list-pdf/' . $livewire->getOwnerRecord()->id))
                     ->openUrlInNewTab(),
                 Tables\Actions\CreateAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
                     ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id())
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['user_id'] = auth()->id();
@@ -108,6 +125,7 @@ class ListsRelationManager extends RelationManager
                         return $data;
                     }),
                 Tables\Actions\AttachAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
                     ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id())
                     ->preloadRecordSelect()
                     ->label('Прикрепить список')
@@ -121,8 +139,10 @@ class ListsRelationManager extends RelationManager
                     ->openUrlInNewTab()
                     ->label('Ученики'),
                 Tables\Actions\EditAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
                     ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id()),
                 Tables\Actions\DetachAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
                     ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id === auth()->id()),
 //                Tables\Actions\DeleteAction::make(),
 
@@ -131,6 +151,7 @@ class ListsRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DetachBulkAction::make()
+                        ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
                         ->visible(fn($livewire) => $livewire->getOwnerRecord()->user_id === auth()->id()),
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),

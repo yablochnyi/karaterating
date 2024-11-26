@@ -10,6 +10,5 @@ class TrenerClubToStudent extends Entry
 
     public function mount(): void
     {
-        dd($this->getState());
     }
 }

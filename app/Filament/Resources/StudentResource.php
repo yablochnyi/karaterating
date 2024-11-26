@@ -6,12 +6,14 @@ use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Infolists\Components\BeltDisplay;
 use App\Infolists\Components\Rating;
+use App\Infolists\Components\SuccessDocument;
 use App\Infolists\Components\TrenerClubToStudent;
 use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
 use Faker\Provider\Text;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
@@ -40,9 +42,10 @@ class StudentResource extends Resource
     protected static ?string $modelLabel = 'Ученик';
     protected static ?string $pluralModelLabel = 'Ученики';
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
     public static function shouldRegisterNavigation(): bool
     {
-        if (auth()->user()->role_id == User::Student || auth()->user()->role_id == User::Admin ) {
+        if (auth()->user()->role_id == User::Student || auth()->user()->role_id == User::Admin) {
             return false;
         } else {
             return true;
@@ -54,7 +57,7 @@ class StudentResource extends Resource
         return $form
             ->schema([
                 TextInput::make('weight')
-                ->label('Вес')
+                    ->label('Вес')
             ]);
     }
 
@@ -94,8 +97,8 @@ class StudentResource extends Resource
                 TextColumn::make('coach_id')
                     ->formatStateUsing(function ($record) {
                         return $record->trener->first_name . ' ' . $record->trener->last_name;
-                })
-                ->label('Тренер')
+                    })
+                    ->label('Тренер')
             ])
             ->filters([
                 //
@@ -155,13 +158,13 @@ class StudentResource extends Resource
                                                 );
                                             })
                                             ->label('Дата Рождения'),
-                                       TextEntry::make('trener')
-                                           ->label('Тренер')
-                                           ->formatStateUsing(function (object $state): HtmlString {
-                                               return new HtmlString($state->first_name . ' ' . $state->last_name);
-                                           }),
-                                       TrenerClubToStudent::make('club')
-                                           ->label('Клуб'),
+                                        TextEntry::make('trener')
+                                            ->label('Тренер')
+                                            ->formatStateUsing(function (object $state): HtmlString {
+                                                return new HtmlString($state->first_name . ' ' . $state->last_name);
+                                            }),
+                                        TrenerClubToStudent::make('club')
+                                            ->label('Клуб'),
 
                                     ]),
                                 ]),
@@ -172,7 +175,7 @@ class StudentResource extends Resource
                             ->hiddenLabel(),
 
                         Rating::make('rating')
-                        ->hiddenLabel()
+                            ->hiddenLabel()
 
                     ]),
 
@@ -202,18 +205,39 @@ class StudentResource extends Resource
                             ->slideWidth('906px')
                             ->slideHeight('1200px')
                             ->href(fn(Model $record): string => url('storage/' . $record->iko_card)),
-//                                Checkbox::make('success_politic')
-//                                    ->label('Я согласен с договором оферты и политикой конфиденциальности')
-//                                    ->required()
-//                                    ->columnSpanFull()
-                    ])->columns(4)
+                        LightboxImageEntry::make('certificate')
+                            ->label('Сертификат')
+                            ->size(200)
+                            ->slideWidth('906px')
+                            ->slideHeight('1200px')
+                            ->href(fn(Model $record): string => url('storage/' . $record->certificate)),
+                        SuccessDocument::make('is_success_passport')
+                            ->visible(fn() => auth()->user()->role_id == User::Organization)
+                            ->hiddenLabel(),
+                        SuccessDocument::make('is_success_brand')
+                            ->visible(fn() => auth()->user()->role_id == User::Organization)
+                            ->hiddenLabel(),
+                        SuccessDocument::make('is_success_insurance')
+                            ->visible(fn() => auth()->user()->role_id == User::Organization)
+                            ->hiddenLabel(),
+                        SuccessDocument::make('is_success_iko_card')
+                            ->visible(fn() => auth()->user()->role_id == User::Organization)
+                            ->hiddenLabel(),
+                        SuccessDocument::make('is_success_certificate')
+                            ->visible(fn() => auth()->user()->role_id == User::Organization)
+                            ->hiddenLabel(),
+
+
+
+                    ])->columns(5)
 
             ]);
     }
+
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\TournamentsRelationManager::make()
         ];
     }
 

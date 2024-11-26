@@ -157,7 +157,13 @@ class TournamentResource extends Resource
                     Tables\Columns\TextColumn::make('name')
                         ->weight(FontWeight::Bold)
                         ->alignCenter()
+                        ->badge(fn ($record) => now()->greaterThan($record->date_finish))
+                        ->color(fn ($record) => now()->greaterThan($record->date_finish) ? 'success' : '') // Цвет меняется в зависимости от завершенности
                         ->extraAttributes(['style' => 'margin-bottom: 30px'])
+                        ->getStateUsing(fn ($record) => now()->greaterThan($record->date_finish)
+                            ? "Турнир {$record->name} завершен"
+                            : $record->name
+                        )
                         ->searchable(),
 
                 ]),
@@ -252,7 +258,7 @@ class TournamentResource extends Resource
                             ->send();
                     }),
                 Tables\Actions\ViewAction::make()->hidden(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => now()->greaterThan($record->date_finish)),
                 Tables\Actions\DeleteAction::make(),
 
             ])

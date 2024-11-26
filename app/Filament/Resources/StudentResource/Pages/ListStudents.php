@@ -7,11 +7,14 @@ use App\Mail\InvitationStudent;
 use App\Mail\InvitationTrener;
 use App\Models\User;
 use App\Models\WaitConfirmationInvitation;
+use AxonC\FilamentCopyablePlaceholder\Forms\Components\CopyablePlaceholder;
 use Closure;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\HtmlString;
 
 class ListStudents extends ListRecords
 {
@@ -26,6 +29,15 @@ class ListStudents extends ListRecords
                 ->color('success')
                 ->visible(auth()->user()->role_id == User::Coach)
                 ->form([
+                    CopyablePlaceholder::make('response')
+                        ->label('Или скопируйте ссылку')
+                        ->content(url('/panel/register?ref=' . auth()->user()->ref_token))
+                        ->icon('heroicon-o-link')
+                        ->extraAttributes([
+                            'class' => 'flex border-md-2 gap-2',
+                        ])
+                        ->iconOnly(),
+
                     TextInput::make('email')
                         ->placeholder('Введите почту ученика или список через запятую')
                         ->rules([

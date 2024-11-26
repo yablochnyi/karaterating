@@ -4,12 +4,26 @@ namespace App\Filament\Resources\TournamentResource\Pages;
 
 use App\Filament\Resources\TournamentResource;
 use App\Http\Controllers\GeneratePuliController;
+use App\Models\Tournament;
+use App\Models\User;
 use Filament\Actions;
+use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\EditRecord;
 
 class EditTournament extends EditRecord
 {
+
     protected static string $resource = TournamentResource::class;
+
+    public function mount($record): void
+    {
+        parent::mount($record);
+
+        // Проверяем, если время вышло
+        if (now()->greaterThan($this->record->date_finish)) {
+            abort(403, 'Редактирование запрещено: время турнира истекло.');
+        }
+    }
 
     protected function getHeaderActions(): array
     {

@@ -51,4 +51,8 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'coach_id', 'id');
     }
 
+    public function tournaments()
+    {
+        return $this->belongsToMany(Tournament::class, 'student_tournaments', 'student_id', 'tournament_id');
+    }
 }

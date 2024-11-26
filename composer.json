@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "axonc/filament-copyable-placeholder": "^0.3.0",
         "barryvdh/laravel-dompdf": "^3.0",
         "blade-ui-kit/blade-heroicons": "^2.4",
         "davidhsianturi/blade-bootstrap-icons": "^1.5",
@@ -15,6 +16,7 @@
         "jeffgreco13/filament-breezy": "^2.4",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
         "mpdf/mpdf": "^8.2",
         "njxqlus/filament-lightbox": "^3.2",
         "resend/resend-php": "^0.14.0",

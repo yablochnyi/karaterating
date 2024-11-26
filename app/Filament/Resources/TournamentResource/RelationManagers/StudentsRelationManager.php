@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TournamentResource\RelationManagers;
 
+use App\Filament\Resources\StudentResource\Pages\ViewStudent;
 use App\Models\ListTournament;
 use App\Models\OrganizatePuliListStudent;
 use App\Models\TournamentStudentList;
@@ -11,11 +12,13 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 
 class StudentsRelationManager extends RelationManager
 {
@@ -45,12 +48,43 @@ class StudentsRelationManager extends RelationManager
                 Tables\Columns\ImageColumn::make('avatar')
                     ->circular()
                     ->label('Фотография'),
+                Tables\Columns\IconColumn::make('name')
+                    ->boolean()
+                    ->getStateUsing(function ($record) {
+                        return $record->is_success_passport &&
+                            $record->is_success_brand &&
+                            $record->is_success_insurance &&
+                            $record->is_success_iko_card &&
+                            $record->is_success_certificate &&
+                            $record->pivot->is_success_weight;
+                    })
+                    ->label(new HtmlString('Документы<br> и вес'))
+                    ->default(false),
+//
+//
+                CheckboxColumn::make('is_success_weight')
+                    ->label(new HtmlString('Подтверждение<br>веса'))
+                    ->toggleable()
+                    ->disabled(fn($livewire) => $livewire->getOwnerRecord()->organization_id != auth()->id())
+                    ->getStateUsing(function ($record) {
+                        return $record->pivot->is_success_weight;
+                    })
+                    ->afterStateUpdated(function ($state, $record) {
+                        $record->pivot->is_success_weight = $state;
+                        $record->pivot->save();
+                    })
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish)),
+
+
                 TextColumn::make('first_name')
                     ->searchable()
+                    ->formatStateUsing(function ($record) {
+                        return $record->first_name . ' ' . $record->last_name;
+                    })
                     ->label('Имя'),
-                TextColumn::make('last_name')
-                    ->searchable()
-                    ->label('Фамилия'),
+//                TextColumn::make('last_name')
+//                    ->searchable()
+//                    ->label('Фамилия'),
                 TextColumn::make('age')
                     ->label('Возраст')
                     ->suffix(' лет'),
@@ -73,11 +107,23 @@ class StudentsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->multiple()
                     ->preloadRecordSelect()
-                    ->recordTitle(fn (Model $record) => "{$record->first_name} {$record->last_name}")
-                    ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('coach_id', auth()->id()))
+                    ->recordTitle(fn(Model $record) => "{$record->first_name} {$record->last_name}")
+                    ->recordSelectOptionsQuery(fn(Builder $query, $livewire) => $query->where('coach_id', auth()->id())
+                        ->where(function ($subQuery) use ($livewire) {
+                            $parentRecord = $livewire->getOwnerRecord(); // Получаем $parentRecord из $livewire
+
+                            // Если выбрано только KY_up_to_8
+                            if ($parentRecord->KY_up_to_8 && !$parentRecord->KY_from_8) {
+                                $subQuery->whereRaw('CAST(REGEXP_REPLACE(rang, "[^0-9]", "") AS UNSIGNED) IN (0, 10, 9)');
+                            } // Если выбрано только KY_from_8
+                            elseif ($parentRecord->KY_from_8 && !$parentRecord->KY_up_to_8) {
+                                $subQuery->whereRaw('CAST(REGEXP_REPLACE(rang, "[^0-9]", "") AS UNSIGNED) IN (1, 2, 3, 4, 5, 6, 7, 8)');
+                            }
+                        })
+                    )
                     ->hidden(function ($livewire) {
                         $trener = TournamentTrener::where('tournament_id', $livewire->getOwnerRecord()->id)
-                        ->where('trener_id', Auth::id())->exists();
+                            ->where('trener_id', Auth::id())->exists();
                         return auth()->user()->role_id == User::Student ||
                             auth()->user()->role_id == User::Organization ||
                             !$trener;
@@ -110,7 +156,7 @@ class StudentsRelationManager extends RelationManager
                                         // Диапазон "до" определенного ранга (например, до 8 кю)
                                         ($list->rang_from <= $list->rang_to && $rankNumber >= $list->rang_to)
                                     )
-                                ){
+                                ) {
                                     TournamentStudentList::create(
                                         [
                                             'list_tournament_id' => $list->pivot->id,
@@ -147,18 +193,47 @@ class StudentsRelationManager extends RelationManager
                     })
             ])
             ->actions([
+                Tables\Actions\Action::make('view')
+                    ->label('Просмотр') // Текст кнопки
+                    ->icon('heroicon-o-eye') // Иконка (опционально)
+                    ->url(fn($record) => route('filament.admin.trener.resources.students.view', $record->id)) // Генерация URL
+                    ->openUrlInNewTab()
+                    ->visible(function ($record, $livewire) {
+                        // Получаем текущего пользователя
+                        $currentUser = auth()->user();
+
+                        // Кнопка видима, если:
+                        return (
+                            // Пользователь является организатором
+                            $livewire->getOwnerRecord()->organization_id == $currentUser->id
+                            // Или он является владельцем записи
+                            || $currentUser->id == $record->id
+                            // Или он — тренер для этой записи
+                            || $record->coach_id == $currentUser->id
+                        );
+                    }),
                 Tables\Actions\EditAction::make()
-                    ->hidden(auth()->user()->role_id == User::Student),
+                    ->hidden(function ($record) {
+                        return auth()->user()->role_id == User::Student || $record->coach_id != auth()->id();
+                    })->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish)),
                 Tables\Actions\DetachAction::make()
                     ->label(function ($record) {
-                        if (auth()->user()->id == $record->id) {
-                            return 'Отказаться';
-                        } else {
-                            return 'Открепить';
-                        }
+                        return auth()->user()->id == $record->id ? 'Отказаться' : 'Открепить';
                     })
-                    ->hidden(function ($record) {
-                        return auth()->user()->role_id == User::Student && auth()->user()->id != $record->id;
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
+                    ->visible(function ($record, $livewire) {
+                        // Получаем текущего пользователя
+                        $currentUser = auth()->user();
+
+                        // Кнопка видима, если:
+                        return (
+                            // Пользователь является организатором
+                            $livewire->getOwnerRecord()->organization_id == $currentUser->id
+                            // Или он является владельцем записи
+                            || $currentUser->id == $record->id
+                            // Или он — тренер для этой записи
+                            || $record->coach_id == $currentUser->id
+                        );
                     })
                     ->after(function ($record, $livewire) {
                         // Получить текущий турнир

@@ -49,17 +49,19 @@ class TrenersRelationManager extends RelationManager
                     ->multiple()
                     ->recordTitle(fn(Model $record) => "{$record->first_name} {$record->last_name}")
                     ->recordSelectOptionsQuery(fn(Builder $query) => $query->where('organization_id', auth()->id()))
-                    ->preloadRecordSelect(),
+                    ->preloadRecordSelect()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish)),
             ])
             ->actions([
 //                Tables\Actions\EditAction::make(),
                 Tables\Actions\DetachAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
                     ->visible(fn($record) => $record->organization_id === auth()->id()),
 //                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make(),
+                    Tables\Actions\DetachBulkAction::make()->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish)),
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
