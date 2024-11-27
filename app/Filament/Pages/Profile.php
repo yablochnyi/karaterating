@@ -197,40 +197,49 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
     {
         $student = Student::find(auth()->id()); // Получаем текущего авторизованного пользователя
 
+        if ($student) {
+            return $table
+                ->query($student->tournaments()->getQuery()) // Преобразуем связь в Builder
+                ->columns([
+                    TextColumn::make('name')
+                        ->label('Турнир'),
+                    TextColumn::make('wins_losses')
+                        ->label('Победы/Поражения')
+                        ->getStateUsing(fn () => $student->getWinsAndLosses()['wins'] . ' / ' . $student->getWinsAndLosses()['losses']), // Формируем текст "Победы / Поражения"
 
-        return $table
-            ->query($student->tournaments()->getQuery()) // Преобразуем связь в Builder
-            ->columns([
-                TextColumn::make('name')
-                    ->label('Турнир'),
-                TextColumn::make('wins_losses')
-                    ->label('Победы/Поражения')
-                    ->getStateUsing(fn () => $student->getWinsAndLosses()['wins'] . ' / ' . $student->getWinsAndLosses()['losses']), // Формируем текст "Победы / Поражения"
+                ])
+                ->filters([
+                    // Добавьте фильтры, если нужно
+                ])
+                ->actions([
+                    // Добавьте действия, если нужно
+                ])
+                ->bulkActions([
+                    // Добавьте массовые действия, если нужно
+                ]);
+        } else {
+            return $table->query(Tournament::query());
+        }
 
-            ])
-            ->filters([
-                // Добавьте фильтры, если нужно
-            ])
-            ->actions([
-                // Добавьте действия, если нужно
-            ])
-            ->bulkActions([
-                // Добавьте массовые действия, если нужно
-            ]);
     }
 
     public function productInfolist(Infolist $infolist): Infolist
     {
         $student = Student::find(auth()->id());
-        return $infolist
-            ->record($student)
-            ->schema([
-                BeltDisplay::make('rang')
-                    ->hiddenLabel(),
+        if ($student) {
+            return $infolist
+                ->record($student)
+                ->schema([
+                    BeltDisplay::make('rang')
+                        ->hiddenLabel(),
 
-                Rating::make('rating')
-                    ->hiddenLabel()
-            ]);
+                    Rating::make('rating')
+                        ->hiddenLabel()
+                ]);
+        } else {
+            return $infolist;
+        }
+
     }
 
     public function create(): void

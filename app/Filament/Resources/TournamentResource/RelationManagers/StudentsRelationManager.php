@@ -213,9 +213,9 @@ class StudentsRelationManager extends RelationManager
                         );
                     }),
                 Tables\Actions\EditAction::make()
-                    ->hidden(function ($record) {
-                        return auth()->user()->role_id == User::Student || $record->coach_id != auth()->id();
-                    })->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish)),
+                    ->hidden(function ($record, $livewire) {
+                        return auth()->user()->role_id == User::Student || $record->coach_id != auth()->id() || now()->greaterThan($livewire->getOwnerRecord()->date_finish);
+                    }),
                 Tables\Actions\DetachAction::make()
                     ->label(function ($record) {
                         return auth()->user()->id == $record->id ? 'Отказаться' : 'Открепить';

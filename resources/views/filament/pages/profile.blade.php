@@ -7,7 +7,9 @@
             Сохранить
         </button>
     </form>
+    @if(auth()->user()->role_id == \App\Models\User::Student)
+        {{ $this->productInfolist }}
+        {{ $this->table }}
+    @endif
 
-    {{ $this->productInfolist }}
-    {{ $this->table }}
 </x-filament-panels::page>
