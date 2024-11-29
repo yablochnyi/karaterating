@@ -50,18 +50,21 @@ class StudentsRelationManager extends RelationManager
                     ->label('Фотография'),
                 Tables\Columns\IconColumn::make('name')
                     ->boolean()
-                    ->getStateUsing(function ($record) {
+                    ->getStateUsing(function ($record, $livewire) {
+                        $parent = $livewire->getOwnerRecord();
+                        $dateFinish = $parent->date_finish;
+
                         return $record->is_success_passport &&
                             $record->is_success_brand &&
                             $record->is_success_insurance &&
-                            $record->is_success_iko_card &&
-                            $record->is_success_certificate &&
-                            $record->pivot->is_success_weight;
+                            $record->insurance_close_date &&
+                            $record->insurance_close_date > $dateFinish &&
+                            (!$record->is_iko_card_included_check || $record->is_success_iko_card) &&
+                            (!$record->is_certificate_included_check || $record->is_success_certificate);
                     })
-                    ->label(new HtmlString('Документы<br> и вес'))
+                    ->label(new HtmlString('Документы'))
                     ->default(false),
-//
-//
+
                 CheckboxColumn::make('is_success_weight')
                     ->label(new HtmlString('Подтверждение<br>веса'))
                     ->toggleable()

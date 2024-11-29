@@ -27,8 +27,7 @@ class ResetStudentMarks extends Command
      */
     public function handle()
     {
-        Log::debug(true);
-//        User::query()->update(['is_success_brand' => false]);
+        User::query()->update(['is_success_brand' => false]);
 
         $this->info('Подтверждения марок успешно сброшены у всех учеников.');
     }

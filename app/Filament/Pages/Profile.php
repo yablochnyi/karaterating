@@ -18,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Actions\Action;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Infolists\Infolist;
@@ -185,6 +186,7 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                                     ))
                                     ->required()
                                     ->columnSpanFull(),
+
 
                             ])->columns(5)
                     ])
