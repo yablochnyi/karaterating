@@ -155,23 +155,18 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                             ->schema([
                                 FileUpload::make('passport')
                                     ->image()
-                                    ->required()
                                     ->label('Будо паспорт'),
                                 FileUpload::make('brand')
                                     ->image()
-                                    ->required()
                                     ->label('Марка'),
                                 FileUpload::make('insurance')
                                     ->image()
-                                    ->required()
                                     ->label('Страховка'),
                                 FileUpload::make('iko_card')
                                     ->image()
-                                    ->required()
                                     ->label('Карта IKO'),
                                 FileUpload::make('certificate')
                                     ->image()
-                                    ->required()
                                     ->label('Сертификат'),
                                 Checkbox::make('success_politic')
                                     ->label(new HtmlString(
