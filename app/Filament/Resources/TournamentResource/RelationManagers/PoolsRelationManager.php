@@ -65,6 +65,7 @@ class PoolsRelationManager extends RelationManager
                 Tables\Actions\Action::make('download_lists')
                     ->label('Скачать пули')
                     ->color('warning')
+                    ->hidden()
                     ->url(fn($livewire): string => url('panel/tournament-student-puli-pdf/' . $livewire->getOwnerRecord()->id))
                     ->openUrlInNewTab(),
             ])

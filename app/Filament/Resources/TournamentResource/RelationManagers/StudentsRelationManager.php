@@ -209,8 +209,6 @@ class StudentsRelationManager extends RelationManager
                         return (
                             // Пользователь является организатором
                             $livewire->getOwnerRecord()->organization_id == $currentUser->id
-                            // Или он является владельцем записи
-                            || $currentUser->id == $record->id
                             // Или он — тренер для этой записи
                             || $record->coach_id == $currentUser->id
                         );
