@@ -125,13 +125,15 @@ class TrenerResource extends Resource
                                         TextEntry::make('weight')
                                             ->label('Вес'),
                                         TextEntry::make('birthday')
-                                            ->formatStateUsing(function (?string $state): HtmlString {
-                                                return new HtmlString(
-                                                    $state
-                                                        ? Carbon::parse($state)->format('d.m.Y')
-                                                        : '-'
-                                                );
-                                            })
+//                                            ->date()
+
+//                                            ->formatStateUsing(function ($state) {
+//                                                return
+//                                                    $state
+//                                                        ? Carbon::parse($state)->format('d.m.Y')
+//                                                        : '-'
+//                                                ;
+//                                            })
                                             ->label('Дата Рождения'),
                                         TextEntry::make('club')
                                             ->label('Клуб')

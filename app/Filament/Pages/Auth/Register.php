@@ -189,6 +189,9 @@ class Register extends BaseRegister
             ->email()
             ->required()
             ->maxLength(255)
+            ->validationMessages([
+                'unique' => 'Этот адрес электронной почты уже зарегистрирован',
+            ])
             ->unique($this->getUserModel());
     }
 
@@ -202,7 +205,9 @@ class Register extends BaseRegister
             ->rule(Password::default())
             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
             ->same('passwordConfirmation')
-            ->validationAttribute(__('filament-panels::pages/auth/register.form.password.validation_attribute'));
+            ->validationMessages([
+                'same' => 'Пароли не совпадают.',
+            ]);
     }
 
     protected function getPasswordConfirmationFormComponent(): Component
@@ -212,6 +217,9 @@ class Register extends BaseRegister
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
+            ->validationMessages([
+                'same' => 'Пароли не совпадают.',
+            ])
             ->dehydrated(false);
     }
 

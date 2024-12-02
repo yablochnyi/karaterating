@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\TrenerResource\RelationManagers;
 
 use App\Exports\StudentsExport;
+use App\Filament\Resources\StudentResource\Pages\ViewStudent;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -115,6 +117,23 @@ class StudentsRelationManager extends RelationManager
 
             ])
             ->actions([
+                Tables\Actions\Action::make('view')
+                    ->label('Просмотр') // Текст кнопки
+                    ->icon('heroicon-o-eye') // Иконка (опционально)
+                    ->url(fn($record) => route('filament.admin.trener.resources.students.view', $record->id)) // Генерация URL
+                    ->openUrlInNewTab()
+                    ->visible(function ($record, $livewire) {
+                        // Получаем текущего пользователя
+                        $currentUser = auth()->user();
+
+                        // Кнопка видима, если:
+                        return (
+                            // Пользователь является организатором
+                            $livewire->getOwnerRecord()->organization_id == $currentUser->id
+                            // Или он — тренер для этой записи
+                            || $record->coach_id == $currentUser->id
+                        );
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -124,4 +143,5 @@ class StudentsRelationManager extends RelationManager
                 ]),
             ]);
     }
+
 }

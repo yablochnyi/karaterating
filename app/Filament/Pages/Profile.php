@@ -110,7 +110,7 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                                     ->required(),
                                 DatePicker::make('birthday')
                                     ->label('Дата Рождения')
-                                    ->format('d.m.y')
+                                    ->format('d.m.Y')
                                     ->required(),
                                 Select::make('rang')
                                     ->prefix('Кю / Дан')
