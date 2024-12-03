@@ -255,6 +255,7 @@ class Register extends BaseRegister
     {
         return [
             $this->getRegisterFormAction(),
+            $this->loginAction()
         ];
     }
 
@@ -277,5 +278,13 @@ class Register extends BaseRegister
     protected function mutateFormDataBeforeRegister(array $data): array
     {
         return $data;
+    }
+
+    public function loginAction(): Action
+    {
+        return Action::make('login')
+            ->link()
+            ->label(__('filament-panels::pages/auth/register.actions.login.label'))
+            ->url(filament()->getLoginUrl());
     }
 }
