@@ -47,17 +47,22 @@ class StudentsRelationManager extends RelationManager
                     ->label('Фотография'),
                 TextColumn::make('first_name')
                     ->searchable()
+                    ->sortable()
                     ->label('Имя'),
                 TextColumn::make('last_name')
                     ->searchable()
+                    ->sortable()
                     ->label('Фамилия'),
                 TextColumn::make('age')
                     ->label('Возраст')
+                    ->sortable()
                     ->suffix(' лет'),
                 TextColumn::make('weight')
                     ->label('Вес')
+                    ->sortable()
                     ->suffix(' кг'),
                 TextColumn::make('rang')
+                    ->sortable()
                     ->label('Кю / Дан'),
                 TextColumn::make('coach_id')
                     ->formatStateUsing(function ($record) {
