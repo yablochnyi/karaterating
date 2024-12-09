@@ -205,6 +205,7 @@ class TournamentResource extends Resource
                             Tables\Columns\TextColumn::make('treners.club')
                                 ->badge()
                                 ->color('success')
+
                         ]),
 
                     ]),

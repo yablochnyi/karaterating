@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pool extends Model
 {
@@ -36,4 +37,10 @@ class Pool extends Model
     {
         return $this->belongsTo(ListTournament::class, 'list_id');
     }
+
+    public function tournament()
+    {
+        return $this->belongsTo(Tournament::class);
+    }
+
 }

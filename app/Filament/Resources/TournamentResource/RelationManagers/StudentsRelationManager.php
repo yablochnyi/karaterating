@@ -7,6 +7,7 @@ use App\Models\ListTournament;
 use App\Models\OrganizatePuliListStudent;
 use App\Models\TournamentStudentList;
 use App\Models\TournamentTrener;
+use App\Models\Trener;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,10 +15,12 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 
 class StudentsRelationManager extends RelationManager
@@ -80,7 +83,7 @@ class StudentsRelationManager extends RelationManager
 
 
                 TextColumn::make('first_name')
-                    ->searchable()
+                    ->searchable(['first_name', 'last_name'])
                     ->formatStateUsing(function ($record) {
                         return $record->first_name . ' ' . $record->last_name;
                     })
@@ -104,8 +107,20 @@ class StudentsRelationManager extends RelationManager
 
             ])
             ->filters([
-                //
+                SelectFilter::make('coach_id')
+                    ->label('Фильтр по тренеру')
+                    ->preload()
+                    ->searchable()
+                    ->options(fn () => Trener::query()
+                        ->select('id', 'first_name', 'last_name')
+                        ->get()
+                        ->mapWithKeys(fn ($trener) => [
+                            $trener->id => trim("{$trener->first_name} {$trener->last_name}") ?: 'Unknown',
+                        ])
+                        ->toArray()
+                    )
             ])
+
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->multiple()
@@ -146,6 +161,10 @@ class StudentsRelationManager extends RelationManager
 
                             // Удаляем все символы, кроме цифр
                             $rankNumber = filter_var($rankString, FILTER_SANITIZE_NUMBER_INT);
+
+                            if ($rankNumber == 0) {
+                                $rankNumber = 10;
+                            }
 
                             foreach ($lists as $list) {
                                 if (

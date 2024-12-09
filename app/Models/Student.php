@@ -37,14 +37,20 @@ class Student extends Model
 
     public function getWinsAndLosses()
     {
-        // Подсчет побед, когда текущий пользователь указан как `winner_id`
-        $wins = Pool::where('winner_id', $this->id)->count();
+        $wins = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('winner_id', $this->id)
+            ->count();
 
-        // Подсчет поражений, когда текущий пользователь участвовал, но не был победителем
-        $losses = Pool::where(function ($query) {
-            $query->where('student_id', $this->id)
-                ->orWhere('opponent_id', $this->id);
-        })->where('winner_id', '!=', $this->id)
+        $losses = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where(function ($query) {
+                $query->where('student_id', $this->id)
+                    ->orWhere('opponent_id', $this->id);
+            })
+            ->where('winner_id', '!=', $this->id)
             ->count();
 
         return [
@@ -53,38 +59,62 @@ class Student extends Model
         ];
     }
 
+
     public function getMedalsCount()
     {
-        $gold = Pool::where('winner_id', $this->id)
+        // Gold medals
+        $gold = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('winner_id', $this->id)
             ->where('type', 'final')
-            ->distinct('tournament_id') // Учитываем только уникальные турниры
+            ->distinct('tournament_id') // Уникальные турниры
             ->count('tournament_id');
 
-        $silver = Pool::where(function ($query) {
-            $query->where('student_id', $this->id)
-                ->orWhere('opponent_id', $this->id);
+        // Silver medals
+        $silver = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
         })
+            ->where(function ($query) {
+                $query->where('student_id', $this->id)
+                    ->orWhere('opponent_id', $this->id);
+            })
             ->where('type', 'final')
             ->whereColumn('winner_id', '!=', DB::raw($this->id))
-            ->distinct('tournament_id') // Учитываем только уникальные турниры
+            ->distinct('tournament_id') // Уникальные турниры
             ->count('tournament_id');
 
-        $bronze = Pool::where('winner_id', $this->id)
+        // Bronze medals
+        $bronze = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('winner_id', $this->id)
             ->where('type', '3rd')
-            ->distinct('tournament_id') // Учитываем только уникальные турниры
+            ->distinct('tournament_id') // Уникальные турниры
             ->count('tournament_id');
 
-        // Подсчёт для Round Robin
-        $roundRobinGold = Pool::where('winner_id_1rd_robbin', $this->id)
-            ->distinct('tournament_id') // Учитываем только уникальные турниры
+        // Round Robin Gold
+        $roundRobinGold = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('winner_id_1rd_robbin', $this->id)
+            ->distinct('tournament_id')
             ->count('tournament_id');
 
-        $roundRobinSilver = Pool::where('winner_id_2rd_robbin', $this->id)
-            ->distinct('tournament_id') // Учитываем только уникальные турниры
+        // Round Robin Silver
+        $roundRobinSilver = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('winner_id_2rd_robbin', $this->id)
+            ->distinct('tournament_id')
             ->count('tournament_id');
 
-        $roundRobinBronze = Pool::where('winner_id_3rd_robbin', $this->id)
-            ->distinct('tournament_id') // Учитываем только уникальные турниры
+        // Round Robin Bronze
+        $roundRobinBronze = Pool::whereHas('tournament', function ($query) {
+            $query->whereNull('deleted_at');
+        })
+            ->where('winner_id_3rd_robbin', $this->id)
+            ->distinct('tournament_id')
             ->count('tournament_id');
 
         return [
@@ -93,4 +123,5 @@ class Student extends Model
             'bronze' => $bronze + $roundRobinBronze,
         ];
     }
+
 }

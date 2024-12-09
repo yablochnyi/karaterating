@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Турнирная сетка</title>
 </head>
 <body>
@@ -156,64 +157,65 @@
 
 
                 <!-- Блок для боя за третье место для текущего list_id -->
-
-            </div>
-            @if($tournament->fight_for_third_place)
-                @php
-                    $thirdPlacePool = $poolsByList->where('type', '3rd')->first();
-                @endphp
-                @if($thirdPlacePool)
-                    <h3 class="third-place-title">Бой за 3 место</h3>
+                @if($tournament->fight_for_third_place)
                     @php
-                        // Проверка, есть ли оба участника в бою за 3 место
-                        $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent && $tournament->organization_id == auth()->id();
+                        $thirdPlacePool = $poolsByList->where('type', '3rd')->first();
                     @endphp
+                    @if($thirdPlacePool)
+                        <h3 class="third-place-title">Бой за 3 место</h3>
+                        @php
+                            // Проверка, есть ли оба участника в бою за 3 место
+                            $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent && $tournament->organization_id == auth()->id();
+                        @endphp
 
-                    <div class="match third-place"
-                         @if($isClickable) wire:click="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif
-                         style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
+                        <div class="match third-place"
+                             @if($isClickable) wire:click="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif
+                             style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
 
-                        <div class="match-top team">
-                            <span class="image"></span>
-                            <span class="seed">3rd</span>
-                            <span class="name">
+                            <div class="match-top team">
+                                <span class="image"></span>
+                                <span class="seed">3rd</span>
+                                <span class="name">
                         {{ $thirdPlacePool->student ? $thirdPlacePool->student->first_name . ' ' . $thirdPlacePool->student->last_name : 'TBD' }}<br>
                         {{ $thirdPlacePool->student ? ($thirdPlacePool->student->club ?? $thirdPlacePool->student->trener->club) : null }}
 
                     </span>
-                            <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
+                                <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
                                 @if($thirdPlacePool->winner_id === null)
-                                    <x-bi-trophy/>
-                                @elseif($thirdPlacePool->student_id == $thirdPlacePool->winner_id)
-                                    <span style="font-size: 24px;">🥉</span>
-                                @endif
+                                        <x-bi-trophy/>
+                                    @elseif($thirdPlacePool->student_id == $thirdPlacePool->winner_id)
+                                        <span style="font-size: 24px;">🥉</span>
+                                    @endif
                     </span>
-                        </div>
+                            </div>
 
-                        <div class="score-input-container">
-                            <input type="text" wire:model.live="tatami_and_fight_number.{{ $thirdPlacePool->id }}"
-                                   class="fight-score-input"
-                                   placeholder="0">
-                        </div>
+                            <div class="score-input-container">
+                                <input type="text" wire:model.live="tatami_and_fight_number.{{ $thirdPlacePool->id }}"
+                                       class="fight-score-input"
+                                       placeholder="0">
+                            </div>
 
-                        <div class="match-bottom team">
-                            <span class="image"></span>
-                            <span class="seed">3rd</span>
-                            <span class="name">
+                            <div class="match-bottom team">
+                                <span class="image"></span>
+                                <span class="seed">3rd</span>
+                                <span class="name">
                         {{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->first_name . ' ' . $thirdPlacePool->opponent->last_name : 'TBD' }}<br>
                         {{ $thirdPlacePool->opponent ? ($thirdPlacePool->opponent->club ?? $thirdPlacePool->opponent->trener->club) : null }}
                     </span>
-                            <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
+                                <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
                                  @if($thirdPlacePool->winner_id === null)
-                                    <x-bi-trophy/>
-                                @elseif($thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
-                                    <span style="font-size: 24px;">🥉</span>
-                                @endif
+                                        <x-bi-trophy/>
+                                    @elseif($thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
+                                        <span style="font-size: 24px;">🥉</span>
+                                    @endif
                     </span>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endif
-            @endif
+            </div>
+
+
         </div>
     @endforeach
 
@@ -470,6 +472,46 @@
 
     .theme-dark .match .score {
         font-size: 14px;
+    }
+    .bracket {
+        transform: scale(0.8); /* Scale down the entire bracket */
+        transform-origin: top left; /* Maintain alignment */
+        margin: 0 auto;
+    }
+
+    .match {
+        height: 100px; /* Reduce match height */
+        margin: 10px 12px; /* Reduce margin */
+        min-width: 180px; /* Narrower match boxes */
+    }
+
+    .match .team {
+        font-size: 12px; /* Smaller font size for team names */
+        height: 50%; /* Adjust height */
+    }
+
+    .match .score {
+        font-size: 12px; /* Smaller score font */
+    }
+
+    .match-lines .line.one {
+        width: 8px; /* Narrower lines */
+    }
+
+    .match-lines .line.two {
+        height: 50px; /* Reduce spacing between rounds */
+    }
+
+    .column {
+        min-height: auto; /* Allow flexible column height */
+    }
+
+    .third-place-title, .title {
+        font-size: 14px; /* Reduce title font size */
+    }
+
+    .page-break {
+        transform: scale(0.9); /* Slightly shrink entire content on page */
     }
 
 </style>
