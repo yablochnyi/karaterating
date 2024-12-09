@@ -112,10 +112,20 @@ class StudentResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()->hidden(),
                 Tables\Actions\EditAction::make()->visible(auth()->user()->role_id == User::Coach),
+                Tables\Actions\Action::make('delete')
+                    ->requiresConfirmation()
+                    ->label('Открепить')
+                    ->color('danger')
+                    ->icon('heroicon-o-trash')
+                    ->action(function ($record) {
+                        $record->coach_id = null;
+                        $record->save();
+                    })
+                    ->visible(auth()->user()->role_id == User::Coach),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->visible(auth()->user()->role_id == User::Coach),
+//                    Tables\Actions\DeleteBulkAction::make()->visible(auth()->user()->role_id == User::Coach),
                 ]),
             ]);
     }
