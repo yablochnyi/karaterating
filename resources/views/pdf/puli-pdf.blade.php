@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Турнирная сетка</title>
 </head>
 <body>
 <div class="theme theme-dark " wire:ignore>
     @foreach($tournament->pools->groupBy('list_id') as $listId => $poolsByList)
 
-        <div class="page-break">
+        <div class="page-break" style="max-height: 1600px">
             @php
                 $titleList = $poolsByList->first()->listTournament->templateStudentList->name ?? 'Default Title';
             @endphp
@@ -157,65 +156,64 @@
 
 
                 <!-- Блок для боя за третье место для текущего list_id -->
-                @if($tournament->fight_for_third_place)
+
+            </div>
+            @if($tournament->fight_for_third_place)
+                @php
+                    $thirdPlacePool = $poolsByList->where('type', '3rd')->first();
+                @endphp
+                @if($thirdPlacePool)
+                    <h3 class="third-place-title">Бой за 3 место</h3>
                     @php
-                        $thirdPlacePool = $poolsByList->where('type', '3rd')->first();
+                        // Проверка, есть ли оба участника в бою за 3 место
+                        $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent && $tournament->organization_id == auth()->id();
                     @endphp
-                    @if($thirdPlacePool)
-                        <h3 class="third-place-title">Бой за 3 место</h3>
-                        @php
-                            // Проверка, есть ли оба участника в бою за 3 место
-                            $isClickable = $thirdPlacePool->student && $thirdPlacePool->opponent && $tournament->organization_id == auth()->id();
-                        @endphp
 
-                        <div class="match third-place"
-                             @if($isClickable) wire:click="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif
-                             style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
+                    <div class="match third-place"
+                         @if($isClickable) wire:click="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif
+                         style="cursor: {{ $isClickable ? 'pointer' : 'default' }}">
 
-                            <div class="match-top team">
-                                <span class="image"></span>
-                                <span class="seed">3rd</span>
-                                <span class="name">
+                        <div class="match-top team">
+                            <span class="image"></span>
+                            <span class="seed">3rd</span>
+                            <span class="name">
                         {{ $thirdPlacePool->student ? $thirdPlacePool->student->first_name . ' ' . $thirdPlacePool->student->last_name : 'TBD' }}<br>
                         {{ $thirdPlacePool->student ? ($thirdPlacePool->student->club ?? $thirdPlacePool->student->trener->club) : null }}
 
                     </span>
-                                <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
+                            <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
                                 @if($thirdPlacePool->winner_id === null)
-                                        <x-bi-trophy/>
-                                    @elseif($thirdPlacePool->student_id == $thirdPlacePool->winner_id)
-                                        <span style="font-size: 24px;">🥉</span>
-                                    @endif
+                                    <x-bi-trophy/>
+                                @elseif($thirdPlacePool->student_id == $thirdPlacePool->winner_id)
+                                    <span style="font-size: 24px;">🥉</span>
+                                @endif
                     </span>
-                            </div>
+                        </div>
 
-                            <div class="score-input-container">
-                                <input type="text" wire:model.live="tatami_and_fight_number.{{ $thirdPlacePool->id }}"
-                                       class="fight-score-input"
-                                       placeholder="0">
-                            </div>
+                        <div class="score-input-container">
+                            <input type="text" wire:model.live="tatami_and_fight_number.{{ $thirdPlacePool->id }}"
+                                   class="fight-score-input"
+                                   placeholder="0">
+                        </div>
 
-                            <div class="match-bottom team">
-                                <span class="image"></span>
-                                <span class="seed">3rd</span>
-                                <span class="name">
+                        <div class="match-bottom team">
+                            <span class="image"></span>
+                            <span class="seed">3rd</span>
+                            <span class="name">
                         {{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->first_name . ' ' . $thirdPlacePool->opponent->last_name : 'TBD' }}<br>
                         {{ $thirdPlacePool->opponent ? ($thirdPlacePool->opponent->club ?? $thirdPlacePool->opponent->trener->club) : null }}
                     </span>
-                                <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
+                            <span class="score" style="{{ $thirdPlacePool->type == '3rd' ? 'color: #cd7f32;' : '' }}">
                                  @if($thirdPlacePool->winner_id === null)
-                                        <x-bi-trophy/>
-                                    @elseif($thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
-                                        <span style="font-size: 24px;">🥉</span>
-                                    @endif
+                                    <x-bi-trophy/>
+                                @elseif($thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
+                                    <span style="font-size: 24px;">🥉</span>
+                                @endif
                     </span>
-                            </div>
                         </div>
-                    @endif
+                    </div>
                 @endif
-            </div>
-
-
+            @endif
         </div>
     @endforeach
 
@@ -248,13 +246,13 @@
     }
 
     .page-break {
-        page-break-before: always; /* Новый блок всегда с новой страницы */
+        page-break-before: always; /* Ensures new page for print */
         width: 100%;
         height: auto;
         margin: 0 auto;
-        transform-origin: top left; /* Масштабирование сверху слева */
-        position: relative;
+        transform-origin: top left;
         overflow: hidden;
+        position: relative;
     }
 
     .title {
@@ -291,11 +289,20 @@
     /*    padding: 40px;*/
     /*    margin: 5px;*/
     /*}*/
+    /*.bracket {*/
+    /*    display: flex;*/
+    /*    flex-direction: row;*/
+    /*    position: relative;*/
+    /*}*/
     .bracket {
         display: flex;
         flex-direction: row;
-        position: relative;
+        transform: scale(0.8); /* Scale down to 80% of its size */
+        transform-origin: top center; /* Ensure scaling starts from the top */
+        width: 100%; /* Make it responsive to fit the page */
+        margin: 0 auto; /* Center align */
     }
+
 
     .column {
         display: flex;
@@ -309,10 +316,13 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        min-width: 240px;
+        /*min-width: 240px;*/
         max-width: 240px;
-        height: 150px;
-        margin: 35px 24px 12px 0;
+        /*height: 150px;*/
+        /*margin: 35px 24px 12px 0;*/
+        min-width: 200px; /* Adjust match box size */
+        height: 100px; /* Adjust height */
+        margin: 20px 10px; /* Reduce spacing */
     }
 
     .match .match-top {
@@ -361,6 +371,72 @@
         background: red;
         position: absolute;
     }
+    @media print {
+        .page-break {
+            width: 100%;
+            height: auto;
+            transform: scale(0.8);
+        }
+    }
+    .page-break {
+        page-break-before: always; /* Force new page for print */
+        width: 100%;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bracket {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap; /* Prevent wrapping */
+        width: 100%; /* Ensure full width usage */
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+        transform-origin: top center;
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        min-height: 100%;
+        margin-right: 10px; /* Reduce column gaps */
+    }
+
+    .match {
+        min-width: 180px; /* Compact match boxes */
+        height: 80px; /* Reduce box height */
+        margin: 10px 5px; /* Tighten spacing */
+        position: relative;
+        box-sizing: border-box;
+    }
+
+    .match-lines .line.one {
+        height: 1px;
+        width: 10px; /* Shorten connector lines */
+    }
+
+    .match-lines .line.two {
+        height: 40px; /* Reduce vertical connector */
+    }
+
+    .match .team {
+        border: 1px solid #ccc;
+        padding: 4px;
+        font-size: 12px; /* Smaller font for compact design */
+        box-sizing: border-box;
+    }
+
+    @media print {
+        .page-break {
+            page-break-inside: avoid; /* Prevent splitting */
+        }
+        .bracket {
+            transform: scale(0.9); /* Adjust for print scale */
+        }
+    }
 
     .match-lines .line.one {
         height: 1px;
@@ -368,7 +444,7 @@
     }
 
     .match-lines .line.two {
-        height: 100px;
+        height: 50px;
         width: 1px;
         left: 11px;
     }
@@ -472,46 +548,6 @@
 
     .theme-dark .match .score {
         font-size: 14px;
-    }
-    .bracket {
-        transform: scale(0.8); /* Scale down the entire bracket */
-        transform-origin: top left; /* Maintain alignment */
-        margin: 0 auto;
-    }
-
-    .match {
-        height: 100px; /* Reduce match height */
-        margin: 10px 12px; /* Reduce margin */
-        min-width: 180px; /* Narrower match boxes */
-    }
-
-    .match .team {
-        font-size: 12px; /* Smaller font size for team names */
-        height: 50%; /* Adjust height */
-    }
-
-    .match .score {
-        font-size: 12px; /* Smaller score font */
-    }
-
-    .match-lines .line.one {
-        width: 8px; /* Narrower lines */
-    }
-
-    .match-lines .line.two {
-        height: 50px; /* Reduce spacing between rounds */
-    }
-
-    .column {
-        min-height: auto; /* Allow flexible column height */
-    }
-
-    .third-place-title, .title {
-        font-size: 14px; /* Reduce title font size */
-    }
-
-    .page-break {
-        transform: scale(0.9); /* Slightly shrink entire content on page */
     }
 
 </style>

@@ -22,16 +22,16 @@ class GeneratePDFPuliController extends Controller
         // Группируем пулы по list_id
         $poolsGroupedByListId = $tournament->pools->groupBy('list_id');
 
-        return view('pdf.puli-pdf', [
-            'tournament' => $tournament,
-            'poolsGroupedByListId' => $poolsGroupedByListId
-        ]);
-        // Передаем сгруппированные данные в шаблон
-//        return Pdf::view('pdf.puli-pdf', [
+//        return view('pdf.puli-pdf', [
 //            'tournament' => $tournament,
 //            'poolsGroupedByListId' => $poolsGroupedByListId
-//        ])->format('a4')
-//            ->name('your-invoice.pdf');
+//        ]);
+        // Передаем сгруппированные данные в шаблон
+        return Pdf::view('pdf.puli-pdf', [
+            'tournament' => $tournament,
+            'poolsGroupedByListId' => $poolsGroupedByListId
+        ])->format('a4')
+            ->name('your-invoice.pdf');
 
 
     }

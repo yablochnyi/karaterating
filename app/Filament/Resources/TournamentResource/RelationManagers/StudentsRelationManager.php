@@ -125,6 +125,7 @@ class StudentsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->multiple()
                     ->preloadRecordSelect()
+                    ->recordSelectSearchColumns(['first_name', 'last_name'])
                     ->recordTitle(fn(Model $record) => "{$record->first_name} {$record->last_name}")
                     ->recordSelectOptionsQuery(fn(Builder $query, $livewire) => $query->where('coach_id', auth()->id())
                         ->where(function ($subQuery) use ($livewire) {

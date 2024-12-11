@@ -178,7 +178,7 @@ class TournamentResource extends Resource
                                 ->description('Дата проведения турнира', position: 'above')
                                 ->icon('heroicon-o-calendar-date-range')
                                 ->weight(FontWeight::Bold),
-                            Tables\Columns\TextColumn::make('date')
+                            Tables\Columns\TextColumn::make('date_finish')
                                 ->description('Дата завершения турнира', position: 'above')
                                 ->icon('heroicon-o-calendar-date-range')
                                 ->weight(FontWeight::Bold),
