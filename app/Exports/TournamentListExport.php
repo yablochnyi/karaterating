@@ -50,8 +50,8 @@ class TournamentListExport implements FromCollection, WithEvents, WithStyles
                     '0',
                     $studentList->student->rang,
                     $studentList->student->weight . ' кг',
-                    $studentList->student->trener->club,
-                    $studentList->student->trener->last_name . ' ' . mb_substr($studentList->student->trener->first_name, 0, 1) . '.',
+                    $studentList->student?->trener->club,
+                    $studentList->student?->trener->last_name . ' ' . mb_substr($studentList->student?->trener->first_name, 0, 1) . '.',
                 ];
             }
         }

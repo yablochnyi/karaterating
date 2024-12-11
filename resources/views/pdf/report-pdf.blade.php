@@ -75,8 +75,8 @@
                 <td>0</td>
                 <td>{{ $studentList->student->rang }}</td>
                 <td>{{ $studentList->student->weight }} кг</td>
-                <td>{{ $studentList->student->trener->club }}</td>
-                <td>{{ $studentList->student->trener->last_name }} {{ mb_substr($studentList->student->trener->first_name, 0, 1) }}.</td>
+                <td>{{ $studentList->student?->trener->club }}</td>
+                <td>{{ $studentList->student?->trener->last_name }} {{ mb_substr($studentList->student?->trener->first_name, 0, 1) }}.</td>
             </tr>
         @endforeach
         </tbody>
