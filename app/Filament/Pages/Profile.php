@@ -44,18 +44,19 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
     protected static string $view = 'filament.pages.profile';
 
     public ?array $data = [];
+    public $user;
 
     public function mount(): void
     {
-        $user = Auth::user();
+        $this->user = Auth::user();
 
         if (Auth::user()->role_id === User::Coach)
         {
-            $this->form->fill($user->toArray());
+            $this->form->fill($this->user->toArray());
         } else {
             $this->form->fill(array_merge(
-                $user->toArray(),
-                ['club' => $user->trener->club ?? null]
+                $this->user->toArray(),
+                ['club' => $this->user->trener->club ?? null]
             ));
         }
     }
@@ -97,6 +98,11 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                                     ->hiddenLabel()
                                     ->required()
                                     ->integer()
+                                    ->disabled(fn () =>
+                                    $this->user->tournaments()
+                                        ->where('date_finish', '>', now())
+                                        ->exists()
+                                    )
                                     ->postfix('кг'),
                                 TextInput::make('age')
                                     ->prefix('Возраст')

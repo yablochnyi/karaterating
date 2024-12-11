@@ -1,5 +1,5 @@
 <x-dynamic-component :component="$getEntryWrapperView()" :entry="$entry">
     <div>
-        {{ $getRecord()->trener->club }}
+        {{ $getRecord()?->trener?->club }}
     </div>
 </x-dynamic-component>
