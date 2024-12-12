@@ -1,0 +1,222 @@
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Righteous&display=swap");
+
+@page {
+    size: A4;
+    margin: 0;
+}
+@media print {
+    html,
+    body {
+        width: 210mm;
+        height: 297mm;
+    }
+    /* ... the rest of the rules ... */
+}
+
+page[size="A4"] {
+    background: white;
+    width: 21cm;
+    height: 29.7cm;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 0.5cm;
+    box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+}
+@media print {
+    body,
+    page[size="A4"] {
+        margin: 0;
+        box-shadow: 0;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #fff;
+}
+
+
+.tournament_name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tournament_name > h1 {
+    font-size: 28px;
+    text-align: center;
+    font-family: "Urbanist", sans-serif;
+    font-weight: 900;
+}
+
+.tournament_name > h2 {
+    font-size: 20px;
+    font-weight: 500;
+    font-family: "Urbanist", sans-serif;
+}
+
+.tournament {
+    position: relative;
+    min-height: 300px;
+}
+
+.tournament__grid {
+    font-size: 0;
+    line-height: 0;
+    display: flex;
+    align-items: stretch;
+    min-height: 400px;
+    font-family: "Urbanist", sans-serif;
+}
+
+.tournament__round {
+    position: relative;
+    flex: 1 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tournament__match {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0;
+    align-items: center;
+    min-height: 64.3px;
+}
+
+.tournament__match:first-child {
+    margin: 0 !important;
+}
+
+.tournament__round--first-round .tournament__match {
+    padding-left: 0;
+}
+
+.tournament__round--winner .tournament__match {
+    padding-right: 0;
+    height: 32px;
+}
+
+.tournament__match:after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 2px;
+    background: rgba(0, 0, 0, 0.2);
+    top: 25%;
+    bottom: 25%;
+}
+
+.tournament__round--winner .tournament__match:after,
+.tournament__round--end-point .tournament__match:after {
+    display: none;
+}
+
+.tournament__match__team {
+    font-size: 7px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    color: #000;
+    text-decoration: none;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.2);
+    display: block;
+    position: relative;
+    width: 120px;
+    height: 21px;
+    line-height: 22px;
+    padding-left: 4px;
+    margin: auto;
+    display: flex;
+}
+
+.tournament__match__team > h4{
+    padding-top: 4px;
+}
+
+.tournament__match__team__info {
+    position: absolute;
+    display: flex;
+    gap: 2px;
+    top: -5px;
+}
+
+.tournament__match__team__info > p:last-child {
+    font-size: 12px;
+    left: 15px;
+}
+
+.tournament__match__team__info > p:nth-child(2) {
+    font-size: 8px;
+}
+
+.tournament__match__team__number {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    bottom: 50%;
+    right: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #000;
+    background-color: red;
+}
+
+.tournament__match__team:before,
+.tournament__match__team:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 999px;
+    height: 2px;
+    margin-top: -1px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.tournament__match__team:after {
+    left: 100%;
+}
+
+.tournament__round:last-child .tournament__match__team:after,
+.tournament__round--end-point .tournament__match__team:after {
+    display: none;
+}
+
+.tournament__match__team:before {
+    right: 100%;
+}
+
+.tournament__round:first-child .tournament__match__team:before {
+    display: none;
+}
+
+.third_place {
+    position: absolute;
+    right: 210px;
+    top: 495px;
+}
+
+.third_place__match:after {
+    display: none;
+}
+
+.third_place_text {
+    position: absolute;
+    top: 470px;
+    right: 190px;
+}
+
+.third_place_text > p {
+    color: #000;
+    font-size: 20px !important;
+    font-weight: 600;
+}
