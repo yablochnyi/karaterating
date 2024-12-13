@@ -388,7 +388,7 @@
 
                                     </div>
                                 </a>
-                                <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                <input type="text" wire:model.live="tatami_and_fight_number.{{ $thirdPlacePool->id }}"
                                        class="tournament__match__team__number"
                                        placeholder="0"
                                        @if($tournament->organization_id != auth()->id()) disabled @endif

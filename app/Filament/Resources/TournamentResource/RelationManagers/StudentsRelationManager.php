@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TournamentResource\RelationManagers;
 use App\Filament\Resources\StudentResource\Pages\ViewStudent;
 use App\Models\ListTournament;
 use App\Models\OrganizatePuliListStudent;
+use App\Models\Pool;
 use App\Models\TournamentStudentList;
 use App\Models\TournamentTrener;
 use App\Models\Trener;
@@ -270,6 +271,20 @@ class StudentsRelationManager extends RelationManager
                                 ->where('list_tournament_id', $listTournament->id)
                                 ->delete();
                         }
+
+                        $pools = Pool::where('tournament_id', $tournamentId)->get();
+
+                        foreach ($pools as $pool) {
+                            if ($pool->student_id === $record->id) {
+                                $pool->student_id = null;
+                            }
+                            if ($pool->opponent_id === $record->id) {
+                                $pool->opponent_id = null;
+                            }
+
+                            $pool->save();
+                        }
+
                     })
             ])
             ->bulkActions([
