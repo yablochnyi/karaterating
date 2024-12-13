@@ -124,4 +124,17 @@ class Student extends Model
         ];
     }
 
+    public function getIsDocumentsValidAttribute(): bool
+    {
+        $dateFinish = $this->parent->date_finish;
+
+        return $this->is_success_passport &&
+            $this->is_success_brand &&
+            $this->is_success_insurance &&
+            $this->insurance_close_date &&
+            $this->insurance_close_date > $dateFinish &&
+            (!$this->is_iko_card_included_check || $this->is_success_iko_card) &&
+            (!$this->is_certificate_included_check || $this->is_success_certificate);
+    }
+
 }

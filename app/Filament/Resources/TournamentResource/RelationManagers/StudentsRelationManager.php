@@ -47,6 +47,7 @@ class StudentsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
                     ->circular()
@@ -120,7 +121,6 @@ class StudentsRelationManager extends RelationManager
                         ->toArray()
                     )
             ])
-
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->multiple()

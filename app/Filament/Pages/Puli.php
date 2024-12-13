@@ -335,7 +335,7 @@ class Puli extends Page implements HasForms, HasActions
                 $pool2 = $pool2Matches->first();
 
                 $participant1Position = '';
-// Проверяем, где находится первый участник
+                // Проверяем, где находится первый участник
                 if ($pool1['student_id'] == $participant1) {
                     // Участник 1 — студент
                     $participant1Position = 'student_id';
@@ -345,7 +345,7 @@ class Puli extends Page implements HasForms, HasActions
                 }
 
                 $participant2Position = 'student_id';
-// Проверяем, где находится второй участник
+                // Проверяем, где находится второй участник
                 if ($pool2['student_id'] == $participant2) {
                     // Участник 2 — студент
                     $participant2Position = 'student_id';

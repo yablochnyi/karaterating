@@ -222,8 +222,8 @@ class GeneratePuliController extends Controller
                 'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
-                'student_id' => $remainingStudents[2]->id, // Student 5
-                'opponent_id' => null,
+                'student_id' => null, // Student 5
+                'opponent_id' => $remainingStudents[2]->id,
                 'round' => $round,
                 'position_in_round' => $position++,
                 'created_at' => now(),
@@ -321,8 +321,8 @@ class GeneratePuliController extends Controller
                 'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
-                'student_id' => $studentsBypassFirstRound[0]->id, // Student 5
-                'opponent_id' => null,
+                'student_id' => null, // Student 5
+                'opponent_id' => $studentsBypassFirstRound[0]->id,
                 'round' => $round,
                 'position_in_round' => $position++,
                 'created_at' => now(),
@@ -334,8 +334,8 @@ class GeneratePuliController extends Controller
                 'type' => '1/2',
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
-                'student_id' => null, // Student 6
-                'opponent_id' => $studentsBypassFirstRound[1]->id,
+                'student_id' => $studentsBypassFirstRound[1]->id, // Student 6
+                'opponent_id' => null,
                 'round' => $round,
                 'position_in_round' => $position++,
                 'created_at' => now(),
@@ -429,8 +429,8 @@ class GeneratePuliController extends Controller
             Pool::create([
                 'tournament_id' => $tournamentId,
                 'list_id' => $listTournamentId,
-                'student_id' => null,
-                'opponent_id' => $orderedStudents[6]->id, // Студент 7
+                'student_id' => $orderedStudents[6]->id,
+                'opponent_id' => null, // Студент 7
                 'round' => $round,
                 'position_in_round' => $position++,
                 'created_at' => now(),
@@ -559,7 +559,7 @@ class GeneratePuliController extends Controller
             // Второй раунд
             $round = 2;
             $position = 1;
-            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => $remainingStudents[0]->id, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position++]);
+            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => $remainingStudents[0]->id, 'round' => $round, 'position_in_round' => $position++]);
 
             for ($i = 1; $i < 4; $i++) {
                 $this->scheduleFight($remainingStudents[$i * 2 - 1], $remainingStudents[$i * 2], $tournamentId, $listTournamentId, $round, $position++);
@@ -584,11 +584,12 @@ class GeneratePuliController extends Controller
 
             $round = 2;
             $position = 1;
-            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => $remainingStudents[0]->id, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position++]);
+            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => $remainingStudents[0]->id, 'round' => $round, 'position_in_round' => $position++]);
 
             $this->scheduleFight($remainingStudents[1], $remainingStudents[2], $tournamentId, $listTournamentId, $round, $position++);
 
-            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => $remainingStudents[3]->id, 'round' => $round, 'position_in_round' => $position++]);
+
+            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => $remainingStudents[3]->id, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position++]);
 
             $this->scheduleFight($remainingStudents[4], $remainingStudents[5], $tournamentId, $listTournamentId, $round, $position++);
 
@@ -615,9 +616,9 @@ class GeneratePuliController extends Controller
             $position = 1;
 
             // Первый, второй, и третий бои второго раунда с одним участником
-            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => $remainingStudents[0]->id, 'round' => $round, 'position_in_round' => $position++]);
-            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => $remainingStudents[1]->id, 'round' => $round, 'position_in_round' => $position++]);
-            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => null, 'opponent_id' => $remainingStudents[2]->id, 'round' => $round, 'position_in_round' => $position++]);
+            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => $remainingStudents[0]->id, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position++]);
+            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => $remainingStudents[1]->id, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position++]);
+            Pool::create(['tournament_id' => $tournamentId, 'list_id' => $listTournamentId, 'student_id' => $remainingStudents[2]->id, 'opponent_id' => null, 'round' => $round, 'position_in_round' => $position++]);
 
             // Четвертый бой с двумя оставшимися участниками
             $this->scheduleFight($remainingStudents[3], $remainingStudents[4], $tournamentId, $listTournamentId, $round, $position++);
@@ -1799,7 +1800,6 @@ class GeneratePuliController extends Controller
             $position = 1;
         }
     }
-
 
     protected function scheduleFight($student1, $student2, $tournamentId, $listTournamentId, $round = 1, $position = 1, $type = null)
     {

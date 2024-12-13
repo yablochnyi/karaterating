@@ -49,9 +49,9 @@
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
-                                            <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->student ? $pool->student->last_name . ' ' . $pool->student->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
                                             @endif
@@ -69,14 +69,18 @@
                                             @endif
                                         </div>
                                     </a>
-                                    <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
+                                    <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                           class="tournament__match__team__number"
+                                           placeholder="0"
+                                           @if($tournament->organization_id != auth()->id()) disabled @endif
+                                    >
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
-                                            <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->opponent ? $pool->opponent->last_name . ' ' . $pool->opponent->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->opponent_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
                                             @endif
@@ -109,27 +113,49 @@
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
-                                            <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->student ? $pool->student->last_name . ' ' . $pool->student->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+                                            @if($pool->type == 'Round Robin')
+                                                @if($pool->student_id == $pool->winner_id_1rd_robbin)
+                                                    <span style="font-size: 20px; color: gold;">🥇</span>
+                                                @elseif($pool->student_id == $pool->winner_id_2rd_robbin)
+                                                    <span style="font-size: 20px; color: silver;">🥈</span>
+                                                @elseif($pool->student_id == $pool->winner_id_3rd_robbin)
+                                                    <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                                @endif
                                             @endif
                                             @if($pool->winner_id != null && $pool->student_id === $pool->winner_id)
                                                 <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
                                             @endif
                                         </div>
                                     </a>
-                                    <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
+                                    <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                           class="tournament__match__team__number"
+                                           placeholder="0"
+                                           @if($tournament->organization_id != auth()->id()) disabled @endif
+                                    >
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
-                                            <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->opponent ? $pool->opponent->last_name . ' ' . $pool->opponent->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->opponent_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+                                            @if($pool->type == 'Round Robin')
+                                                @if($pool->opponent_id == $pool->winner_id_1rd_robbin)
+                                                    <span style="font-size: 20px; color: gold;">🥇</span>
+                                                @elseif($pool->opponent_id == $pool->winner_id_2rd_robbin)
+                                                    <span style="font-size: 20px; color: silver;">🥈</span>
+                                                @elseif($pool->opponent_id == $pool->winner_id_3rd_robbin)
+                                                    <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                                @endif
                                             @endif
                                             @if($pool->winner_id != null && $pool->opponent_id === $pool->winner_id)
                                                 <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
@@ -151,27 +177,49 @@
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
-                                            <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->student ? $pool->student->last_name . ' ' . $pool->student->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+                                            @if($pool->type == 'Round Robin')
+                                                @if($pool->student_id == $pool->winner_id_1rd_robbin)
+                                                    <span style="font-size: 20px; color: gold;">🥇</span>
+                                                @elseif($pool->student_id == $pool->winner_id_2rd_robbin)
+                                                    <span style="font-size: 20px; color: silver;">🥈</span>
+                                                @elseif($pool->student_id == $pool->winner_id_3rd_robbin)
+                                                    <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                                @endif
                                             @endif
                                             @if($pool->winner_id != null && $pool->student_id === $pool->winner_id)
                                                 <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
                                             @endif
                                         </div>
                                     </a>
-                                    <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
+                                    <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                           class="tournament__match__team__number"
+                                           placeholder="0"
+                                           @if($tournament->organization_id != auth()->id()) disabled @endif
+                                    >
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
-                                            <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->opponent ? $pool->opponent->last_name . ' ' . $pool->opponent->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->opponent_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+                                            @if($pool->type == 'Round Robin')
+                                                @if($pool->opponent_id == $pool->winner_id_1rd_robbin)
+                                                    <span style="font-size: 20px; color: gold;">🥇</span>
+                                                @elseif($pool->opponent_id == $pool->winner_id_2rd_robbin)
+                                                    <span style="font-size: 20px; color: silver;">🥈</span>
+                                                @elseif($pool->opponent_id == $pool->winner_id_3rd_robbin)
+                                                    <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                                @endif
                                             @endif
                                             @if($pool->winner_id != null && $pool->opponent_id === $pool->winner_id)
                                                 <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
@@ -193,27 +241,49 @@
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
-                                            <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->student ? $pool->student->last_name . ' ' . $pool->student->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+                                            @if($pool->type == 'Round Robin')
+                                                @if($pool->student_id == $pool->winner_id_1rd_robbin)
+                                                    <span style="font-size: 20px; color: gold;">🥇</span>
+                                                @elseif($pool->student_id == $pool->winner_id_2rd_robbin)
+                                                    <span style="font-size: 20px; color: silver;">🥈</span>
+                                                @elseif($pool->student_id == $pool->winner_id_3rd_robbin)
+                                                    <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                                @endif
                                             @endif
                                             @if($pool->winner_id != null && $pool->student_id === $pool->winner_id)
                                                 <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
                                             @endif
                                         </div>
                                     </a>
-                                    <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
+                                    <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                           class="tournament__match__team__number"
+                                           placeholder="0"
+                                           @if($tournament->organization_id != auth()->id()) disabled @endif
+                                    >
                                     <a class="tournament__match__team" href="#"
                                        @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                                     >
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
-                                            <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
+                                            <p>{{ $pool->opponent ? $pool->opponent->last_name . ' ' . $pool->opponent->first_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->opponent_id != $pool->winner_id)
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
+                                            @endif
+                                            @if($pool->type == 'Round Robin')
+                                                @if($pool->opponent_id == $pool->winner_id_1rd_robbin)
+                                                    <span style="font-size: 20px; color: gold;">🥇</span>
+                                                @elseif($pool->opponent_id == $pool->winner_id_2rd_robbin)
+                                                    <span style="font-size: 20px; color: silver;">🥈</span>
+                                                @elseif($pool->opponent_id == $pool->winner_id_3rd_robbin)
+                                                    <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                                @endif
                                             @endif
                                             @if($pool->winner_id != null && $pool->opponent_id === $pool->winner_id)
                                                 <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
@@ -233,27 +303,49 @@
                             <a class="tournament__match__team" href="#"
                                @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                             >
-                                <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                 <div class="tournament__match__team__info">
-                                    <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
+                                    <p>{{ $pool->student ? $pool->student->last_name . ' ' . $pool->student->first_name : 'TBD' }}</p>
                                     @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
                                         <span style="font-size: 24px; color: silver;">🥈</span>
+                                    @endif
+                                    @if($pool->type == 'Round Robin')
+                                        @if($pool->student_id == $pool->winner_id_1rd_robbin)
+                                            <span style="font-size: 20px; color: gold;">🥇</span>
+                                        @elseif($pool->student_id == $pool->winner_id_2rd_robbin)
+                                            <span style="font-size: 20px; color: silver;">🥈</span>
+                                        @elseif($pool->student_id == $pool->winner_id_3rd_robbin)
+                                            <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                        @endif
                                     @endif
                                     @if($pool->winner_id != null && $pool->student_id === $pool->winner_id)
                                         <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
                                     @endif
                                 </div>
                             </a>
-                            <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
+                            <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                   class="tournament__match__team__number"
+                                   placeholder="0"
+                                   @if($tournament->organization_id != auth()->id()) disabled @endif
+                            >
                             <a class="tournament__match__team" href="#"
                                @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $pool->id }} })" @endif
                             >
-                                <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                 <div class="tournament__match__team__info">
 
-                                    <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
+                                    <p>{{ $pool->opponent ? $pool->opponent->last_name . ' ' . $pool->opponent->first_name : 'TBD' }}</p>
                                     @if($pool->winner_id != null && $pool->type == 'final' && $pool->opponent_id != $pool->winner_id)
                                         <span style="font-size: 24px; color: silver;">🥈</span>
+                                    @endif
+                                    @if($pool->type == 'Round Robin')
+                                        @if($pool->opponent_id == $pool->winner_id_1rd_robbin)
+                                            <span style="font-size: 20px; color: gold;">🥇</span>
+                                        @elseif($pool->opponent_id == $pool->winner_id_2rd_robbin)
+                                            <span style="font-size: 20px; color: silver;">🥈</span>
+                                        @elseif($pool->opponent_id == $pool->winner_id_3rd_robbin)
+                                            <span style="font-size: 20px; color: #cd7f32;">🥉</span>
+                                        @endif
                                     @endif
                                     @if($pool->winner_id != null && $pool->opponent_id === $pool->winner_id)
                                         <x-bi-trophy style="font-size: 24px; margin-top: 8px"/>
@@ -287,21 +379,21 @@
                             <div class="tournament__match third_place__match">
                                 <a class="tournament__match__team" href="#"
                                    @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif>
-                                    <h4>{{ $thirdPlacePool->student ? ($thirdPlacePool->student->club ?? $thirdPlacePool->student->trener->club) : null }}</h4>
+                                    <h4>{{ $thirdPlacePool->student ? $thirdPlacePool->student->trener->club : null }}</h4>
                                     <div class="tournament__match__team__info">
-                                        <p>{{ $thirdPlacePool->student ? $thirdPlacePool->student->first_name . ' ' . $thirdPlacePool->student->last_name : 'TBD' }}</p>
+                                        <p>{{ $thirdPlacePool->student ? $thirdPlacePool->student->last_name . ' ' . $thirdPlacePool->student->first_name : 'TBD' }}</p>
                                         @if($thirdPlacePool->winner_id != null && $thirdPlacePool->type == '3rd' && $thirdPlacePool->student_id == $thirdPlacePool->winner_id)
                                             <span style="font-size: 24px; color: silver;">🥉</span>
                                         @endif
 
                                     </div>
                                 </a>
-                                <h6 class="tournament__match__team__number">{{$thirdPlacePool->tatami_and_fight_number}}</h6>
+
                                 <a class="tournament__match__team" href="#"
                                    @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif>
-                                    <h4>{{ $thirdPlacePool->opponent ? ($thirdPlacePool->opponent->club ?? $thirdPlacePool->opponent->trener->club) : null }}</h4>
+                                    <h4>{{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->trener->club : null }}</h4>
                                     <div class="tournament__match__team__info">
-                                        <p>{{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->first_name . ' ' . $thirdPlacePool->opponent->last_name : 'TBD' }}</p>
+                                        <p>{{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->last_name . ' ' . $thirdPlacePool->opponent->first_name : 'TBD' }}</p>
                                         @if($thirdPlacePool->winner_id != null && $thirdPlacePool->type == '3rd' && $thirdPlacePool->opponent_id == $thirdPlacePool->winner_id)
                                             <span style="font-size: 24px; color: silver;">🥉</span>
                                         @endif
@@ -329,9 +421,9 @@
                             <a class="tournament__match__team" href="#">
                                 @if($final->winner_id == null)
                                 @elseif($final->student_id == $final->winner_id)
-                                    <h4>{{$final->student->club ?? $final->student->trener->club}}</h4>
+                                    <h4>{{$final->student->trener->club}}</h4>
                                 @elseif($final->opponent_id == $final->winner_id)
-                                    <h4>{{$final->opponent->club ?? $final->opponent->trener->club}}</h4>
+                                    <h4>{{$final->opponent->trener->club}}</h4>
                                 @endif
                                 <div class="tournament__match__team__info">
                                     @if($final->winner_id == null)
@@ -352,9 +444,9 @@
                             <a class="tournament__match__team" href="#">
                                 @if($firstRoundRobinPool->winner_id_1rd_robbin == null)
                                 @elseif($firstRoundRobinPool->student_id == $firstRoundRobinPool->winner_id_1rd_robbin)
-                                    <h4>{{$firstRoundRobinPool->student->club ?? $firstRoundRobinPool->student->trener->club}}</h4>
+                                    <h4>{{$firstRoundRobinPool->student->trener->club}}</h4>
                                 @elseif($firstRoundRobinPool->opponent_id == $firstRoundRobinPool->winner_id_1rd_robbin)
-                                    <h4>{{$firstRoundRobinPool->opponent->club ?? $firstRoundRobinPool->opponent->trener->club}}</h4>
+                                    <h4>{{$firstRoundRobinPool->opponent->trener->club}}</h4>
                                 @endif
                                 <div class="tournament__match__team__info">
                                     @if($firstRoundRobinPool->winner_id == null)
@@ -548,14 +640,17 @@
 
         .tournament__match__team__number {
             position: absolute;
+            width: 60px;
+            margin-top: -10px;
             right: 2px;
+            /* margin-bottom: 30px; */
             top: 50%;
             bottom: 50%;
             right: 10px;
             font-size: 12px;
             font-weight: 800;
             color: #000;
-            background-color: red;
+            /* background-color: red; */
         }
 
         .tournament__match__team:before,

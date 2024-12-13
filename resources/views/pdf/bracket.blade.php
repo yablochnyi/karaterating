@@ -294,6 +294,7 @@
         body {
             width: 210mm;
             height: 297mm;
+
         }
 
         /* ... the rest of the rules ... */

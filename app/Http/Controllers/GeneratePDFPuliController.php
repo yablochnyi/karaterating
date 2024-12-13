@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tournament;
-use Spatie\Browsershot\Browsershot;
+//use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Facades\Pdf;
 
 class GeneratePDFPuliController extends Controller
@@ -22,12 +22,7 @@ class GeneratePDFPuliController extends Controller
         // Группируем пулы по list_id
         $poolsGroupedByListId = $tournament->pools->groupBy('list_id');
 
-        // Передаем сгруппированные данные в шаблон
-//        return Pdf::view('pdf.puli-pdf', [
-//            'tournament' => $tournament,
-//            'poolsGroupedByListId' => $poolsGroupedByListId
-//        ])->name('your-invoice.pdf');
-//return view('pdf.bracket', compact('poolsGroupedByListId', 'tournament'));
+
         return Pdf::view('pdf.bracket', [
             'tournament' => $tournament,
             'poolsGroupedByListId' => $poolsGroupedByListId

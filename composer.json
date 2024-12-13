@@ -22,6 +22,7 @@
         "njxqlus/filament-lightbox": "^3.2",
         "resend/resend-php": "^0.14.0",
         "saade/filament-laravel-log": "^3.0",
+        "spatie/browsershot": "^4.4",
         "spatie/laravel-pdf": "^1.5"
     },
     "require-dev": {
