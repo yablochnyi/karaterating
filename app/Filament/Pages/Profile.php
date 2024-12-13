@@ -74,6 +74,8 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                                     ->directory('avatar')
                                     ->required()
                                     ->image()
+                                    ->optimize('webp')
+                                    ->resize(50)
                                     ->columnSpan(['md' => 2])
                             ])->columnSpan(3),
                         Section::make()
@@ -161,18 +163,28 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                             ->schema([
                                 FileUpload::make('passport')
                                     ->image()
+                                    ->optimize('webp')
+                                    ->resize(50)
                                     ->label('Будо паспорт'),
                                 FileUpload::make('brand')
                                     ->image()
+                                    ->optimize('webp')
+                                    ->resize(50)
                                     ->label('Марка'),
                                 FileUpload::make('insurance')
                                     ->image()
+                                    ->optimize('webp')
+                                    ->resize(50)
                                     ->label('Страховка'),
                                 FileUpload::make('iko_card')
                                     ->image()
+                                    ->optimize('webp')
+                                    ->resize(50)
                                     ->label('Карта IKO'),
                                 FileUpload::make('certificate')
                                     ->image()
+                                    ->optimize('webp')
+                                    ->resize(50)
                                     ->label('Сертификат'),
                                 Checkbox::make('success_politic')
                                     ->label(new HtmlString(

@@ -33,7 +33,7 @@
                             @foreach($poolsByList->where('round', $round) as $pool)
                                 <div class="tournament__match" style="min-height: {{ $matchHeight }};">
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
                                             <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
@@ -46,7 +46,7 @@
                                     </a>
                                     <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
                                             <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
@@ -68,7 +68,7 @@
                             @foreach($poolsByList->where('round', $round) as $pool)
                                 <div class="tournament__match" style="min-height: {{ $matchHeight }};">
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
                                             <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
@@ -81,7 +81,7 @@
                                     </a>
                                     <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
                                             <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
@@ -103,7 +103,7 @@
                             @foreach($poolsByList->where('round', $round) as $pool)
                                 <div class="tournament__match" style="min-height: {{ $matchHeight }};">
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
                                             <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
@@ -116,7 +116,7 @@
                                     </a>
                                     <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
                                             <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
@@ -138,7 +138,7 @@
                             @foreach($poolsByList->where('round', $round) as $pool)
                                 <div class="tournament__match" style="min-height: {{ $matchHeight }};">
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
                                             <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
                                             @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
@@ -151,7 +151,7 @@
                                     </a>
                                     <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
                                     <a class="tournament__match__team" href="#">
-                                        <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                        <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                         <div class="tournament__match__team__info">
 
                                             <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
@@ -171,7 +171,7 @@
                     @if($round == 5)
                             <div class="tournament__match" style="min-height: {{ $matchHeight }};">
                                 <a class="tournament__match__team" href="#">
-                                    <h4>{{ $pool->student ? ($pool->student->club ?? $pool->student->trener->club) : null }}</h4>
+                                    <h4>{{ $pool->student ? $pool->student?->trener?->club : null }}</h4>
                                     <div class="tournament__match__team__info">
                                         <p>{{ $pool->student ? $pool->student->first_name . ' ' . $pool->student->last_name : 'TBD' }}</p>
                                         @if($pool->winner_id != null && $pool->type == 'final' && $pool->student_id != $pool->winner_id)
@@ -184,7 +184,7 @@
                                 </a>
                                 <h6 class="tournament__match__team__number">{{$pool->tatami_and_fight_number}}</h6>
                                 <a class="tournament__match__team" href="#">
-                                    <h4>{{ $pool->opponent ? ($pool->opponent->club ?? $pool->opponent->trener->club) : null }}</h4>
+                                    <h4>{{ $pool->opponent ? $pool->opponent?->trener?->club : null }}</h4>
                                     <div class="tournament__match__team__info">
 
                                         <p>{{ $pool->opponent ? $pool->opponent->first_name . ' ' . $pool->opponent->last_name : 'TBD' }}</p>
@@ -218,7 +218,7 @@
                              style="top: {{ $topPosition }}px; right: {{ $rightPosition }}px;">
                             <div class="tournament__match third_place__match">
                                 <a class="tournament__match__team" href="#">
-                                    <h4>{{ $thirdPlacePool->student ? ($thirdPlacePool->student->club ?? $thirdPlacePool->student->trener->club) : null }}</h4>
+                                    <h4>{{ $thirdPlacePool->student ? $thirdPlacePool->student?->trener?->club : null }}</h4>
                                     <div class="tournament__match__team__info">
                                         <p>{{ $thirdPlacePool->student ? $thirdPlacePool->student->first_name . ' ' . $thirdPlacePool->student->last_name : 'TBD' }}</p>
                                         @if($thirdPlacePool->winner_id != null && $thirdPlacePool->type == '3rd' && $thirdPlacePool->student_id != $thirdPlacePool->winner_id)
@@ -229,7 +229,7 @@
                                 </a>
                                 <h6 class="tournament__match__team__number">{{$thirdPlacePool->tatami_and_fight_number}}</h6>
                                 <a class="tournament__match__team" href="#">
-                                    <h4>{{ $thirdPlacePool->opponent ? ($thirdPlacePool->opponent->club ?? $thirdPlacePool->opponent->trener->club) : null }}</h4>
+                                    <h4>{{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent?->trener?->club : null }}</h4>
                                     <div class="tournament__match__team__info">
                                         <p>{{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->first_name . ' ' . $thirdPlacePool->opponent->last_name : 'TBD' }}</p>
                                         @if($thirdPlacePool->winner_id != null && $thirdPlacePool->type == '3rd' && $thirdPlacePool->opponent_id != $thirdPlacePool->winner_id)
@@ -247,34 +247,57 @@
                 @endif
 
                 @php
-                    $final = $poolsByList->where('type', 'final')->first();
+                    $final = $tournament->pools->where('type', 'final')->first();
+                    $firstRoundRobinPool = $tournament->pools->firstWhere('type', 'Round Robin');
                 @endphp
+
+
                 @if($final)
-                <div class="tournament__round tournament__round--winner">
-                    <div class="tournament__match">
-                        <a class="tournament__match__team" href="#">
-                            @if($final->winner_id == null)
-
-                            @elseif($final->student_id == $final->winner_id)
-                                <h4>{{$final->student->club ?? $final->student->trener->club}}</h4>
-                            @elseif($final->opponent_id == $final->winner_id)
-                                <h4>{{$final->opponent->club ?? $final->opponent->trener->club}}</h4>
-                            @endif
-                            <div class="tournament__match__team__info">
+                    <div class="tournament__round tournament__round--winner">
+                        <div class="tournament__match">
+                            <a class="tournament__match__team" href="#">
                                 @if($final->winner_id == null)
-
                                 @elseif($final->student_id == $final->winner_id)
-                                    <p>{{$final->student->last_name}} {{$final->student->first_name}}</p>
-                                    <p style="font-size: 24px; color: gold;">🥇</p>
+                                    <h4>{{$final->student->trener->club}}</h4>
                                 @elseif($final->opponent_id == $final->winner_id)
-                                    <p>{{$final->opponent->last_name}} {{$final->opponent->first_name}}</p>
-                                    <span style="font-size: 24px; color: gold;">🥇</span>
+                                    <h4>{{$final->opponent->trener->club}}</h4>
                                 @endif
-
-                            </div>
-                        </a>
+                                <div class="tournament__match__team__info">
+                                    @if($final->winner_id == null)
+                                    @elseif($final->student_id == $final->winner_id)
+                                        <p>{{$final->student->last_name}} {{$final->student->first_name}}</p>
+                                        <p style="font-size: 24px; color: gold;">🥇</p>
+                                    @elseif($final->opponent_id == $final->winner_id)
+                                        <p>{{$final->opponent->last_name}} {{$final->opponent->first_name}}</p>
+                                        <span style="font-size: 24px; color: gold;">🥇</span>
+                                    @endif
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                </div>
+                @elseif($firstRoundRobinPool)
+                    <div class="tournament__round tournament__round--winner">
+                        <div class="tournament__match">
+                            <a class="tournament__match__team" href="#">
+                                @if($firstRoundRobinPool->winner_id_1rd_robbin == null)
+                                @elseif($firstRoundRobinPool->student_id == $firstRoundRobinPool->winner_id_1rd_robbin)
+                                    <h4>{{$firstRoundRobinPool->student->trener->club}}</h4>
+                                @elseif($firstRoundRobinPool->opponent_id == $firstRoundRobinPool->winner_id_1rd_robbin)
+                                    <h4>{{$firstRoundRobinPool->opponent->trener->club}}</h4>
+                                @endif
+                                <div class="tournament__match__team__info">
+                                    @if($firstRoundRobinPool->winner_id == null)
+                                    @elseif($firstRoundRobinPool->student_id == $firstRoundRobinPool->winner_id_1rd_robbin)
+                                        <p>{{$firstRoundRobinPool->student->last_name}} {{$firstRoundRobinPool->student->first_name}}</p>
+                                        <p style="font-size: 24px; color: gold;">🥇</p>
+                                    @elseif($firstRoundRobinPool->opponent_id == $firstRoundRobinPool->winner_id_1rd_robbin)
+                                        <p>{{$firstRoundRobinPool->opponent->last_name}} {{$firstRoundRobinPool->opponent->first_name}}</p>
+                                        <span style="font-size: 24px; color: gold;">🥇</span>
+                                    @endif
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>
