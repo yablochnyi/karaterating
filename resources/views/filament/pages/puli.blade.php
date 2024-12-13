@@ -362,12 +362,12 @@
                                     $totalParticipants = $tournament->pools->first()->listTournament->students->count();
 
 
-      $topPosition = $totalParticipants <= 4 ? '240' :
-                       ($totalParticipants <= 8 ? '480' :
-                       ($totalParticipants <= 16 ? '500' : '495'));
+      $topPosition = $totalParticipants <= 4 ? '230' :
+                       ($totalParticipants <= 8 ? '490' :
+                       ($totalParticipants <= 16 ? '490' : '495'));
         $rightPosition = $totalParticipants <= 4 ? '350' :
-                         ($totalParticipants <= 8 ? '250' :
-                         ($totalParticipants <= 16 ? '230' : '210'));
+                         ($totalParticipants <= 8 ? '350' :
+                         ($totalParticipants <= 16 ? '260' : '210'));
                     @endphp
                     @if($thirdPlacePool)
                         @php
@@ -388,7 +388,11 @@
 
                                     </div>
                                 </a>
-
+                                <input type="text" wire:model.live="tatami_and_fight_number.{{ $pool->id }}"
+                                       class="tournament__match__team__number"
+                                       placeholder="0"
+                                       @if($tournament->organization_id != auth()->id()) disabled @endif
+                                >
                                 <a class="tournament__match__team" href="#"
                                    @if($isClickable) wire:click.prevent="mountAction('winner', { id: {{ $thirdPlacePool->id }} })" @endif>
                                     <h4>{{ $thirdPlacePool->opponent ? $thirdPlacePool->opponent->trener->club : null }}</h4>
@@ -564,6 +568,7 @@
             flex-direction: column;
             flex: 1 0;
             align-items: center;
+            min-height: 64.3px;
         }
 
         .tournament__match:first-child {
@@ -643,7 +648,7 @@
             width: 60px;
             margin-top: -10px;
             right: 2px;
-            /* margin-bottom: 30px; */
+             /*margin-bottom: 30px;*/
             top: 50%;
             bottom: 50%;
             right: 10px;
