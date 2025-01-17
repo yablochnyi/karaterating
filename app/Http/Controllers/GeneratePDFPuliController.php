@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tournament;
-use Spatie\LaravelPdf\Facades\Pdf;
 use Spatie\Browsershot\Browsershot;
 
 class GeneratePDFPuliController extends Controller
@@ -22,29 +21,24 @@ class GeneratePDFPuliController extends Controller
         // Группируем пулы по list_id
         $poolsGroupedByListId = $tournament->pools->groupBy('list_id');
 
-        // Создаем экземпляр Browsershot
-        $browsershot = new Browsershot();
-
-
-        // Указываем путь к бинарникам Node.js, NPM, Puppeteer, а также к Chromium
-        return Browsershot::html('pdf.bracket', [
+        // Генерируем PDF с помощью Browsershot
+        $pdfContent = Browsershot::html(view('pdf.bracket', [
             'tournament' => $tournament,
             'poolsGroupedByListId' => $poolsGroupedByListId
-        ])
-            ->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
+        ])->render())  // Рендерим представление HTML в строку
+        ->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
             ->setNpmBinary('/root/.nvm/versions/node/v23.1.0/bin/npm')
-            ->setChromePath('/usr/bin/chromium-browser')  // Укажите путь к вашему Chromium
+            ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
             ->setIncludePath('$PATH:/usr/local/bin')
             ->addChromiumArguments([
                 'no-sandbox',
                 'disable-setuid-sandbox',  // Иногда требуется для Linux-серверов
-            ]);
-//        dd($browsershot);
-        // Генерируем PDF с помощью Spatie Laravel PDF, используя настраиваемые параметры
-//        return Pdf::view('pdf.bracket', [
-//            'tournament' => $tournament,
-//            'poolsGroupedByListId' => $poolsGroupedByListId
-//        ])
-//            ->name('your-invoice.pdf');
+            ])
+            ->pdf(); // Генерируем PDF
+
+        // Возвращаем PDF в ответ
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="tournament-bracket.pdf"');
     }
 }
