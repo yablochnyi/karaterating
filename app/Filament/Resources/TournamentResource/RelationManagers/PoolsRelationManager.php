@@ -118,8 +118,12 @@ class PoolsRelationManager extends RelationManager
             ])
             ->actions([
                 DownStepAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id == auth()->id())
                     ->label('Вниз'),
                 UpStepAction::make()
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id == auth()->id())
                     ->label('Вверх'),
 
                 Tables\Actions\Action::make('select_tatami')
@@ -170,6 +174,8 @@ class PoolsRelationManager extends RelationManager
                         $index = new GeneratePuliController();
                         $index->generate($livewire->getOwnerRecord()->id, $record->list_id);
                     })
+                    ->hidden(fn($livewire) => now()->greaterThan($livewire->getOwnerRecord()->date_finish))
+                    ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id == auth()->id())
                     ->label('Перегенерировать'),
             ])
             ->defaultSort('sort_order', 'asc')
