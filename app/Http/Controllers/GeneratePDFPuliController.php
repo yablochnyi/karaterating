@@ -25,15 +25,17 @@ class GeneratePDFPuliController extends Controller
         // Создаем экземпляр Browsershot
         $browsershot = new Browsershot();
 
+
         // Указываем путь к бинарникам Node.js, NPM, Puppeteer, а также к Chromium
         $browsershot->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
             ->setNpmBinary('/root/.nvm/versions/node/v23.1.0/bin/npm')
             ->setChromePath('/usr/bin/chromium-browser')  // Укажите путь к вашему Chromium
+            ->setIncludePath('$PATH:/usr/local/bin')
             ->addChromiumArguments([
                 'no-sandbox',
                 'disable-setuid-sandbox',  // Иногда требуется для Linux-серверов
             ]);
-
+//        dd($browsershot);
         // Генерируем PDF с помощью Spatie Laravel PDF, используя настраиваемые параметры
         return Pdf::view('pdf.bracket', [
             'tournament' => $tournament,
