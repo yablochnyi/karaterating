@@ -4,12 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pool extends Model
 {
     use HasFactory;
     protected $guarded = false;
+
+    protected static function booted()
+    {
+        static::created(function ($pool) {
+            // Получаем связанный ListTournament
+            $listTournament = $pool->listTournament;
+
+            if ($listTournament && !$listTournament->sort_order) {
+                // Устанавливаем sort_order равным ID записи
+                $listTournament->sort_order = $listTournament->id;
+                $listTournament->save();
+            }
+        });
+    }
 
     public function student()
     {

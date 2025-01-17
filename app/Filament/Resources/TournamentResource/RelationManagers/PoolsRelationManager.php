@@ -2,21 +2,31 @@
 
 namespace App\Filament\Resources\TournamentResource\RelationManagers;
 
+use App\Http\Controllers\GeneratePuliController;
 use App\Models\Pool;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilamentSortOrder\Actions\DownStepAction;
+use IbrahimBougaoua\FilamentSortOrder\Actions\UpStepAction;
+use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 
 class PoolsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'pools';
+    protected static string $relationship = 'listWhereExistPools';
     protected static ?string $title = 'Пули';
 
     public function form(Form $form): Form
@@ -33,13 +43,47 @@ class PoolsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('id')
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query
-                    ->selectRaw('MIN(id) as id, tournament_id, list_id, MAX(tatami) as tatami') // Добавляем поля type и winner_id
-                    ->groupBy('tournament_id', 'list_id') // Указываем группировку
-                    ->orderBy('tournament_id', 'asc'); // Указываем сортировку
-            })
             ->columns([
+                TextColumn::make('id'),
+                CircleProgress::make('circle')
+                    ->label('Завершенность')
+                    ->getStateUsing(function ($record) {
+                        $poolsTotal = '';
+                        $poolsProgress = '';
+                        $type = $record->pools->first()->type;
+                        if ($type == 'Round Robin') {
+                            $poolsTotal = Pool::where('tournament_id', $record->tournament_id)
+                                ->where('list_id', $record->id)
+                                ->count();
+
+
+                            $poolsProgress = Pool::where('tournament_id', $record->tournament_id)
+                                ->where('list_id', $record->id)
+                                ->whereNotNull('winner_id_1rd_robbin')
+                                ->whereNotNull('winner_id_2rd_robbin')
+                                ->where('winner_id', '!=', null)
+                                ->count();
+//                            dd($poolsProgress);
+                        } else {
+                            $poolsTotal = Pool::where('tournament_id', $record->tournament_id)
+                                ->where('list_id', $record->id)
+                                ->whereNotNull('student_id')
+                                ->whereNotNull('opponent_id')
+                                ->count();
+
+                            $poolsProgress = Pool::where('tournament_id', $record->tournament_id)
+                                ->where('list_id', $record->id)
+                                ->whereNotNull('student_id')
+                                ->whereNotNull('opponent_id')
+                                ->where('winner_id', '!=', null)
+                                ->count();
+                        }
+
+                        return [
+                            'total' => $poolsTotal,
+                            'progress' => $poolsProgress,
+                        ];
+                    }),
                 Tables\Columns\TextColumn::make('templateStudentList.name')
                     ->label('Пуля')
                     ->sortable()
@@ -59,24 +103,32 @@ class PoolsRelationManager extends RelationManager
                             $options[chr(64 + $i)] = chr(64 + $i); // Генерируем буквы алфавита (A, B, C...)
                         }
                         return $options;
-                    })
+                    }),
+
+
             ])
+
             ->headerActions([
                 Tables\Actions\Action::make('download_lists')
                     ->label('Скачать пули')
                     ->color('warning')
-                    ->hidden()
+//                    ->hidden()
                     ->url(fn($livewire): string => url('panel/tournament-student-puli-pdf/' . $livewire->getOwnerRecord()->id))
                     ->openUrlInNewTab(),
             ])
             ->actions([
+                DownStepAction::make()
+                    ->label('Вниз'),
+                UpStepAction::make()
+                    ->label('Вверх'),
+
                 Tables\Actions\Action::make('select_tatami')
                     ->label('Добавить в Татами')
                     ->icon('heroicon-o-cog')
                     ->action(function ($record, $data, $livewire) {
                         // Получаем записи, которые соответствуют группировке
                         $relatedRecords = Pool::where('tournament_id', $record->tournament_id)
-                            ->where('list_id', $record->list_id)
+                            ->where('list_id', $record->id)
                             ->get();
 
                         // Обновляем tatami для всех записей в группе
@@ -84,8 +136,7 @@ class PoolsRelationManager extends RelationManager
                             $relatedRecord->tatami = $data['tatami'];
                             $relatedRecord->save();
                         }
-                        // Действие после подтверждения выбора
-                        // Здесь можно обработать результат, например, сохранить выбранное значение
+
                         $record->tatami = $data['tatami'];
                         $record->save();
                     })
@@ -109,10 +160,19 @@ class PoolsRelationManager extends RelationManager
                     ->visible(fn($livewire) => $livewire->getOwnerRecord()->organization_id == auth()->id()),
                 Tables\Actions\Action::make('view_pool')
                     ->icon('heroicon-o-trophy')
-                    ->url(fn($record, $livewire): string => url('panel/tournament-puli/' . $record->list_id . '/tournament/' . $livewire->getOwnerRecord()->id))
+                    ->url(fn($record, $livewire): string => url('panel/tournament-puli/' . $record->id . '/tournament/' . $livewire->getOwnerRecord()->id))
                     ->openUrlInNewTab()
                     ->label('Посмотреть'),
+                Tables\Actions\Action::make('regenerate_pool')
+                    ->icon('heroicon-s-arrow-path-rounded-square')
+                    ->color('danger')
+                    ->action(function ($record, $data, $livewire) {
+                        $index = new GeneratePuliController();
+                        $index->generate($livewire->getOwnerRecord()->id, $record->list_id);
+                    })
+                    ->label('Перегенерировать'),
             ])
+            ->defaultSort('sort_order', 'asc')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(), // Раскомментируйте, если нужно действие удаления

@@ -10,6 +10,7 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -77,39 +78,194 @@ class Puli extends Page implements HasForms, HasActions
     public function winnerAction(): Action
     {
         return Action::make('winner')
-            ->label('Победитель')
+            ->label('Опции')
             ->color('success')
             ->requiresConfirmation()
             ->modalIcon('heroicon-o-trophy')
-            ->modalDescription('Выберите победителя')
+            ->modalDescription('Выберите победителя или отметьте неявку на турнир')
             ->form(function (array $arguments) {
                 $pool = Pool::find($arguments['id']);
                 return [
-                    Radio::make('winner_id')
-                        ->hiddenLabel()
-                        ->options($this->getPoolParticipants($arguments['id']))
-                        ->default($pool->winner_id)
-                        ->required(),
+                    // Блок для выбора победителя
+                    Section::make('Победитель')
+                        ->description('Выберите участника, который победил в турнире.')
+                        ->schema([
+                            Radio::make('winner_id')
+                                ->options($this->getPoolParticipants($arguments['id']))
+                                ->nullable()
+                                ->label('Победитель'),
+                        ]),
+
+                    // Блок для отметки неявившегося
+                    Section::make('Неявка')
+                        ->description('Укажите, кто из участников не явился на турнир.')
+                        ->schema([
+                            Radio::make('absent_id')
+                                ->options($this->getPoolParticipants($arguments['id']))
+                                ->nullable()
+                                ->hidden(fn() => $pool->winner_id || $pool->round != 1)
+                                ->label('Неявился'),
+                        ]),
                 ];
             })
             ->action(function (array $data, array $arguments) {
                 $pool = Pool::find($arguments['id']);
-                $pool->winner_id = $data['winner_id'];
-                $pool->save();
 
-                // Переносим победителя в следующий раунд
-                $this->moveWinnerToNextRound($pool, $data['winner_id']);
+                // Обработка информации о том, кто не явился
+                if (!empty($data['absent_id'])) {
+                    $this->handleAbsence($pool, $data['absent_id']);
+                } else {
+                    // Обработка информации о победителе
+                    if (!empty($data['winner_id'])) {
+                        $pool->winner_id = $data['winner_id'];
+                        $pool->save();
+
+                        // Переносим победителя в следующий раунд
+                        $this->moveWinnerToNextRound($pool, $data['winner_id']);
+                    }
+                }
 
                 $this->mount($pool->list_id, $pool->tournament_id);
                 return redirect()->to(request()->header('Referer'));
-//                Notification::make()
-//                    ->title('Данные сохранены')
-//                    ->success()
-//                    ->send();
+
             });
     }
 
-    public function winnerForThreeStudentsAction(): Action
+    public function getPoolParticipants($poolId)
+    {
+        $pool = Pool::find($poolId);
+
+        return [
+            $pool->student->id => $pool->student->last_name . ' ' . $pool->student->first_name,
+            $pool->opponent->id => $pool->opponent->last_name . ' ' . $pool->opponent->first_name,
+        ];
+    }
+
+    protected function moveWinnerToNextRound(Pool $currentPool, $winnerId)
+    {
+        // Если текущий бой является финальным, не перемещаем победителя
+        if ($currentPool->type === 'final') {
+            return;
+        }
+
+        $nextRound = $currentPool->round + 1;
+        $nextPosition = intdiv($currentPool->position_in_round - 1, 2) + 1;
+
+        // Проверка на полуфинал для боя за 3 место
+        if ($currentPool->type === '1/2') {
+            $loserId = ($currentPool->student_id == $winnerId) ? $currentPool->opponent_id : $currentPool->student_id;
+            $this->moveLoserToThirdPlace($currentPool, $loserId);
+        }
+
+        $nextPool = Pool::where('tournament_id', $currentPool->tournament_id)
+            ->where('list_id', $currentPool->list_id)
+            ->where('round', $nextRound)
+            ->where('position_in_round', $nextPosition)
+            ->first();
+
+        if ($nextPool) {
+            // Если студент или оппонент в следующем пуле — это предыдущий победитель, убираем его
+            if ($nextPool->student_id == $currentPool->student_id || $nextPool->student_id == $currentPool->opponent_id) {
+                $nextPool->student_id = null;
+            } elseif ($nextPool->opponent_id == $currentPool->opponent_id || $nextPool->opponent_id == $currentPool->student_id) {
+                $nextPool->opponent_id = null;
+            }
+
+            $totalPools = Pool::where('tournament_id', $currentPool->tournament_id)
+                ->where('list_id', $currentPool->list_id)
+                ->get();
+
+            $currentPoolIndex = $totalPools->search(function ($pool) use ($currentPool) {
+                return $pool->id === $currentPool->id + 1; // Сравниваем ID текущего пула
+            });
+
+            if ($currentPoolIndex % 2 == 0) {
+                if (is_null($nextPool->opponent_id)) {
+                    $nextPool->opponent_id = $winnerId;
+                }
+            } else {
+                if (is_null($nextPool->student_id)) {
+                    $nextPool->student_id = $winnerId;
+                }
+            }
+
+
+//                if (is_null($nextPool->student_id)) {
+//                    $nextPool->student_id = $winnerId;
+//                } elseif (is_null($nextPool->opponent_id)) {
+//                    $nextPool->opponent_id = $winnerId;
+//                } else {
+//                    Log::warning("Не удалось переместить победителя в раунд {$nextRound} позиции {$nextPosition}, так как обе ячейки заняты.");
+//                    return;
+//                }
+
+            $nextPool->save();
+        }
+    }
+
+    protected
+    function handleAbsence(Pool $pool, $absentId)
+    {
+        // Определяем противника
+        $studentId = ($pool->student_id == $absentId) ? $pool->opponent_id : $pool->student_id;
+
+        // Удаляем отсутствующего из моделей
+        $this->removeFromTournament($pool, $absentId);
+
+        // Переносим противника в следующий раунд
+        if (!empty($studentId)) {
+            $this->moveWinnerToNextRound($pool, $studentId);
+        }
+
+        // Обновляем текущий Pool, удаляя отсутствующего
+        if ($pool->student_id == $absentId) {
+            $pool->student_id = null;
+        } elseif ($pool->opponent_id == $absentId) {
+            $pool->opponent_id = null;
+        }
+        $pool->save();
+    }
+
+    protected
+    function removeFromTournament(Pool $pool, $absentId)
+    {
+        // Устанавливаем student_id и opponent_id в null для записей, где они равны $absentId
+        if ($pool->type === 'Round Robin') {
+            // Удаляем записи вместо их обновления
+            Pool::where('tournament_id', $pool->tournament_id)
+                ->where(function ($query) use ($absentId) {
+                    $query->where('student_id', $absentId)
+                        ->orWhere('opponent_id', $absentId);
+                })
+                ->delete();
+        } else {
+            // Устанавливаем student_id и opponent_id в null для записей, где они равны $absentId
+            Pool::where('tournament_id', $pool->tournament_id)
+                ->where(function ($query) use ($absentId) {
+                    $query->where('student_id', $absentId)
+                        ->orWhere('opponent_id', $absentId);
+                })
+                ->update([
+                    'student_id' => null,
+                    'opponent_id' => null,
+                ]);
+        }
+
+        // Удаляем запись из TournamentStudentList через связь
+        $pool->listTournament->students()
+            ->where('student_id', $absentId)
+            ->delete();
+
+        // Удаляем из Tournament
+        $tournament = Tournament::find($pool->tournament_id);
+        if ($tournament) {
+            $tournament->students()->detach($absentId);
+        }
+    }
+
+
+    public
+    function winnerForThreeStudentsAction(): Action
     {
         return Action::make('winnerForThreeStudents')
             ->label('Победитель')
@@ -147,8 +303,7 @@ class Puli extends Page implements HasForms, HasActions
                         ->required(),
                     Select::make('winner_id_3rd_robbin')
                         ->label('3-е место')
-                        ->options($userOptions) // Используем имена для выбора
-                        ->required(),
+                        ->options($userOptions),
                 ];
             })
             ->action(function (array $data, array $arguments) {
@@ -169,61 +324,8 @@ class Puli extends Page implements HasForms, HasActions
             });
     }
 
-    public function getPoolParticipants($poolId)
-    {
-        $pool = Pool::find($poolId);
-
-        return [
-            $pool->student->id => $pool->student->first_name . ' ' . $pool->student->last_name,
-            $pool->opponent->id => $pool->opponent->first_name . ' ' . $pool->opponent->last_name,
-        ];
-    }
-
-    protected function moveWinnerToNextRound(Pool $currentPool, $winnerId)
-    {
-        // Если текущий бой является финальным, не перемещаем победителя
-        if ($currentPool->type === 'final') {
-            return;
-        }
-
-        $nextRound = $currentPool->round + 1;
-        $nextPosition = intdiv($currentPool->position_in_round - 1, 2) + 1;
-
-        // Проверка на полуфинал для боя за 3 место
-        if ($currentPool->type === '1/2') {
-            $loserId = ($currentPool->student_id == $winnerId) ? $currentPool->opponent_id : $currentPool->student_id;
-            $this->moveLoserToThirdPlace($currentPool, $loserId);
-        }
-
-        $nextPool = Pool::where('tournament_id', $currentPool->tournament_id)
-            ->where('list_id', $currentPool->list_id)
-            ->where('round', $nextRound)
-            ->where('position_in_round', $nextPosition)
-            ->first();
-
-        if ($nextPool) {
-            // Если студент или оппонент в следующем пуле — это предыдущий победитель, убираем его
-            if ($nextPool->student_id == $currentPool->student_id || $nextPool->student_id == $currentPool->opponent_id) {
-                $nextPool->student_id = null;
-            } elseif ($nextPool->opponent_id == $currentPool->opponent_id || $nextPool->opponent_id == $currentPool->opponent_id) {
-                $nextPool->opponent_id = null;
-            }
-
-            // Заполняем победителем свободное место
-            if (is_null($nextPool->student_id)) {
-                $nextPool->student_id = $winnerId;
-            } elseif (is_null($nextPool->opponent_id)) {
-                $nextPool->opponent_id = $winnerId;
-            } else {
-                Log::warning("Не удалось переместить победителя в раунд {$nextRound} позиции {$nextPosition}, так как обе ячейки заняты.");
-                return;
-            }
-
-            $nextPool->save();
-        }
-    }
-
-    protected function moveLoserToThirdPlace(Pool $pool, $loserId)
+    protected
+    function moveLoserToThirdPlace(Pool $pool, $loserId)
     {
         // Убедимся, что проигравший существует
         if ($loserId) {
@@ -248,11 +350,22 @@ class Puli extends Page implements HasForms, HasActions
                 // Если студент уже находится в позиции opponent_id, заменим его на нового проигравшего
                 $thirdPlacePool->opponent_id = $loserId;
             } else {
-                // Если оба места свободны, добавляем проигравшего в первую свободную позицию
-                if (is_null($thirdPlacePool->student_id)) {
-                    $thirdPlacePool->student_id = $loserId;
-                } elseif (is_null($thirdPlacePool->opponent_id)) {
-                    $thirdPlacePool->opponent_id = $loserId;
+                $totalPools = Pool::where('tournament_id', $pool->tournament_id)
+                    ->where('list_id', $pool->list_id)
+                    ->get();
+
+                $currentPoolIndex = $totalPools->search(function ($value) use ($pool) {
+                    return $value->id === $pool->id + 1; // Сравниваем ID текущего пула
+                });
+
+                if ($currentPoolIndex % 2 == 0) {
+                    if (is_null($thirdPlacePool->opponent_id)) {
+                        $thirdPlacePool->opponent_id = $loserId;
+                    }
+                } else {
+                    if (is_null($thirdPlacePool->student_id)) {
+                        $thirdPlacePool->student_id = $loserId;
+                    }
                 }
             }
 
@@ -260,7 +373,8 @@ class Puli extends Page implements HasForms, HasActions
         }
     }
 
-    public function swapParticipantsAction(): Action
+    public
+    function swapParticipantsAction(): Action
     {
         return Action::make('swapParticipants')
             ->label('Переместить участников')

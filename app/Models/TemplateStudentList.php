@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use IbrahimBougaoua\FilamentSortOrder\Traits\SortOrder;
+use App\Traits\SortOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class TemplateStudentList extends Model
 {

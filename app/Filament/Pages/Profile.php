@@ -106,13 +106,13 @@ class Profile extends Page implements HasForms, HasTable, HasInfolists
                                         ->exists()
                                     )
                                     ->postfix('кг'),
-                                TextInput::make('age')
-                                    ->prefix('Возраст')
-                                    ->hiddenLabel()
-                                    ->required()
-                                    ->integer()
-                                    ->postfix('лет')
-                                    ->columnSpanFull(),
+//                                TextInput::make('age')
+//                                    ->prefix('Возраст')
+//                                    ->hiddenLabel()
+//                                    ->required()
+//                                    ->integer()
+//                                    ->postfix('лет')
+//                                    ->columnSpanFull(),
                                 TextInput::make('email')
                                     ->label('Email')
                                     ->required(),

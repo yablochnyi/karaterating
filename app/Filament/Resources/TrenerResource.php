@@ -63,8 +63,7 @@ class TrenerResource extends Resource
                     ->searchable()
                     ->label('Фамилия'),
                 TextColumn::make('age')
-                    ->label('Возраст')
-                    ->suffix(' лет'),
+                    ->label('Возраст'),
                 TextColumn::make('weight')
                     ->label('Вес')
                     ->suffix(' кг'),

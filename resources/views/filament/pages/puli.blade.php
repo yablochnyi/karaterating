@@ -34,9 +34,11 @@
                         ->max('round');
 
                     $totalParticipants = $tournament->pools->first()->listTournament->students->count();
-
+//dd($tournament->pools->first()->listTournament->templateStudentList);
+//                    dd($tournament->pools->first()->listTournament->students);
                     // Определяем высоту в зависимости от количества участников
                     $matchHeight = $totalParticipants <= 8 ? '260px' : ($totalParticipants <= 16 ? '130px' : '64.3px');
+
                 @endphp
                 @for ($round = 1; $round <= $maxRound; $round++)
                     @if($round == 1)
@@ -56,11 +58,11 @@
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
                                             @endif
                                             @if($pool->type == 'Round Robin')
-                                                @if($pool->student_id == $pool->winner_id_1rd_robbin)
+                                                @if($pool->winner_id_1rd_robbin != null && $pool->student_id == $pool->winner_id_1rd_robbin)
                                                     <span style="font-size: 20px; color: gold;">🥇</span>
-                                                @elseif($pool->student_id == $pool->winner_id_2rd_robbin)
+                                                @elseif($pool->winner_id_2rd_robbin != null && $pool->student_id == $pool->winner_id_2rd_robbin)
                                                     <span style="font-size: 20px; color: silver;">🥈</span>
-                                                @elseif($pool->student_id == $pool->winner_id_3rd_robbin)
+                                                @elseif($pool->winner_id_3rd_robbin != null && $pool->student_id == $pool->winner_id_3rd_robbin)
                                                     <span style="font-size: 20px; color: #cd7f32;">🥉</span>
                                                 @endif
                                             @endif
@@ -85,11 +87,11 @@
                                                 <span style="font-size: 24px; color: silver;">🥈</span>
                                             @endif
                                             @if($pool->type == 'Round Robin')
-                                                @if($pool->opponent_id == $pool->winner_id_1rd_robbin)
+                                                @if($pool->winner_id_1rd_robbin != null && $pool->opponent_id == $pool->winner_id_1rd_robbin)
                                                     <span style="font-size: 20px; color: gold;">🥇</span>
-                                                @elseif($pool->opponent_id == $pool->winner_id_2rd_robbin)
+                                                @elseif($pool->winner_id_2rd_robbin != null && $pool->opponent_id == $pool->winner_id_2rd_robbin)
                                                     <span style="font-size: 20px; color: silver;">🥈</span>
-                                                @elseif($pool->opponent_id == $pool->winner_id_3rd_robbin)
+                                                @elseif($pool->winner_id_3rd_robbin != null && $pool->opponent_id == $pool->winner_id_3rd_robbin)
                                                     <span style="font-size: 20px; color: #cd7f32;">🥉</span>
                                                 @endif
                                             @endif

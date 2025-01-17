@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -54,5 +55,22 @@ class User extends Authenticatable
     public function tournaments()
     {
         return $this->belongsToMany(Tournament::class, 'student_tournaments', 'student_id', 'tournament_id');
+    }
+
+    public function getAgeAttribute(): ?string
+    {
+        if (!$this->birthday) {
+            return null;
+        }
+
+        $age = Carbon::parse($this->birthday)->age;
+
+        $suffix = match (true) {
+            $age % 10 === 1 && $age % 100 !== 11 => 'год',
+            in_array($age % 10, [2, 3, 4]) && !in_array($age % 100, [12, 13, 14]) => 'года',
+            default => 'лет',
+        };
+
+        return "{$age} {$suffix}";
     }
 }

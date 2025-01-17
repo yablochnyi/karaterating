@@ -67,8 +67,7 @@ class TournamentStudentList extends Page implements HasForms, HasTable, HasInfol
                     ->searchable()
                     ->label('Фамилия'),
                 TextColumn::make('age')
-                    ->label('Возраст')
-                    ->suffix(' лет'),
+                    ->label('Возраст'),
                 TextColumn::make('weight')
                     ->label('Вес')
                     ->suffix(' кг'),

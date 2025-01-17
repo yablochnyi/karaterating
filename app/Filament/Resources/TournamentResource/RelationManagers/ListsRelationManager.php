@@ -41,13 +41,11 @@ class ListsRelationManager extends RelationManager
                         Forms\Components\TextInput::make('age_from')
                             ->hiddenLabel()
                             ->prefix('Возраст от')
-                            ->suffix('лет')
                             ->integer()
                             ->required(),
                         Forms\Components\TextInput::make('age_to')
                             ->hiddenLabel()
                             ->prefix('Возраст до')
-                            ->suffix('лет')
                             ->integer()
                             ->required(),
                         Forms\Components\TextInput::make('weight_from')
@@ -90,6 +88,10 @@ class ListsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+            ->query(function (Builder $query) {
+                $query->join('list_tournaments', 'list_tournaments.template_student_list_id', '=', 'template_student_lists.id')
+                    ->orderBy('list_tournaments.sort_order', 'asc'); // Указание таблицы в `orderBy`
+            })
             ->columns([
                 TextColumn::make('name')
                     ->label('Название списка')
@@ -147,6 +149,7 @@ class ListsRelationManager extends RelationManager
 //                Tables\Actions\DeleteAction::make(),
 
             ])
+            ->defaultSort('list_tournaments.sort_order', 'asc')
 
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

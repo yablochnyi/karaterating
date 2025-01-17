@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TrenerResource\RelationManagers;
 
 use App\Exports\StudentsExport;
 use App\Filament\Resources\StudentResource\Pages\ViewStudent;
+use Carbon\Carbon;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -55,8 +56,7 @@ class StudentsRelationManager extends RelationManager
                     ->label('Фамилия'),
                 TextColumn::make('age')
                     ->label('Возраст')
-                    ->sortable()
-                    ->suffix(' лет'),
+                    ->sortable(),
                 TextColumn::make('weight')
                     ->label('Вес')
                     ->sortable()

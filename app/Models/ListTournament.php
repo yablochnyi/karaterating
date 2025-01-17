@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use IbrahimBougaoua\FilamentSortOrder\Traits\SortOrder;
+use App\Traits\SortOrder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ListTournament extends Model
 {
     use HasFactory;
+    use SortOrder;
+
     protected $guarded = false;
 
     public function templateStudentList()
@@ -31,4 +33,15 @@ class ListTournament extends Model
             'student_id' // Local key on TournamentStudentList table
         );
     }
+
+    public function pools()
+    {
+        return $this->hasMany(Pool::class, 'list_id');
+    }
+
+    public function getFirstTatamiAttribute()
+    {
+        return $this->pools()->first()->tatami ?? null;
+    }
+
 }

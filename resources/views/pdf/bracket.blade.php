@@ -206,12 +206,12 @@
                                     $totalParticipants = $poolsByList->first()->listTournament->students->count();
 
 
-      $topPosition = $totalParticipants <= 4 ? '240' :
-                       ($totalParticipants <= 8 ? '480' :
-                       ($totalParticipants <= 16 ? '500' : '495'));
+      $topPosition = $totalParticipants <= 4 ? '230' :
+                       ($totalParticipants <= 8 ? '490' :
+                       ($totalParticipants <= 16 ? '490' : '495'));
         $rightPosition = $totalParticipants <= 4 ? '350' :
-                         ($totalParticipants <= 8 ? '250' :
-                         ($totalParticipants <= 16 ? '230' : '210'));
+                         ($totalParticipants <= 8 ? '350' :
+                         ($totalParticipants <= 16 ? '260' : '210'));
                     @endphp
                     @if($thirdPlacePool)
                         <div class="tournament__round third_place"
@@ -400,6 +400,8 @@
         flex-direction: column;
         flex: 1 0;
         align-items: center;
+        min-height: 64.3px;
+
     }
 
     .tournament__match:first-child {

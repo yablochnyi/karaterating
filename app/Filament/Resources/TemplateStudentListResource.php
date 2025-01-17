@@ -36,13 +36,11 @@ class TemplateStudentListResource extends Resource
                         Forms\Components\TextInput::make('age_from')
                             ->hiddenLabel()
                             ->prefix('Возраст от')
-                            ->suffix('лет')
                             ->integer()
                             ->required(),
                         Forms\Components\TextInput::make('age_to')
                             ->hiddenLabel()
                             ->prefix('Возраст до')
-                            ->suffix('лет')
                             ->integer()
                             ->required(),
                         Forms\Components\TextInput::make('weight_from')

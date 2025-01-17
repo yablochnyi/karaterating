@@ -41,8 +41,24 @@ class StudentResource extends Resource
     protected static ?string $cluster = \App\Filament\Clusters\Trener::class;
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $modelLabel = 'Ученик';
-    protected static ?string $pluralModelLabel = 'Ученики';
+//    protected static ?string $pluralModelLabel = 'Ученики';
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    public static function getPluralModelLabel(): string
+    {
+        $countStudent = 0;
+
+        if (auth()->user()->role_id == User::Coach) {
+            // Если пользователь тренер, считаем только его студентов
+            $countStudent = User::where('coach_id', auth()->id())->count();
+        } elseif (auth()->user()->role_id == User::Organization) {
+            // Если пользователь организация, ищем тренеров и их студентов
+            $coachIds = User::where('organization_id', auth()->id())->pluck('id');
+            $countStudent = User::whereIn('coach_id', $coachIds)->count();
+        }
+
+        return 'Ученики ('.$countStudent.')';
+    }
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -91,8 +107,7 @@ class StudentResource extends Resource
                     ->label('Фамилия'),
                 TextColumn::make('age')
                     ->label('Возраст')
-                    ->sortable()
-                    ->suffix(' лет'),
+                    ->sortable(),
                 TextColumn::make('weight')
                     ->label('Вес')
                     ->sortable()

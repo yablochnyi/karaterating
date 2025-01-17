@@ -40,12 +40,13 @@ class EditTournament extends EditRecord
                 ->requiresConfirmation(function ($record) {
                     return $record->pools()->exists();
                 })
+                ->hidden(fn() => now()->greaterThan($this->record->date_commission))
                 ->modalHeading(fn($record) => $record->pools()->exists() ? 'Перегенерация' : 'Подтверждение')
                 ->modalDescription(fn($record) => $record->pools()->exists()
                     ? 'Пули уже сгенерированы. Вы уверены, что хотите перегенерировать их?'
                     : 'Вы уверены, что хотите сгенерировать пули для этого турнира?'),
 
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->hidden(fn() => now()->greaterThan($this->record->date_commission)),
         ];
     }
 

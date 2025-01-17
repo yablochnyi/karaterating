@@ -10,6 +10,7 @@ use App\Models\TournamentStudentList;
 use App\Models\TournamentTrener;
 use App\Models\Trener;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -95,7 +96,18 @@ class StudentsRelationManager extends RelationManager
 //                    ->label('Фамилия'),
                 TextColumn::make('age')
                     ->label('Возраст')
-                    ->suffix(' лет'),
+                    ->formatStateUsing(function ($record) {
+                        if (!$record->birthday) {
+                            return null;
+                        }
+                        $age = \Carbon\Carbon::parse($record->birthday)->age;
+                        $suffix = match (true) {
+                            $age % 10 === 1 && $age % 100 !== 11 => 'год',
+                            in_array($age % 10, [2, 3, 4]) && !in_array($age % 100, [12, 13, 14]) => 'года',
+                            default => 'лет',
+                        };
+                        return "{$age} {$suffix}";
+                    }),
                 TextColumn::make('weight')
                     ->label('Вес')
                     ->suffix(' кг'),
@@ -170,7 +182,7 @@ class StudentsRelationManager extends RelationManager
 
                             foreach ($lists as $list) {
                                 if (
-                                    $student->age >= $list->age_from && $student->age <= $list->age_to &&
+                                    Carbon::parse($student->birthday)->age >= $list->age_from && Carbon::parse($student->birthday)->age <= $list->age_to &&
                                     $student->weight >= $list->weight_from && $student->weight <= $list->weight_to &&
                                     $student->gender == $list->gender &&
                                     (

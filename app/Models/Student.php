@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -137,4 +138,19 @@ class Student extends Model
             (!$this->is_certificate_included_check || $this->is_success_certificate);
     }
 
+    public function getAgeAttribute(): ?string
+    {
+        if (!$this->birthday) {
+            return null;
+        }
+        $age = Carbon::parse($this->birthday)->age;
+
+        $suffix = match (true) {
+            $age % 10 === 1 && $age % 100 !== 11 => 'год',
+            in_array($age % 10, [2, 3, 4]) && !in_array($age % 100, [12, 13, 14]) => 'года',
+            default => 'лет',
+        };
+
+        return "{$age} {$suffix}";
+    }
 }

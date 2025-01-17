@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ListTournament;
 use App\Models\Pool;
 use App\Models\Tournament;
 use Filament\Notifications\Notification;
@@ -11,7 +12,7 @@ class GeneratePuliController extends Controller
 {
     public $tournament;
 
-    public function generate($tournamentId)
+    public function generate($tournamentId, $listId = null)
     {
         $tournament = Tournament::with([
             'lists.listTournaments' => function ($query) use ($tournamentId) {
@@ -23,27 +24,64 @@ class GeneratePuliController extends Controller
 
         $this->tournament = $tournament;
 
-        $pools = $tournament->pools()->exists();
-        if ($pools) {
-            Pool::where('tournament_id', $tournamentId)->delete();
-        }
+        if ($listId) {
+            // Проверяем, есть ли пули для указанного списка
+            $poolsExist = $tournament->pools()->where('list_id', $listId)->exists();
 
-        foreach ($tournament->lists as $list) {
-            foreach ($list->listTournaments as $listTournament) {
-                $students = $listTournament->students;
+            if ($poolsExist) {
+                // Удаляем только пули для этого списка
+                Pool::where('tournament_id', $tournamentId)
+                    ->where('list_id', $listId)
+                    ->delete();
 
-                if ($students->count() == 2) {
-                    $this->generateForTwoStudents($students, $tournamentId, $listTournament->id);
-                } elseif ($students->count() == 3) {
-                    $this->generateForThreeStudents($students, $tournamentId, $listTournament->id);
-                } elseif ($students->count() == 4) {
-                    $this->generateForFourStudents($students, $tournamentId, $listTournament->id);
-                } elseif ($students->count() >= 5 && $students->count() <= 8) {
-                    $this->generateForFiveToEightStudents($students, $tournamentId, $listTournament->id);
-                } elseif ($students->count() >= 9 && $students->count() <= 16) {
-                    $this->generateForNineToSixteenStudents($students, $tournamentId, $listTournament->id);
-                } elseif ($students->count() >= 17 && $students->count() <= 32) {
-                    $this->generateForSeventeenToThirtyTwoStudents($students, $tournamentId, $listTournament->id);
+                $getListTournament = ListTournament::find($listId);
+                // Генерируем новые пули только для этого списка
+                foreach ($tournament->lists as $list) {
+                    foreach ($list->listTournaments as $listTournament) {
+                        if ($list->id == $getListTournament->template_student_list_id) {
+                            $students = $listTournament->students;
+
+                            if ($students->count() == 2) {
+                                $this->generateForTwoStudents($students, $tournamentId, $listTournament->id);
+                            } elseif ($students->count() == 3) {
+                                $this->generateForThreeStudents($students, $tournamentId, $listTournament->id);
+                            } elseif ($students->count() == 4) {
+                                $this->generateForFourStudents($students, $tournamentId, $listTournament->id);
+                            } elseif ($students->count() >= 5 && $students->count() <= 8) {
+                                $this->generateForFiveToEightStudents($students, $tournamentId, $listTournament->id);
+                            } elseif ($students->count() >= 9 && $students->count() <= 16) {
+                                $this->generateForNineToSixteenStudents($students, $tournamentId, $listTournament->id);
+                            } elseif ($students->count() >= 17 && $students->count() <= 32) {
+                                $this->generateForSeventeenToThirtyTwoStudents($students, $tournamentId, $listTournament->id);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+
+            $pools = $tournament->pools()->exists();
+            if ($pools) {
+                Pool::where('tournament_id', $tournamentId)->delete();
+            }
+
+            foreach ($tournament->lists as $list) {
+                foreach ($list->listTournaments as $listTournament) {
+                    $students = $listTournament->students;
+
+                    if ($students->count() == 2) {
+                        $this->generateForTwoStudents($students, $tournamentId, $listTournament->id);
+                    } elseif ($students->count() == 3) {
+                        $this->generateForThreeStudents($students, $tournamentId, $listTournament->id);
+                    } elseif ($students->count() == 4) {
+                        $this->generateForFourStudents($students, $tournamentId, $listTournament->id);
+                    } elseif ($students->count() >= 5 && $students->count() <= 8) {
+                        $this->generateForFiveToEightStudents($students, $tournamentId, $listTournament->id);
+                    } elseif ($students->count() >= 9 && $students->count() <= 16) {
+                        $this->generateForNineToSixteenStudents($students, $tournamentId, $listTournament->id);
+                    } elseif ($students->count() >= 17 && $students->count() <= 32) {
+                        $this->generateForSeventeenToThirtyTwoStudents($students, $tournamentId, $listTournament->id);
+                    }
                 }
             }
         }

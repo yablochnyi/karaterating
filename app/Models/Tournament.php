@@ -35,6 +35,14 @@ class Tournament extends Model
             ->withPivot('id');
     }
 
+    public function listWhereExistPools()
+    {
+        return $this->hasMany(ListTournament::class, 'tournament_id')
+            ->whereHas('pools')
+            ->orderBy('list_tournaments.sort_order', 'asc');
+    }
+
+
     public function region()
     {
         return $this->belongsTo(Region::class);
