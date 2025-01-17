@@ -27,7 +27,11 @@ class GeneratePDFPuliController extends Controller
 
 
         // Указываем путь к бинарникам Node.js, NPM, Puppeteer, а также к Chromium
-        $browsershot->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
+        return Browsershot::html('pdf.bracket', [
+            'tournament' => $tournament,
+            'poolsGroupedByListId' => $poolsGroupedByListId
+        ])
+            ->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
             ->setNpmBinary('/root/.nvm/versions/node/v23.1.0/bin/npm')
             ->setChromePath('/usr/bin/chromium-browser')  // Укажите путь к вашему Chromium
             ->setIncludePath('$PATH:/usr/local/bin')
@@ -37,10 +41,10 @@ class GeneratePDFPuliController extends Controller
             ]);
 //        dd($browsershot);
         // Генерируем PDF с помощью Spatie Laravel PDF, используя настраиваемые параметры
-        return Pdf::view('pdf.bracket', [
-            'tournament' => $tournament,
-            'poolsGroupedByListId' => $poolsGroupedByListId
-        ])
-            ->name('your-invoice.pdf');
+//        return Pdf::view('pdf.bracket', [
+//            'tournament' => $tournament,
+//            'poolsGroupedByListId' => $poolsGroupedByListId
+//        ])
+//            ->name('your-invoice.pdf');
     }
 }
