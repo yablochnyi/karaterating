@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
+use Torgodly\Html2Media\Tables\Actions\Html2MediaAction;
 
 class PoolsRelationManager extends RelationManager
 {
