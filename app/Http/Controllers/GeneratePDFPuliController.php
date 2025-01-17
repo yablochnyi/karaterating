@@ -29,7 +29,7 @@ class GeneratePDFPuliController extends Controller
         ->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
             ->setNpmBinary('/root/.nvm/versions/node/v23.1.0/bin/npm')
             ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
-            ->setIncludePath('$PATH:/usr/local/bin')
+            ->setIncludePath('/usr/local/bin')
             ->addChromiumArguments([
                 'no-sandbox',
                 'disable-setuid-sandbox',  // Иногда требуется для Linux-серверов
