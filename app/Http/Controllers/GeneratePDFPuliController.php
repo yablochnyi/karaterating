@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tournament;
-use Spatie\Browsershot\Browsershot;
+//use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class GeneratePDFPuliController extends Controller
 {
@@ -21,24 +22,11 @@ class GeneratePDFPuliController extends Controller
         // Группируем пулы по list_id
         $poolsGroupedByListId = $tournament->pools->groupBy('list_id');
 
-        // Генерируем PDF с помощью Browsershot
-        $pdfContent = Browsershot::html(view('pdf.bracket', [
+
+        return Pdf::view('pdf.bracket', [
             'tournament' => $tournament,
             'poolsGroupedByListId' => $poolsGroupedByListId
-        ])->render())  // Рендерим представление HTML в строку
-        ->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
-            ->setNpmBinary('/root/.nvm/versions/node/v23.1.0/bin/npm')
-            ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
-            ->setIncludePath('/usr/local/bin')
-            ->addChromiumArguments([
-                'no-sandbox',
-                'disable-setuid-sandbox',  // Иногда требуется для Linux-серверов
-            ])
-            ->pdf(); // Генерируем PDF
+        ])->name('your-invoice.pdf');
 
-        // Возвращаем PDF в ответ
-        return response($pdfContent)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="tournament-bracket.pdf"');
     }
 }
