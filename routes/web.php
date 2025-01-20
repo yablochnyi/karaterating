@@ -12,6 +12,6 @@ Route::get('/panel/tournament-student-list-pdf/{id}', [GeneratePDFReportControll
     ->middleware(['auth'])->name('generatePDFReport');
 
 Route::get('/panel/tournament-student-puli-pdf/{id}', [GeneratePDFPuliController::class, 'generatePDFPuli'])
-    ->name('generatePDFPuli');
+    ->middleware(['auth'])->name('generatePDFPuli');
 
 

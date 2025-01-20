@@ -1,4 +1,4 @@
-<x-filament-panels::page>
+<x-filament-panels::page class="scrollable-page">
     <div wire:ignore>
         @if ($tournament->pools->where('type', 'Round Robin')->count() > 0 && $tournament->organization_id == auth()->id())
             <button
@@ -521,6 +521,16 @@
             background: #fff;
         }
 
+        .scrollable-page {
+            display: flex; /* Используем flexbox */
+            overflow-x: auto; /* Разрешаем горизонтальный скролл */
+            white-space: nowrap; /* Отключаем перенос строк */
+            width: 100%; /* Ширина блока */
+        }
+
+        .scrollable-page > * {
+            flex: 0 0 auto; /* Элементы не будут растягиваться */
+        }
 
         .tournament_name {
             display: flex;
