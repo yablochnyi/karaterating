@@ -45,7 +45,7 @@ class PoolsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                TextColumn::make('id'),
+//                TextColumn::make('id'),
                 CircleProgress::make('circle')
                     ->label('Завершенность')
                     ->getStateUsing(function ($record) {
