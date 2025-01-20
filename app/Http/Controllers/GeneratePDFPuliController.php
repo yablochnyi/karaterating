@@ -28,8 +28,8 @@ class GeneratePDFPuliController extends Controller
         ])->render())  // Рендерим представление HTML в строку
         ->setNodeBinary('/var/www/karaterating_usr/data/.nvm/versions/node/v23.6.0/bin/node')
             ->setNpmBinary('/var/www/karaterating_usr/data/.nvm/versions/node/v23.6.0/bin/npm')
-            ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
-            ->setIncludePath('/usr/local/bin')
+//            ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
+//            ->setIncludePath('/usr/local/bin')
             ->addChromiumArguments([
                 'no-sandbox',
                 'disable-setuid-sandbox',  // Иногда требуется для Linux-серверов
