@@ -26,9 +26,9 @@ class GeneratePDFPuliController extends Controller
             'tournament' => $tournament,
             'poolsGroupedByListId' => $poolsGroupedByListId
         ])->render())  // Рендерим представление HTML в строку
-//        ->setNodeBinary('/root/.nvm/versions/node/v23.1.0/bin/node')
-//            ->setNpmBinary('/root/.nvm/versions/node/v23.1.0/bin/npm')
-//            ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
+        ->setNodeBinary('/var/www/karaterating_usr/data/.nvm/versions/node/v23.6.0/bin/node')
+            ->setNpmBinary('/var/www/karaterating_usr/data/.nvm/versions/node/v23.6.0/bin/npm')
+            ->setChromePath('/usr/bin/chromium-browser')  // Указываем путь к вашему Chromium
             ->setIncludePath('/usr/local/bin')
             ->addChromiumArguments([
                 'no-sandbox',
